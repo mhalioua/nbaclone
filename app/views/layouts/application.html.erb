@@ -1,14 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>NbaApp</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
-
-<%= yield %>
-
-</body>
+	<head>
+  		<title>NBA App</title>
+	</head>
+	<body>
+		<div id="header">
+			<h1>NBA App</h1>
+		</div>
+		<div id="main">
+			<% if !flash[:notice].blank? %>
+				<div class="notice">
+					<%= flash[:notice] %>
+				</div>
+				<div id="content">
+					<%= yield %>
+				</div>
+			<% end %>
+		</div>
+		<div id="footer">
+			<p id="copyright">&copy; Mike Halioua</p>
+		</div>
+	</body>
 </html>
