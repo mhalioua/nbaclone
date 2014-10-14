@@ -1,2 +1,9 @@
-<h1>Access#index</h1>
-<p>Find me in app/views/access/index.html.erb</p>
+<% @page_title = "Admin Menu" %>
+
+<div class="menu">
+	<h2>Admin Menu</h2>
+	<div class="identity">Logged in as: <%= session[:username] %></div>
+	<ul>
+		<li><%= link_to("Logout", :action => 'logout')%></li>
+	</ul>
+</div>
