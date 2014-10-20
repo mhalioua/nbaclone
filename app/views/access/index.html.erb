@@ -1,10 +1,16 @@
-<% @page_title = "Admin Menu" %>
+<% @page_title = "Home Page" %>
+<%today = Time.now.strftime("%B %d")%>
+<%tomorrow = Time.now.tomorrow.strftime("%B %d")%>
+<%yesterday = Time.now.yesterday.strftime("%B %d")%>
 
 <div class="menu">
-	<h2>Admin Menu</h2>
+	<h2>Home Page</h2>
 	<div class="identity">Logged in as: <%= session[:username] %></div>
 	<ul>
 		<li><%= link_to("Team", :controller => 'index', :action => 'team') %></li>
+		<li><%= link_to(yesterday + " Matchups", :controller => 'index', :action => 'yesterday') %></li>
+		<li><%= link_to(today + " Matchups", :controller => 'index', :action => 'today') %></li>
+		<li><%= link_to(tomorrow + " Matchups", :controller => 'index', :action => 'tomorrow') %></li>
 		<li><%= link_to("Logout", :action => 'logout')%></li>
 	</ul>
 </div>

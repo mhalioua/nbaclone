@@ -1,0 +1,15 @@
+<% @page_title = Time.now.yesterday.strftime("%B %d") %>
+
+<%= link_to("Home Page", :controller => 'access', :action => 'index') %>
+
+<h2><%= Time.now.yesterday.strftime("%B %d") %> Matchups</h2>
+<div id="main">
+	<div id="list">
+		<ul>
+			<h3>Home vs Away</h3>
+			<% @teams.each do |team| %>
+			<li><%= link_to(team.name + " vs " + team.opp_yesterday, {:controller => 'mlb', :action => 'tomorrow', :id => team.id}) %></li>
+			<% end %>
+		</ul>
+	</div>
+</div>

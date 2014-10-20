@@ -1,18 +1,14 @@
 Rails.application.routes.draw do
-  # get 'index/date'
 
-  # get 'index/team'
 
-  # get 'access/index'
-
-  # get 'access/login'
+  get 'statistics/team'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
-  root 'access#index'
+  get 'admin', :to => 'access#index'
 
-  get 'admin', :to => "access#index"
+  root 'access#index'
 
   match ':controller(/:action(/:id))', :via => [:get, :post]
 

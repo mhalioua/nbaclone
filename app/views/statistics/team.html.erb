@@ -1,0 +1,18 @@
+<% @page_title = @team.name + " Stats"%>
+
+<%= link_to("Teams", :controller => 'index', :action => 'team') %> </br>
+
+<h2><%= @team.name %></h2>
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>Free throw percentage</th>
+	</tr>
+	<% @players.each do |player| %>
+		<tr>
+			<td><%= player.name %> </td>
+			<td>25</td>
+		</tr>
+	<% end %>
+</table>

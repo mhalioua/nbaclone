@@ -29,6 +29,12 @@ ActiveRecord::Schema.define(version: 20141014194507) do
 
   create_table "teams", force: true do |t|
     t.string   "name"
+    t.boolean  "yesterday"
+    t.boolean  "today"
+    t.boolean  "tomorrow"
+    t.string   "opp_yesterday"
+    t.string   "opp_today"
+    t.string   "opp_tomorrow"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
