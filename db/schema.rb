@@ -23,9 +23,31 @@ ActiveRecord::Schema.define(version: 20141014194507) do
   create_table "players", force: true do |t|
     t.integer  "team_id"
     t.string   "name"
+    t.string   "alias"
+    t.integer  "GS"
+    t.integer  "MP"
+    t.integer  "FG"
+    t.integer  "FGA"
+    t.float    "FGP",        limit: 24
+    t.integer  "ThP"
+    t.integer  "ThPA"
+    t.float    "ThPP",       limit: 24
+    t.integer  "FT"
+    t.integer  "FTA"
+    t.float    "FTP",        limit: 24
+    t.integer  "ORB"
+    t.integer  "DRB"
+    t.integer  "AST"
+    t.integer  "STL"
+    t.integer  "BLK"
+    t.integer  "TO"
+    t.integer  "PF"
+    t.integer  "PTS"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "players", ["name"], name: "index_players_on_name", using: :btree
 
   create_table "teams", force: true do |t|
     t.string   "name"
@@ -38,6 +60,8 @@ ActiveRecord::Schema.define(version: 20141014194507) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "teams", ["name"], name: "index_teams_on_name", using: :btree
 
   create_table "users", force: true do |t|
     t.string   "username"

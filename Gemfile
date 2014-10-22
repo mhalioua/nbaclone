@@ -35,6 +35,12 @@ gem 'watir'
 
 gem 'watir-rails'
 
+gem 'phantomjs.rb', '~> 2.0.0'
+
+gem 'capybara'
+
+gem 'poltergeist'
+
 # Use unicorn as the app server
 # gem 'unicorn'
 

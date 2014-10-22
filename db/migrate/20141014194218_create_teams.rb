@@ -10,6 +10,7 @@ class CreateTeams < ActiveRecord::Migration
 		  t.string "opp_tomorrow"
       t.timestamps
     end
+    add_index("teams", "name")
   end
 
   def down
