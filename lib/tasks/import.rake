@@ -3,20 +3,28 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+		url = "http://www.teamrankings.com/nba/stat/fastbreak-efficiency"
+		doc = Nokogiri::HTML(open(url))
+		doc.css(".sortable td").each do |item|
+			puts item.text
+		end
+
+	end
+
+	task :ajax => :environment do
 		require 'capybara'
 		require 'capybara/poltergeist'
 		require 'open-uri'
 		require 'nokogiri'
 
-		def wait_for_ajax
-		  
-		end
 		session = Capybara::Session.new(:poltergeist)
-		session.visit "http://www.teamrankings.com/nba/stat/shooting-pct"
+		session.visit "http://www.teamrankings.com/nba/stat/fastbreak-efficiency"
 		counter = 0
 		while session.execute_script("return $.active").to_i > 0
 			counter += 1
-			sleep(1)
+			sleep(3)
 			raise "AJAX request took longer than 5 seconds." if counter >= 50
 		end
 
