@@ -4,6 +4,7 @@ class CreatePlayers < ActiveRecord::Migration
     	t.references :team
     	t.string "name"
       t.string "alias"
+      t.string "position"
       t.integer "GS"
       t.integer "MP"
       t.integer "FG"

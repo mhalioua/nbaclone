@@ -24,6 +24,7 @@ ActiveRecord::Schema.define(version: 20141014194507) do
     t.integer  "team_id"
     t.string   "name"
     t.string   "alias"
+    t.string   "position"
     t.integer  "GS"
     t.integer  "MP"
     t.integer  "FG"

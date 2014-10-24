@@ -68,8 +68,12 @@ namespace :import do
 			var = 0
 			doc.css("#roster td").each do |player|
 				var += 1
-				if var%8 == 2
-					Player.create(:team_id => index+1, :name => player.text)
+				case var%8
+				when 2
+					@name = player.text
+				when 3
+					@position = player.text
+					Player.create(:team_id => index+1, :name => player.text, :position => player.text)
 				end
 			end
 		end
@@ -186,6 +190,32 @@ namespace :import do
 					end
 				end
 			end
+		end
+	end
+
+	task :create_matchups => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+		# hawks = Team.find_by_name("Hawks")
+		# hornets = Team.find_by_name("Hornets")
+		# hawks_players = Player.where(:team_id => hawks.id)
+		# hornets_players = Player.where(:team_id => hornets.id)
+
+		# hawks_players.each do |hawk|
+		# 	hornets_players.each do |hornet|
+		# 		url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{hawk.alias}&p2=#{hornet.alias}"
+		# 		doc = Nokogiri::HTML(open(url))
+		# 		doc.css("#stats td").each do |stat|
+		# 			puts stat.text
+		# 		end
+		# 	end
+		# end
+
+		url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=barneha01&p2=cartevi01"
+		doc = Nokogiri::HTML(open(url))
+		doc.css("#stats td").each do |stat|
+			puts stat.text
 		end
 	end
 end
