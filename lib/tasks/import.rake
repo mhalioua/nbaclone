@@ -271,14 +271,12 @@ namespace :import do
 				opp_players = opp.player.where(:starter => true, :forward => true)
 				players.each do |player1|
 					opp_players.each do |player2|
-						id1 = player1.id
-						id2 = player2.id
-						matchup = PlayerMatchup.create(:player_one_id => id1, :player_two_id => id2)
+						matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+						puts player1.name + " vs " + player2.name
 						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
 						doc = Nokogiri::HTML(open(url))
 						var = 0
 						size = doc.css("#stats_games td").size
-
 						doc.css("#stats_games td").each do |stat|
 							var += 1
 							if var <= (size - 270)
@@ -289,8 +287,6 @@ namespace :import do
 								@name = stat.text
 							when 3
 								@date = stat.text
-							when 5
-								@GS = stat.text.to_i
 							when 9
 								@MP = stat.text
 							when 10
@@ -327,6 +323,73 @@ namespace :import do
 								@PF = stat.text.to_i
 							when 0
 								@PTS = stat.text.to_i
+								PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
+									:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+									:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+							end
+						end
+					end
+				end
+
+				players = team.player.where(:starter => true, :guard => true)
+				opp_players = opp.player.where(:starter => true, :guard => true)
+				players.each do |player1|
+					opp_players.each do |player2|
+						puts player1.name + " vs " + player2.name
+						matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+						doc = Nokogiri::HTML(open(url))
+						var = 0
+						size = doc.css("#stats_games td").size
+						doc.css("#stats_games td").each do |stat|
+							var += 1
+							if var <= (size - 270)
+								next
+							end
+							case var%27
+							when 2
+								@name = stat.text
+							when 3
+								@date = stat.text
+							when 9
+								@MP = stat.text
+							when 10
+								@FG = stat.text.to_i
+							when 11
+								@FGA = stat.text.to_i
+							when 12
+								@FGP = (stat.text.to_f*100).round(1)
+							when 13
+								@ThP = stat.text.to_i
+							when 14
+								@ThPA = stat.text.to_i
+							when 15
+								@ThPP = (stat.text.to_f*100).round(1)
+							when 16
+								@FT = stat.text.to_i
+							when 17
+								@FTA = stat.text.to_i
+							when 18
+								@FTP = (stat.text.to_f*100).round(1)
+							when 19
+								@ORB = stat.text.to_i
+							when 20
+								@DRB = stat.text.to_i
+							when 22
+								@AST = stat.text.to_i
+							when 23
+								@STL = stat.text.to_i
+							when 24
+								@BLK = stat.text.to_i
+							when 25
+								@TO = stat.text.to_i
+							when 26
+								@PF = stat.text.to_i
+							when 0
+								@PTS = stat.text.to_i
+								PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
+									:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+									:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
 							end
 						end
 					end
