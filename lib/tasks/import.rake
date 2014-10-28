@@ -13,19 +13,6 @@ namespace :import do
 
 	end
 
-	task :position => :environment do
-		players = Player.all
-		player.each do |player|
-			player.update_attributes(:forward => false, :guard => false)
-			position = player.position
-			if position == "PF" || position == "SF" || position == "C"
-				player.update_attributes(:forward => true)
-			else
-				player.update_attributes(:guard => true)
-			end
-		end
-	end
-
 	task :ajax => :environment do
 		require 'capybara'
 		require 'capybara/poltergeist'
@@ -86,7 +73,11 @@ namespace :import do
 					@name = player.text
 				when 3
 					@position = player.text
-					Player.create(:team_id => index+1, :name => player.text, :position => player.text)
+					if @position == "SF" || @position == "PF" || @position == "C"
+						Player.create(:team_id => index+1, :name => @name, :position => @position, :forward => true)
+					else
+						Player.create(:team_id => index+1, :name => @name, :position => @position, :guard => true)
+					end
 				end
 			end
 		end
@@ -159,9 +150,15 @@ namespace :import do
 				when 0
 					@PTS = player.text.to_i
 					if player = Player.where(:name => @name, :team_id => index+1).first
-						player.update_attributes(:GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
-							:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
-							:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						if var <= 216
+							player.update_attributes(:starter => true, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
+								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
+								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						else
+							player.update_attributes(:starter => false, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
+								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
+								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
 					end
 				end
 			end
@@ -227,36 +224,14 @@ namespace :import do
 					opp_players.each do |player2|
 						id1 = player1.id
 						id2 = player2.id
+						matchup = PlayerMatchup.create(:player_one_id => id1, :player_two_id => id2)
 						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
 						doc = HTML::Nokogiri(open(url))
+						puts player1.name
+						puys player2.name
 					end
 				end
 			end
-
-			# opp = Team.find_by_name(team.opponent)
-			# players = team.player.where(:starter => true)
-			# opp_players = opp.player(:starter => true)
-			# players.zip(opp_players).each do |player1, player2|
-			# 	id1 = player1.id
-			# 	id2 = player2.id
-			# 	url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-			# 	doc = HTML::Nokogiri(open(url))
-			# end
 		end
-
-		# hawks = Team.find_by_name("Hawks")
-		# hornets = Team.find_by_name("Hornets")
-		# hawks_players = Player.where(:team_id => hawks.id)
-		# hornets_players = Player.where(:team_id => hornets.id)
-
-		# hawks_players.each do |hawk|
-		# 	hornets_players.each do |hornet|
-		# 		url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{hawk.alias}&p2=#{hornet.alias}"
-		# 		doc = Nokogiri::HTML(open(url))
-		# 		doc.css("#stats td").each do |stat|
-		# 			puts stat.text
-		# 		end
-		# 	end
-		# end
 	end
 end

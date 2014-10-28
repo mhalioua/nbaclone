@@ -2,12 +2,12 @@ class CreatePlayers < ActiveRecord::Migration
   def up
     create_table :players do |t|
     	t.references :team
-      t.boolean "starter"
+      t.boolean "starter", :default => false
     	t.string "name"
       t.string "alias"
       t.string "position"
-      t.boolean "forward"
-      t.boolean "guard"
+      t.boolean "forward", :default => false
+      t.boolean "guard", :default => false
       t.integer "GS"
       t.integer "MP"
       t.integer "FG"

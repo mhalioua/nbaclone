@@ -49,10 +49,12 @@ ActiveRecord::Schema.define(version: 20141028033011) do
 
   create_table "players", force: true do |t|
     t.integer  "team_id"
-    t.boolean  "starter"
+    t.boolean  "starter",               default: false
     t.string   "name"
     t.string   "alias"
     t.string   "position"
+    t.boolean  "forward",               default: false
+    t.boolean  "guard",                 default: false
     t.integer  "GS"
     t.integer  "MP"
     t.integer  "FG"
