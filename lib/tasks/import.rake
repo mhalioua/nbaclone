@@ -13,6 +13,19 @@ namespace :import do
 
 	end
 
+	task :position => :environment do
+		players = Player.all
+		player.each do |player|
+			player.update_attributes(:forward => false, :guard => false)
+			position = player.position
+			if position == "PF" || position == "SF" || position == "C"
+				player.update_attributes(:forward => true)
+			else
+				player.update_attributes(:guard => true)
+			end
+		end
+	end
+
 	task :ajax => :environment do
 		require 'capybara'
 		require 'capybara/poltergeist'
@@ -197,6 +210,40 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
+		# TODO set teams that are matched up
+		teams = Team.all
+		opp = Team.all
+
+		@arr = Array.new
+		teams.each do |team|
+			opp.each do |opp|
+				@arr << team.id
+				if @arr.include? opp.id || team.id == opp.id
+					next
+				end
+				players = team.player.where(:starter => true, :forward => true)
+				opp_players = opp.player.where(:starter => true, :forward => true)
+				players.each do |player1|
+					opp_players.each do |player2|
+						id1 = player1.id
+						id2 = player2.id
+						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+						doc = HTML::Nokogiri(open(url))
+					end
+				end
+			end
+
+			# opp = Team.find_by_name(team.opponent)
+			# players = team.player.where(:starter => true)
+			# opp_players = opp.player(:starter => true)
+			# players.zip(opp_players).each do |player1, player2|
+			# 	id1 = player1.id
+			# 	id2 = player2.id
+			# 	url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+			# 	doc = HTML::Nokogiri(open(url))
+			# end
+		end
+
 		# hawks = Team.find_by_name("Hawks")
 		# hornets = Team.find_by_name("Hornets")
 		# hawks_players = Player.where(:team_id => hawks.id)
@@ -211,11 +258,5 @@ namespace :import do
 		# 		end
 		# 	end
 		# end
-
-		url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=barneha01&p2=cartevi01"
-		doc = Nokogiri::HTML(open(url))
-		doc.css("#stats td").each do |stat|
-			puts stat.text
-		end
 	end
 end

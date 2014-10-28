@@ -5,7 +5,7 @@ class CreateTeams < ActiveRecord::Migration
 		  t.boolean "yesterday"
 		  t.boolean "today"
 		  t.boolean "tomorrow"
-      t.string "opp_yesterday"
+      t.string "opp_yesterday" #TODO change string to link to team
 		  t.string "opp_today"
 		  t.string "opp_tomorrow"
       t.timestamps

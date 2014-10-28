@@ -1,15 +1,12 @@
-class CreatePlayers < ActiveRecord::Migration
+class CreatePlayerMatchupGames < ActiveRecord::Migration
   def up
-    create_table :players do |t|
-    	t.references :team
-      t.boolean "starter"
-    	t.string "name"
-      t.string "alias"
-      t.string "position"
-      t.boolean "forward"
-      t.boolean "guard"
+    create_table :player_matchup_games do |t|
+
+      t.references :player_matchup
+      t.string "name"
+      t.string "date"
       t.integer "GS"
-      t.integer "MP"
+      t.string "MP"
       t.integer "FG"
       t.integer "FGA"
       t.float "FGP"
@@ -27,12 +24,12 @@ class CreatePlayers < ActiveRecord::Migration
       t.integer "TO"
       t.integer "PF"
       t.integer "PTS"
+
       t.timestamps
     end
-    add_index("players", "name")
   end
 
   def down
-  	drop_table :players
+  	drop_table :player_matchup_games
   end
 end
