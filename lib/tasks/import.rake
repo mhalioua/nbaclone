@@ -5,12 +5,61 @@ namespace :import do
 	task :test => :environment do
 		require 'open-uri'
 		require 'nokogiri'
-		url = "http://www.teamrankings.com/nba/stat/fastbreak-efficiency"
+		url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=jeffeal01&p2=ilyaser01"
 		doc = Nokogiri::HTML(open(url))
-		doc.css(".sortable td").each do |item|
-			puts item.text
-		end
+		var = 0
+		size = doc.css("#stats_games td").size
 
+		doc.css("#stats_games td").each do |stat|
+			var += 1
+			if var <= (size - 270)
+				next
+			end
+			case var%27
+			when 2
+				@name = stat.text
+			when 3
+				@date = stat.text
+			when 5
+				@GS = stat.text.to_i
+			when 9
+				@MP = stat.text
+			when 10
+				@FG = stat.text.to_i
+			when 11
+				@FGA = stat.text.to_i
+			when 12
+				@FGP = (stat.text.to_f*100).round(1)
+			when 13
+				@ThP = stat.text.to_i
+			when 14
+				@ThPA = stat.text.to_i
+			when 15
+				@ThPP = (stat.text.to_f*100).round(1)
+			when 16
+				@FT = stat.text.to_i
+			when 17
+				@FTA = stat.text.to_i
+			when 18
+				@FTP = (stat.text.to_f*100).round(1)
+			when 19
+				@ORB = stat.text.to_i
+			when 20
+				@DRB = stat.text.to_i
+			when 22
+				@AST = stat.text.to_i
+			when 23
+				@STL = stat.text.to_i
+			when 24
+				@BLK = stat.text.to_i
+			when 25
+				@TO = stat.text.to_i
+			when 26
+				@PF = stat.text.to_i
+			when 0
+				@PTS = stat.text.to_i
+			end
+		end
 	end
 
 	task :ajax => :environment do
@@ -226,9 +275,60 @@ namespace :import do
 						id2 = player2.id
 						matchup = PlayerMatchup.create(:player_one_id => id1, :player_two_id => id2)
 						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-						doc = HTML::Nokogiri(open(url))
-						puts player1.name
-						puys player2.name
+						doc = Nokogiri::HTML(open(url))
+						var = 0
+						size = doc.css("#stats_games td").size
+
+						doc.css("#stats_games td").each do |stat|
+							var += 1
+							if var <= (size - 270)
+								next
+							end
+							case var%27
+							when 2
+								@name = stat.text
+							when 3
+								@date = stat.text
+							when 5
+								@GS = stat.text.to_i
+							when 9
+								@MP = stat.text
+							when 10
+								@FG = stat.text.to_i
+							when 11
+								@FGA = stat.text.to_i
+							when 12
+								@FGP = (stat.text.to_f*100).round(1)
+							when 13
+								@ThP = stat.text.to_i
+							when 14
+								@ThPA = stat.text.to_i
+							when 15
+								@ThPP = (stat.text.to_f*100).round(1)
+							when 16
+								@FT = stat.text.to_i
+							when 17
+								@FTA = stat.text.to_i
+							when 18
+								@FTP = (stat.text.to_f*100).round(1)
+							when 19
+								@ORB = stat.text.to_i
+							when 20
+								@DRB = stat.text.to_i
+							when 22
+								@AST = stat.text.to_i
+							when 23
+								@STL = stat.text.to_i
+							when 24
+								@BLK = stat.text.to_i
+							when 25
+								@TO = stat.text.to_i
+							when 26
+								@PF = stat.text.to_i
+							when 0
+								@PTS = stat.text.to_i
+							end
+						end
 					end
 				end
 			end
