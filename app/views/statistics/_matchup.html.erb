@@ -1,0 +1,13 @@
+<h3>Guard Matchups</h3>
+<ul>
+	<% @guard_matchups.each do |matchup| %>
+	<li><%= link_to(Player.find_by_id(matchup.player_one_id).name + " vs " + Player.find_by_id(matchup.player_two_id).name, :controller => 'statistics', :action => 'game', :id => matchup.id, :first_id => params[:first_id], :second_id => params[:second_id]) %></li>
+	<% end %>
+</ul>
+
+<h3>Forward Matchups</h3>
+<ul>
+	<% @forward_matchups.each do |matchup| %>
+	<li><%= link_to(Player.find_by_id(matchup.player_one_id).name + " vs " + Player.find_by_id(matchup.player_two_id).name, :controller => 'statistics', :action => 'game', :id => matchup.id, :first_id => params[:first_id], :second_id => params[:second_id]) %></li>
+	<% end %>
+</ul>

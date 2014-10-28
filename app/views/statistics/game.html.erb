@@ -1,0 +1,3 @@
+<%= link_to("Player Matchups", :controller => 'statistics', :action => 'matchup', :first_id => params[:first_id], :second_id => params[:second_id]) %>
+<h2>Previous Games</h2>
+<%= render(:partial => 'matchup_table') %>

@@ -33,19 +33,23 @@ class StatisticsController < ApplicationController
  			end
  		end
 
- 		@forward_game = Array.new
- 		@forward_matchups.each do |matchup|
- 			matchup.player_matchup_game.each do |game|
- 				@forward_game << game
- 			end
- 		end
+ 		# @forward_game = Array.new
+ 		# @forward_matchups.each do |matchup|
+ 		# 	matchup.player_matchup_game.each do |game|
+ 		# 		@forward_game << game
+ 		# 	end
+ 		# end
 
- 		@guard_game = Array.new
- 		@guard_matchups.each do |matchup|
- 			matchup.player_matchup_game.each do |game|
- 				@guard_game << game
- 			end
- 		end
+ 		# @guard_game = Array.new
+ 		# @guard_matchups.each do |matchup|
+ 		# 	matchup.player_matchup_game.each do |game|
+ 		# 		@guard_game << game
+ 		# 	end
+ 		# end
+ 	end
+
+ 	def game
+ 		@game = PlayerMatchup.find_by_id(params[:id]).player_matchup_game
  	end
 
 end
