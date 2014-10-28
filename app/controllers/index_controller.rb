@@ -28,7 +28,7 @@ class IndexController < ApplicationController
 	end
 
 	def second
-		@teams = Team.all
+		@teams = Team.where("id != #{params[:first_id]}")
 	end
 
 end
