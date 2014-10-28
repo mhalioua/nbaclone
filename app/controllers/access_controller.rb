@@ -2,7 +2,7 @@ class AccessController < ApplicationController
 
   before_action :confirm_logged_in, :except => [:login, :attempt_login, :logout]
 
-  layout 'nba'
+  layout 'application'
 
   def index
   	#display text and links

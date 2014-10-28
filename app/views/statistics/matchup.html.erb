@@ -1,0 +1,7 @@
+<% @page_title = @first_team.name + " vs " + @second_team.name%>
+
+<%= link_to("Second Team", :controller => 'index', :action => 'second', :first_id => params[:first_id]) %> </br>
+
+<h2><%= @first_team.name + " vs " + @second_team.name %></h2>
+
+<%= render(:partial => 'matchup_table') %>

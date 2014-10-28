@@ -5,7 +5,6 @@ class CreatePlayerMatchupGames < ActiveRecord::Migration
       t.references :player_matchup
       t.string "name"
       t.string "date"
-      t.integer "GS"
       t.string "MP"
       t.integer "FG"
       t.integer "FGA"

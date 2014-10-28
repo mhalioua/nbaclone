@@ -23,4 +23,12 @@ class IndexController < ApplicationController
 		@teams = Team.where(:tomorrow => true)
 	end
 
+	def first
+		@teams = Team.all
+	end
+
+	def second
+		@teams = Team.all
+	end
+
 end
