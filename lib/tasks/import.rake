@@ -85,8 +85,8 @@ namespace :import do
 	end
 
 	task :create_teams => :environment do
-		team = ["Bobcats", "Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
-				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pistons", "Raptors",
+		team = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
+				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
 				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trailblazers", "Warriors", "Wizards"]
 		team.each do |team|
 			Team.create(:name => team)
@@ -97,14 +97,14 @@ namespace :import do
 		require 'nokogiri'
 		require 'open-uri'
 
-		url = ["http://www.basketball-reference.com/teams/CHA/2015.html", "http://www.basketball-reference.com/teams/MIL/2015.html",
-			"http://www.basketball-reference.com/teams/CHI/2015.html", "http://www.basketball-reference.com/teams/CLE/2015.html",
-			"http://www.basketball-reference.com/teams/BOS/2015.html", "http://www.basketball-reference.com/teams/LAC/2015.html",
-			"http://www.basketball-reference.com/teams/MEM/2015.html", "http://www.basketball-reference.com/teams/ATL/2015.html",
-			"http://www.basketball-reference.com/teams/MIA/2015.html", "http://www.basketball-reference.com/teams/NOP/2015.html",
-			"http://www.basketball-reference.com/teams/UTA/2015.html", "http://www.basketball-reference.com/teams/SAC/2015.html",
-			"http://www.basketball-reference.com/teams/NYK/2015.html", "http://www.basketball-reference.com/teams/LAL/2015.html",
-			"http://www.basketball-reference.com/teams/ORL/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
+		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
+			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
+			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
+			"http://www.basketball-reference.com/teams/ATL/2015.html", "http://www.basketball-reference.com/teams/MIA/2015.html",
+		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
+		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
+		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
+		    "http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
 			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
 			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
 			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
@@ -136,14 +136,14 @@ namespace :import do
 		require 'nokogiri'
 		require 'open-uri'
 
-		url = ["http://www.basketball-reference.com/teams/CHA/2015.html", "http://www.basketball-reference.com/teams/MIL/2015.html",
-			"http://www.basketball-reference.com/teams/CHI/2015.html", "http://www.basketball-reference.com/teams/CLE/2015.html",
-			"http://www.basketball-reference.com/teams/BOS/2015.html", "http://www.basketball-reference.com/teams/LAC/2015.html",
-			"http://www.basketball-reference.com/teams/MEM/2015.html", "http://www.basketball-reference.com/teams/ATL/2015.html",
-			"http://www.basketball-reference.com/teams/MIA/2015.html", "http://www.basketball-reference.com/teams/NOP/2015.html",
-			"http://www.basketball-reference.com/teams/UTA/2015.html", "http://www.basketball-reference.com/teams/SAC/2015.html",
-			"http://www.basketball-reference.com/teams/NYK/2015.html", "http://www.basketball-reference.com/teams/LAL/2015.html",
-			"http://www.basketball-reference.com/teams/ORL/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
+		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
+			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
+			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
+			"http://www.basketball-reference.com/teams/ATL/2015.html", "http://www.basketball-reference.com/teams/MIA/2015.html",
+		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
+		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
+		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
+		    "http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
 			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
 			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
 			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
@@ -157,7 +157,7 @@ namespace :import do
 			var = 0
 			doc.css("#totals td").each do |player|
 				var += 1
-				case var%27
+				case var%28
 				when 2
 					@name = player.text
 				when 5
@@ -176,30 +176,30 @@ namespace :import do
 					@ThPA = player.text.to_i
 				when 12
 					@ThPP = (player.text.to_f*100).round(1)
-				when 16
-					@FT = player.text.to_i
 				when 17
-					@FTA = player.text.to_i
+					@FT = player.text.to_i
 				when 18
-					@FTP = (player.text.to_f*100).round(1)
+					@FTA = player.text.to_i
 				when 19
-					@ORB = player.text.to_i
+					@FTP = (player.text.to_f*100).round(1)
 				when 20
+					@ORB = player.text.to_i
+				when 21
 					@DRB = player.text.to_i
-				when 22
-					@AST = player.text.to_i
 				when 23
-					@STL = player.text.to_i
+					@AST = player.text.to_i
 				when 24
-					@BLK = player.text.to_i
+					@STL = player.text.to_i
 				when 25
-					@TO = player.text.to_i
+					@BLK = player.text.to_i
 				when 26
+					@TO = player.text.to_i
+				when 27
 					@PF = player.text.to_i
 				when 0
 					@PTS = player.text.to_i
 					if player = Player.where(:name => @name, :team_id => index+1).first
-						if var <= 216
+						if var <= 224
 							player.update_attributes(:starter => true, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
 								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
 								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
@@ -217,14 +217,14 @@ namespace :import do
 	task :create_alias => :environment do
 		require 'mechanize'
 
-		url = ["http://www.basketball-reference.com/teams/CHA/2015.html", "http://www.basketball-reference.com/teams/MIL/2015.html",
-			"http://www.basketball-reference.com/teams/CHI/2015.html", "http://www.basketball-reference.com/teams/CLE/2015.html",
-			"http://www.basketball-reference.com/teams/BOS/2015.html", "http://www.basketball-reference.com/teams/LAC/2015.html",
-			"http://www.basketball-reference.com/teams/MEM/2015.html", "http://www.basketball-reference.com/teams/ATL/2015.html",
-			"http://www.basketball-reference.com/teams/MIA/2015.html", "http://www.basketball-reference.com/teams/NOP/2015.html",
-			"http://www.basketball-reference.com/teams/UTA/2015.html", "http://www.basketball-reference.com/teams/SAC/2015.html",
-			"http://www.basketball-reference.com/teams/NYK/2015.html", "http://www.basketball-reference.com/teams/LAL/2015.html",
-			"http://www.basketball-reference.com/teams/ORL/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
+		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
+			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
+			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
+			"http://www.basketball-reference.com/teams/ATL/2015.html", "http://www.basketball-reference.com/teams/MIA/2015.html",
+		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
+		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
+		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
+		    "http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
 			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
 			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
 			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
@@ -263,10 +263,11 @@ namespace :import do
 		@arr = Array.new
 		teams.each do |team|
 			opp.each do |opp|
-				@arr << team.id
-				if @arr.include? opp.id || team.id == opp.id
+				@arr << team.name
+				if @arr.include? opp.name || team.name == opp.name
 					next
 				end
+				puts team.name + " vs " + opp.name
 				players = team.player.where(:starter => true, :forward => true)
 				opp_players = opp.player.where(:starter => true, :forward => true)
 				players.each do |player1|

@@ -4,4 +4,6 @@
 
 <h2><%= @first_team.name + " vs " + @second_team.name %></h2>
 
+<%= link_to("All Players", :controller => 'statistics', :action => 'game', :id => nil,:first_id => params[:first_id], :second_id => params[:second_id])%>
+
 <%= render(:partial => 'matchup') %>
