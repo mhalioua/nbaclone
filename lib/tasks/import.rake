@@ -97,21 +97,21 @@ namespace :import do
 		require 'nokogiri'
 		require 'open-uri'
 
-		url = ["http://www.basketball-reference.com/teams/CHA/2014.html", "http://www.basketball-reference.com/teams/MIL/2014.html",
-			"http://www.basketball-reference.com/teams/CHI/2014.html", "http://www.basketball-reference.com/teams/CLE/2014.html",
-			"http://www.basketball-reference.com/teams/BOS/2014.html", "http://www.basketball-reference.com/teams/LAC/2014.html",
-			"http://www.basketball-reference.com/teams/MEM/2014.html", "http://www.basketball-reference.com/teams/ATL/2014.html",
-			"http://www.basketball-reference.com/teams/MIA/2014.html", "http://www.basketball-reference.com/teams/NOP/2014.html",
-			"http://www.basketball-reference.com/teams/UTA/2014.html", "http://www.basketball-reference.com/teams/SAC/2014.html",
-			"http://www.basketball-reference.com/teams/NYK/2014.html", "http://www.basketball-reference.com/teams/LAL/2014.html",
-			"http://www.basketball-reference.com/teams/ORL/2014.html", "http://www.basketball-reference.com/teams/DAL/2014.html",
-			"http://www.basketball-reference.com/teams/BRK/2014.html", "http://www.basketball-reference.com/teams/DEN/2014.html",
-			"http://www.basketball-reference.com/teams/IND/2014.html", "http://www.basketball-reference.com/teams/DET/2014.html",
-			"http://www.basketball-reference.com/teams/TOR/2014.html", "http://www.basketball-reference.com/teams/HOU/2014.html",
-			"http://www.basketball-reference.com/teams/PHI/2014.html", "http://www.basketball-reference.com/teams/SAS/2014.html",
-			"http://www.basketball-reference.com/teams/PHO/2014.html", "http://www.basketball-reference.com/teams/OKC/2014.html",
-			"http://www.basketball-reference.com/teams/MIN/2014.html", "http://www.basketball-reference.com/teams/POR/2014.html",
-			"http://www.basketball-reference.com/teams/GSW/2014.html", "http://www.basketball-reference.com/teams/WAS/2014.html"]
+		url = ["http://www.basketball-reference.com/teams/CHA/2015.html", "http://www.basketball-reference.com/teams/MIL/2015.html",
+			"http://www.basketball-reference.com/teams/CHI/2015.html", "http://www.basketball-reference.com/teams/CLE/2015.html",
+			"http://www.basketball-reference.com/teams/BOS/2015.html", "http://www.basketball-reference.com/teams/LAC/2015.html",
+			"http://www.basketball-reference.com/teams/MEM/2015.html", "http://www.basketball-reference.com/teams/ATL/2015.html",
+			"http://www.basketball-reference.com/teams/MIA/2015.html", "http://www.basketball-reference.com/teams/NOP/2015.html",
+			"http://www.basketball-reference.com/teams/UTA/2015.html", "http://www.basketball-reference.com/teams/SAC/2015.html",
+			"http://www.basketball-reference.com/teams/NYK/2015.html", "http://www.basketball-reference.com/teams/LAL/2015.html",
+			"http://www.basketball-reference.com/teams/ORL/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
+			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
+			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
+			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
+			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
+			"http://www.basketball-reference.com/teams/MIN/2015.html", "http://www.basketball-reference.com/teams/POR/2015.html",
+			"http://www.basketball-reference.com/teams/GSW/2015.html", "http://www.basketball-reference.com/teams/WAS/2015.html"]
 		url.each_with_index do |url, index|
 			doc = Nokogiri::HTML(open(url))
 			var = 0
@@ -136,21 +136,21 @@ namespace :import do
 		require 'nokogiri'
 		require 'open-uri'
 
-		url = ["http://www.basketball-reference.com/teams/CHA/2014.html", "http://www.basketball-reference.com/teams/MIL/2014.html",
-			"http://www.basketball-reference.com/teams/CHI/2014.html", "http://www.basketball-reference.com/teams/CLE/2014.html",
-			"http://www.basketball-reference.com/teams/BOS/2014.html", "http://www.basketball-reference.com/teams/LAC/2014.html",
-			"http://www.basketball-reference.com/teams/MEM/2014.html", "http://www.basketball-reference.com/teams/ATL/2014.html",
-			"http://www.basketball-reference.com/teams/MIA/2014.html", "http://www.basketball-reference.com/teams/NOP/2014.html",
-			"http://www.basketball-reference.com/teams/UTA/2014.html", "http://www.basketball-reference.com/teams/SAC/2014.html",
-			"http://www.basketball-reference.com/teams/NYK/2014.html", "http://www.basketball-reference.com/teams/LAL/2014.html",
-			"http://www.basketball-reference.com/teams/ORL/2014.html", "http://www.basketball-reference.com/teams/DAL/2014.html",
-			"http://www.basketball-reference.com/teams/BRK/2014.html", "http://www.basketball-reference.com/teams/DEN/2014.html",
-			"http://www.basketball-reference.com/teams/IND/2014.html", "http://www.basketball-reference.com/teams/DET/2014.html",
-			"http://www.basketball-reference.com/teams/TOR/2014.html", "http://www.basketball-reference.com/teams/HOU/2014.html",
-			"http://www.basketball-reference.com/teams/PHI/2014.html", "http://www.basketball-reference.com/teams/SAS/2014.html",
-			"http://www.basketball-reference.com/teams/PHO/2014.html", "http://www.basketball-reference.com/teams/OKC/2014.html",
-			"http://www.basketball-reference.com/teams/MIN/2014.html", "http://www.basketball-reference.com/teams/POR/2014.html",
-			"http://www.basketball-reference.com/teams/GSW/2014.html", "http://www.basketball-reference.com/teams/WAS/2014.html"]		
+		url = ["http://www.basketball-reference.com/teams/CHA/2015.html", "http://www.basketball-reference.com/teams/MIL/2015.html",
+			"http://www.basketball-reference.com/teams/CHI/2015.html", "http://www.basketball-reference.com/teams/CLE/2015.html",
+			"http://www.basketball-reference.com/teams/BOS/2015.html", "http://www.basketball-reference.com/teams/LAC/2015.html",
+			"http://www.basketball-reference.com/teams/MEM/2015.html", "http://www.basketball-reference.com/teams/ATL/2015.html",
+			"http://www.basketball-reference.com/teams/MIA/2015.html", "http://www.basketball-reference.com/teams/NOP/2015.html",
+			"http://www.basketball-reference.com/teams/UTA/2015.html", "http://www.basketball-reference.com/teams/SAC/2015.html",
+			"http://www.basketball-reference.com/teams/NYK/2015.html", "http://www.basketball-reference.com/teams/LAL/2015.html",
+			"http://www.basketball-reference.com/teams/ORL/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
+			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
+			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
+			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
+			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
+			"http://www.basketball-reference.com/teams/MIN/2015.html", "http://www.basketball-reference.com/teams/POR/2015.html",
+			"http://www.basketball-reference.com/teams/GSW/2015.html", "http://www.basketball-reference.com/teams/WAS/2015.html"]	
 
 		url.each_with_index do |url, index|
 			doc = Nokogiri::HTML(open(url))
@@ -217,21 +217,21 @@ namespace :import do
 	task :create_alias => :environment do
 		require 'mechanize'
 
-		url = ["http://www.basketball-reference.com/teams/CHA/2014.html", "http://www.basketball-reference.com/teams/MIL/2014.html",
-			"http://www.basketball-reference.com/teams/CHI/2014.html", "http://www.basketball-reference.com/teams/CLE/2014.html",
-			"http://www.basketball-reference.com/teams/BOS/2014.html", "http://www.basketball-reference.com/teams/LAC/2014.html",
-			"http://www.basketball-reference.com/teams/MEM/2014.html", "http://www.basketball-reference.com/teams/ATL/2014.html",
-			"http://www.basketball-reference.com/teams/MIA/2014.html", "http://www.basketball-reference.com/teams/NOP/2014.html",
-			"http://www.basketball-reference.com/teams/UTA/2014.html", "http://www.basketball-reference.com/teams/SAC/2014.html",
-			"http://www.basketball-reference.com/teams/NYK/2014.html", "http://www.basketball-reference.com/teams/LAL/2014.html",
-			"http://www.basketball-reference.com/teams/ORL/2014.html", "http://www.basketball-reference.com/teams/DAL/2014.html",
-			"http://www.basketball-reference.com/teams/BRK/2014.html", "http://www.basketball-reference.com/teams/DEN/2014.html",
-			"http://www.basketball-reference.com/teams/IND/2014.html", "http://www.basketball-reference.com/teams/DET/2014.html",
-			"http://www.basketball-reference.com/teams/TOR/2014.html", "http://www.basketball-reference.com/teams/HOU/2014.html",
-			"http://www.basketball-reference.com/teams/PHI/2014.html", "http://www.basketball-reference.com/teams/SAS/2014.html",
-			"http://www.basketball-reference.com/teams/PHO/2014.html", "http://www.basketball-reference.com/teams/OKC/2014.html",
-			"http://www.basketball-reference.com/teams/MIN/2014.html", "http://www.basketball-reference.com/teams/POR/2014.html",
-			"http://www.basketball-reference.com/teams/GSW/2014.html", "http://www.basketball-reference.com/teams/WAS/2014.html"]	
+		url = ["http://www.basketball-reference.com/teams/CHA/2015.html", "http://www.basketball-reference.com/teams/MIL/2015.html",
+			"http://www.basketball-reference.com/teams/CHI/2015.html", "http://www.basketball-reference.com/teams/CLE/2015.html",
+			"http://www.basketball-reference.com/teams/BOS/2015.html", "http://www.basketball-reference.com/teams/LAC/2015.html",
+			"http://www.basketball-reference.com/teams/MEM/2015.html", "http://www.basketball-reference.com/teams/ATL/2015.html",
+			"http://www.basketball-reference.com/teams/MIA/2015.html", "http://www.basketball-reference.com/teams/NOP/2015.html",
+			"http://www.basketball-reference.com/teams/UTA/2015.html", "http://www.basketball-reference.com/teams/SAC/2015.html",
+			"http://www.basketball-reference.com/teams/NYK/2015.html", "http://www.basketball-reference.com/teams/LAL/2015.html",
+			"http://www.basketball-reference.com/teams/ORL/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
+			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
+			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
+			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
+			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
+			"http://www.basketball-reference.com/teams/MIN/2015.html", "http://www.basketball-reference.com/teams/POR/2015.html",
+			"http://www.basketball-reference.com/teams/GSW/2015.html", "http://www.basketball-reference.com/teams/WAS/2015.html"]
 
 		url.each_with_index do |url, index|
 			players = Team.find_by_id(index+1).player
