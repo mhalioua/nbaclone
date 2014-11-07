@@ -262,8 +262,8 @@ namespace :import do
 		opp = Team.all
 
 		@arr = Array.new
-		@arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
-		team = Team.find(18) # removed array replaced with one team previous: teams = Team.all teams.each do |team|
+		@arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+		team = Team.find(19) # removed array replaced with one team previous: teams = Team.all teams.each do |team|
 			opp.each do |opp|
 				# @arr << team.id
 				if @arr.include? opp.id || team.id == opp.id
