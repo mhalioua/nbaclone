@@ -262,6 +262,17 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
+		playermatchup = PlayerMatchup.all
+		playermatchupgame = PlayerMatchupGame.all
+
+		playermatchupgame.each do |game|
+			game.destroy
+		end
+
+		playermatchup.each do |matchup|
+			matchup.destroy
+		end
+
 		team = Team.where(:today => true)
 		team.each do |team|
 			opp = Team.find_by_name(team.opp_today)
