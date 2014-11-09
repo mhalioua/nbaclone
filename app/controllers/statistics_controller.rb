@@ -99,15 +99,16 @@ class StatisticsController < ApplicationController
  				@guard_matchups << matchup
  			end
  		end
- 		@game = Array.new
+ 		@forward_game = Array.new
+ 		@guard_game = Array.new
 	 	@guard_matchups.each do |matchup|
 	 		matchup.player_matchup_game.each do |game|
-	 			@game << game
+	 			@guard_game << game
 	 		end
 	 	end
 	 	@forward_matchups.each do |matchup|
 	 		matchup.player_matchup_game.each do |game|
-	 			@game << game
+	 			@forward_game << game
 	 		end
 	 	end
  	end

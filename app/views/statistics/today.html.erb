@@ -1,4 +1,7 @@
 <% date = Time.now.strftime("%B %d") %> 
 <%= link_to(date + " Matchups", :controller => 'index', :action => 'today') %>
 <h2><%= @home_team.name + " vs " + @away_team.name %></h2>
-<%= render(:partial => 'matchup_table') %>
+<h3>Guard Matchups</h3>
+<%= render(:partial => 'matchup_table', :locals => {:game => @guard_game}) %>
+<h3>Forward Matchups</h3>
+<%= render(:partial => 'matchup_table', :locals => {:game => @forward_game}) %>
