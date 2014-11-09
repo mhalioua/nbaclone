@@ -42,6 +42,9 @@ table a {
 color: #333333;
 text-decoration:none;
 }
+table tr:nth-of-type(odd) td {
+    border-bottom: 3px solid #000000;
+}
 table a:hover {
 text-decoration:underline;
 }
