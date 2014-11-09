@@ -45,6 +45,11 @@ text-decoration:none;
 table.matchup tr:nth-of-type(odd) td {
     border-bottom: 3px solid #000000;
 }
+
+table.matchup tr:nth-of-type(even) td {
+    border-bottom: 1px solid #000000;
+}
+
 table a:hover {
 text-decoration:underline;
 }
