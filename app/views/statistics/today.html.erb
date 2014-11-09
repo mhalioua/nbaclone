@@ -1,0 +1,4 @@
+<% date = Time.now.strftime("%B %d") %> 
+<%= link_to(date + " Matchups", :controller => 'index', :action => 'today') %>
+<h2>Previous Games</h2>
+<%= render(:partial => 'matchup_table') %>

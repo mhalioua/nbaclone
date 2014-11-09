@@ -3,65 +3,6 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
-		require 'open-uri'
-		require 'nokogiri'
-
-		Team.find(1)
-		# url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=jeffeal01&p2=ilyaser01"
-		# doc = Nokogiri::HTML(open(url))
-		# var = 0
-		# size = doc.css("#stats_games td").size
-
-		# doc.css("#stats_games td").each do |stat|
-		# 	var += 1
-		# 	if var <= (size - 270)
-		# 		next
-		# 	end
-		# 	case var%27
-		# 	when 2
-		# 		@name = stat.text
-		# 	when 3
-		# 		@date = stat.text
-		# 	when 5
-		# 		@GS = stat.text.to_i
-		# 	when 9
-		# 		@MP = stat.text
-		# 	when 10
-		# 		@FG = stat.text.to_i
-		# 	when 11
-		# 		@FGA = stat.text.to_i
-		# 	when 12
-		# 		@FGP = (stat.text.to_f*100).round(1)
-		# 	when 13
-		# 		@ThP = stat.text.to_i
-		# 	when 14
-		# 		@ThPA = stat.text.to_i
-		# 	when 15
-		# 		@ThPP = (stat.text.to_f*100).round(1)
-		# 	when 16
-		# 		@FT = stat.text.to_i
-		# 	when 17
-		# 		@FTA = stat.text.to_i
-		# 	when 18
-		# 		@FTP = (stat.text.to_f*100).round(1)
-		# 	when 19
-		# 		@ORB = stat.text.to_i
-		# 	when 20
-		# 		@DRB = stat.text.to_i
-		# 	when 22
-		# 		@AST = stat.text.to_i
-		# 	when 23
-		# 		@STL = stat.text.to_i
-		# 	when 24
-		# 		@BLK = stat.text.to_i
-		# 	when 25
-		# 		@TO = stat.text.to_i
-		# 	when 26
-		# 		@PF = stat.text.to_i
-		# 	when 0
-		# 		@PTS = stat.text.to_i
-		# 	end
-		# end
 	end
 
 	task :ajax => :environment do
@@ -89,9 +30,12 @@ namespace :import do
 	task :create_teams => :environment do
 		team = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
 				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
-				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trailblazers", "Warriors", "Wizards"]
-		team.each do |team|
-			Team.create(:name => team)
+				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trail Blazers", "Warriors", "Wizards"]
+		city = ["Milwaukee", "Chicago", "Cleveland", "Boston", "Los Angeles", "Memphis", "Atlanta", "Miami", "Charlotte", "Utah", "Sacramento",
+				"New York", "Los Angeles", "Orlando", "Dallas", "Brooklyn", "Denver", "Indiana", "New Orleans", "Detroit", "Toronto", "Houston",
+				"Philadelphia", "San Antonio", "Phoenix", "Oklahoma City", "Minnesota", "Portland", "Golden State", "Washington"]
+		team.zip(city).each do |team, city|
+			Team.create(:name => team, :city => city)
 		end
 	end
 
@@ -106,9 +50,9 @@ namespace :import do
 		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
 		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
 		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
-		    "http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
-			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
-			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+		    "http://www.basketball-reference.com/teams/DAL/2015.html", "http://www.basketball-reference.com/teams/BRK/2015.html",
+			"http://www.basketball-reference.com/teams/DEN/2015.html", "http://www.basketball-reference.com/teams/IND/2015.html",
+			"http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
 			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
 			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
 			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
@@ -145,9 +89,9 @@ namespace :import do
 		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
 		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
 		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
-		    "http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
-			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
-			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+		    "http://www.basketball-reference.com/teams/DAL/2015.html", "http://www.basketball-reference.com/teams/BRK/2015.html",
+			"http://www.basketball-reference.com/teams/DEN/2015.html", "http://www.basketball-reference.com/teams/IND/2015.html",
+			"http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
 			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
 			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
 			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
@@ -216,8 +160,68 @@ namespace :import do
 		end
 	end
 
+	task :starters => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+		team = Team.all
+
+		team.each do |team|
+			team.update_attributes(:today => false, :yesterday => false, :tomorrow => false)
+		end
+
+		month = Date.today.strftime("%B")[0..2]
+		day = Time.now.strftime("%d")
+		if day[0] == "0"
+			day = day[1]
+		end
+		date = month + " " + day
+		url = "http://www.basketball-reference.com/leagues/NBA_2015_games.html"
+		doc = Nokogiri::HTML(open(url))
+		@bool = false
+		@var = 0
+		@home = Array.new
+		@away = Array.new
+		doc.css("#games a").each_with_index do |key, value|
+			if key.text.include? ","
+				date_bool = key.text.include? date
+				if date_bool
+					@bool = true
+				else
+					@bool = false
+				end
+			end
+			if @bool
+				if @var%3 == 1
+					@away << key.text
+				end
+				if @var%3 == 2
+					@home << key.text
+				end
+				@var = @var + 1
+			end
+		end
+
+		@home.zip(@away).each do |home, away|
+			last = home.rindex(" ") + 1
+			home = home[last..-1]
+			last = away.rindex(" ") + 1
+			away = away[last..-1]
+			if home == "Blazers"
+				home = "Trail " + home
+			end
+			if away == "Blazers"
+				away = "Trail " + away
+			end
+			team = Team.find_by_name(home)
+			team.update_attributes(:today => true, :opp_today => away)
+		end
+
+	end
+
 	task :create_alias => :environment do
 		require 'mechanize'
+
 
 		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
 			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
@@ -226,9 +230,9 @@ namespace :import do
 		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
 		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
 		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
-		    "http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DAL/2015.html",
-			"http://www.basketball-reference.com/teams/BRK/2015.html", "http://www.basketball-reference.com/teams/DEN/2015.html",
-			"http://www.basketball-reference.com/teams/IND/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+		    "http://www.basketball-reference.com/teams/DAL/2015.html", "http://www.basketball-reference.com/teams/BRK/2015.html",
+			"http://www.basketball-reference.com/teams/DEN/2015.html", "http://www.basketball-reference.com/teams/IND/2015.html",
+			"http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
 			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
 			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
 			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
@@ -258,146 +262,137 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		# TODO set teams that are matched up
-		opp = Team.all
-
-		@arr = Array.new
-		@arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
-		team = Team.find(25) # removed array replaced with one team previous: teams = Team.all teams.each do |team|
-			opp.each do |opp|
-				# @arr << team.id
-				if @arr.include? opp.id || team.id == opp.id
-					next
-				end
-				puts team.name + " vs " + opp.name
-				players = team.player.where(:starter => true, :forward => true)
-				opp_players = opp.player.where(:starter => true, :forward => true)
-				players.each do |player1|
-					opp_players.each do |player2|
-						matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-						puts player1.name + " vs " + player2.name
-						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-						doc = Nokogiri::HTML(open(url))
-						var = 0
-						size = doc.css("#stats_games td").size
-						doc.css("#stats_games td").each do |stat|
-							var += 1
-							if var <= (size - 270)
-								next
-							end
-							case var%27
-							when 2
-								@name = stat.text
-							when 3
-								@date = stat.text
-							when 9
-								@MP = stat.text
-							when 10
-								@FG = stat.text.to_i
-							when 11
-								@FGA = stat.text.to_i
-							when 12
-								@FGP = (stat.text.to_f*100).round(1)
-							when 13
-								@ThP = stat.text.to_i
-							when 14
-								@ThPA = stat.text.to_i
-							when 15
-								@ThPP = (stat.text.to_f*100).round(1)
-							when 16
-								@FT = stat.text.to_i
-							when 17
-								@FTA = stat.text.to_i
-							when 18
-								@FTP = (stat.text.to_f*100).round(1)
-							when 19
-								@ORB = stat.text.to_i
-							when 20
-								@DRB = stat.text.to_i
-							when 22
-								@AST = stat.text.to_i
-							when 23
-								@STL = stat.text.to_i
-							when 24
-								@BLK = stat.text.to_i
-							when 25
-								@TO = stat.text.to_i
-							when 26
-								@PF = stat.text.to_i
-							when 0
-								@PTS = stat.text.to_i
-								PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
-									:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-									:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-							end
+		team = Team.where(:today => true)
+		team.each do |team|
+			opp = Team.find_by_name(team.opp_today)
+			puts team.name + " vs " + opp.name
+			players = team.player.where(:starter => true, :forward => true)
+			opp_players = opp.player.where(:starter => true, :forward => true)
+			players.each do |player1|
+				opp_players.each do |player2|
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					puts player1.name + " vs " + player2.name
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
 						end
-					end
-				end
-
-				players = team.player.where(:starter => true, :guard => true)
-				opp_players = opp.player.where(:starter => true, :guard => true)
-				players.each do |player1|
-					opp_players.each do |player2|
-						puts player1.name + " vs " + player2.name
-						matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-						doc = Nokogiri::HTML(open(url))
-						var = 0
-						size = doc.css("#stats_games td").size
-						doc.css("#stats_games td").each do |stat|
-							var += 1
-							if var <= (size - 270)
-								next
-							end
-							case var%27
-							when 2
-								@name = stat.text
-							when 3
-								@date = stat.text
-							when 9
-								@MP = stat.text
-							when 10
-								@FG = stat.text.to_i
-							when 11
-								@FGA = stat.text.to_i
-							when 12
-								@FGP = (stat.text.to_f*100).round(1)
-							when 13
-								@ThP = stat.text.to_i
-							when 14
-								@ThPA = stat.text.to_i
-							when 15
-								@ThPP = (stat.text.to_f*100).round(1)
-							when 16
-								@FT = stat.text.to_i
-							when 17
-								@FTA = stat.text.to_i
-							when 18
-								@FTP = (stat.text.to_f*100).round(1)
-							when 19
-								@ORB = stat.text.to_i
-							when 20
-								@DRB = stat.text.to_i
-							when 22
-								@AST = stat.text.to_i
-							when 23
-								@STL = stat.text.to_i
-							when 24
-								@BLK = stat.text.to_i
-							when 25
-								@TO = stat.text.to_i
-							when 26
-								@PF = stat.text.to_i
-							when 0
-								@PTS = stat.text.to_i
-								PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
-									:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-									:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-							end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
 						end
 					end
 				end
 			end
-		
+
+			players = team.player.where(:starter => true, :guard => true)
+			opp_players = opp.player.where(:starter => true, :guard => true)
+			players.each do |player1|
+				opp_players.each do |player2|
+					puts player1.name + " vs " + player2.name
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
+						end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
+					end
+				end
+			end
+		end		
 	end
 end

@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
 
   create_table "teams", force: true do |t|
     t.string   "name"
+    t.string   "city"
     t.boolean  "yesterday"
     t.boolean  "today"
     t.boolean  "tomorrow"

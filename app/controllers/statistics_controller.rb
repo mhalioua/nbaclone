@@ -75,4 +75,41 @@ class StatisticsController < ApplicationController
  		end
  	end
 
+ 	def today
+
+ 		@home_team = Team.find_by_id(params[:id])
+ 		@away_team = Team.find_by_name(@home_team.opp_today)
+ 		@home_guard_players = @home_team.player.where(:starter => true, :guard => true)
+ 		@away_guard_players = @away_team.player.where(:starter => true, :guard => true)
+ 		@home_forward_players = @home_team.player.where(:starter => true, :forward => true)
+ 		@away_forward_players = @away_team.player.where(:starter => true, :forward => true)
+
+ 		@forward_matchups = Array.new
+ 		@home_forward_players.each do |home_forward|
+ 			@away_forward_players.each do |away_forward|
+ 				matchup = PlayerMatchup.where("(player_one_id = #{home_forward.id} or player_one_id = #{away_forward.id}) and (player_two_id = #{home_forward.id} or player_two_id = #{away_forward.id})").first
+ 				@forward_matchups << matchup
+ 			end
+ 		end
+
+ 		@guard_matchups = Array.new
+ 		@home_guard_players.each do |home_guard|
+ 			@away_guard_players.each do |away_guard|
+ 				matchup = PlayerMatchup.where("(player_one_id = #{home_guard.id} or player_one_id = #{away_guard.id}) and (player_two_id = #{home_guard.id} or player_two_id = #{away_guard.id})").first
+ 				@guard_matchups << matchup
+ 			end
+ 		end
+ 		@game = Array.new
+	 	@guard_matchups.each do |matchup|
+	 		matchup.player_matchup_game.each do |game|
+	 			@game << game
+	 		end
+	 	end
+	 	@forward_matchups.each do |matchup|
+	 		matchup.player_matchup_game.each do |game|
+	 			@game << game
+	 		end
+	 	end
+ 	end
+
 end
