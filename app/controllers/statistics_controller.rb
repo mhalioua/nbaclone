@@ -79,6 +79,8 @@ class StatisticsController < ApplicationController
 
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = Team.find_by_name(@home_team.opp_today)
+ 		@home_players = @home_team.player.where(:starter => true)
+ 		@away_players = @away_team.player.where(:starter => true)
  		@home_guard_players = @home_team.player.where(:starter => true, :guard => true)
  		@away_guard_players = @away_team.player.where(:starter => true, :guard => true)
  		@home_forward_players = @home_team.player.where(:starter => true, :forward => true)
