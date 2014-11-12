@@ -6,11 +6,13 @@
 <div class="menu">
 	<h2>Home Page</h2>
 	<div class="identity">Logged in as: <%= session[:username] %></div>
-	<ul>
-		<li><%= link_to("Team", :controller => 'index', :action => 'team') %></li>
-		<li><%= link_to(yesterday + " Matchups", :controller => 'index', :action => 'yesterday') %></li>
-		<li><%= link_to(today + " Matchups", :controller => 'index', :action => 'today') %></li>
-		<li><%= link_to(tomorrow + " Matchups", :controller => 'index', :action => 'tomorrow') %></li>
-		<li><%= link_to("Logout", :action => 'logout')%></li>
-	</ul>
+	<nav>
+		<ul>
+			<li><%= link_to("Team", :controller => 'index', :action => 'team') %></li>
+			<li><%= link_to(yesterday + " Matchups", :controller => 'index', :action => 'yesterday') %></li>
+			<li><%= link_to(today + " Matchups", :controller => 'index', :action => 'today') %></li>
+			<li><%= link_to(tomorrow + " Matchups", :controller => 'index', :action => 'tomorrow') %></li>
+			<li><%= link_to("Logout", :action => 'logout')%></li>
+		</ul>
+	</nav>
 </div>

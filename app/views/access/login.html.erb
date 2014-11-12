@@ -1,7 +1,7 @@
 <% @page_title = "Admin Login" %>
 
 <div class="login">
-	<%= form_tag(:action => 'attempt_login') do %>
+	<%= form_tag({:action => 'attempt_login'}, :role => 'form', :class => 'form-group') do %>
 	<table>
 		<tr>
 			<td><%= label_tag(:username) %></td>

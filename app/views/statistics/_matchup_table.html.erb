@@ -1,5 +1,5 @@
-<table class="matchup">
-	<tr>
+<table class="table table-bordered table-striped table-hover table-condensed">
+	<tr class = "row">
 		<th>Team</th>
 		<th>Name</th>
 		<th>Date</th>
@@ -23,12 +23,12 @@
 		<th>PTS</th>
 	</tr>
 	<% game.each_with_index do |player, index| %>
-		<tr>
-			<% if index%2 == 0%>
-			<td><%= @home_team.name %></td>
-			<% else %>
-			<td><%= @away_team.name %></td>
-			<% end %>
+		<% if index%2 == 0%>
+		<tr class="row danger">
+		<% else %>
+		<tr class="row success">
+		<% end %>
+			<td><%= Team.find(Player.find_by_name(player.name).team_id).name %></td>
 			<td><%= player.name %> </td>
 			<td><%= player.date %> </td>
 			<td><%= player.MP %> </td>

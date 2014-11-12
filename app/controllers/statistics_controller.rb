@@ -101,10 +101,16 @@ class StatisticsController < ApplicationController
  				@guard_matchups << matchup
  			end
  		end
+ 		@visited = Array.new
  		@forward_game = Array.new
  		@guard_game = Array.new
 	 	@guard_matchups.each do |matchup|
 	 		matchup.player_matchup_game.each do |game|
+	 			# if !@visited.include? matchup.id 							figure out how to get the totals
+	 			# 	@visited << matchup.id
+	 			# 	first_total = @guard_matchups.where(:player_matchup_id => matchup.id, :name => matchup.name)
+	 			# 	second_total = @guard_matchups.where(:player_matchup_id => matchup.id).where('name != ?', matchup.name)
+	 			# end
 	 			@guard_game << game
 	 		end
 	 	end
