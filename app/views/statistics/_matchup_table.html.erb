@@ -23,10 +23,17 @@
 		<th>PTS</th>
 	</tr>
 	<% game.each_with_index do |player, index| %>
+		<% if player.player_matchup_id != @id %>
+			<tr>
+				<td>
+				</td>
+			</tr>
+		<% end %>
+		<% @id = player.player_matchup_id %>
 		<% if index%2 == 0%>
-		<tr class="row danger">
+		<tr class="row info">
 		<% else %>
-		<tr class="row success">
+		<tr class="row warning">
 		<% end %>
 			<td><%= Team.find(Player.find_by_name(player.name).team_id).name %></td>
 			<td><%= player.name %> </td>
