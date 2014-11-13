@@ -5,6 +5,7 @@
 				<th>Name</th>
 				<th>Team</th>
 				<th>Position</th>
+				<th>Height</th>
 				<th>Date</th>
 				<th>MP</th>
 				<th>FG</th>
@@ -39,6 +40,7 @@
 			<td><%= Team.find(Player.find_by_name(player.name).team_id).name %></td>
 			<% end %>
 			<td><%= Player.find_by_name(player.name).position %></td>
+			<td><%= Player.find_by_name(player.name).height %></td>
 			<td><%= player.date %></td>
 			<td><%= player.MP %></td>
 			<td><%= player.FG %></td>
