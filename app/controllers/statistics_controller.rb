@@ -101,18 +101,58 @@ class StatisticsController < ApplicationController
  				@guard_matchups << matchup
  			end
  		end
- 		@visited = Array.new
+
  		@forward_game = Array.new
  		@guard_game = Array.new
 	 	@guard_matchups.each do |matchup|
+	 		@id = 0
 	 		matchup.player_matchup_game.each do |game|
-	 			# if !@visited.include? matchup.id 							figure out how to get the totals
-	 			# 	@visited << matchup.id
-	 			# 	first_total = @guard_matchups.where(:player_matchup_id => matchup.id, :name => matchup.name)
-	 			# 	second_total = @guard_matchups.where(:player_matchup_id => matchup.id).where('name != ?', matchup.name)
+	 			# if @id == 0
+	 			# 	@id = game.player_matchup_id
+	 			# 	@MP = 0
+			  #     	@FG = 0
+			  #     	@FGA = 0
+			  #     	@FGP = 0
+			  #     	@ThP = 0
+			  #     	@ThPA = 0
+			  #     	@ThPP = 0
+			  #     	@FT = 0
+			  #     	@FTA = 0
+			  #     	@FTP = 0
+			  #     	@ORB = 0
+			  #     	@DRB = 0
+			  #     	@AST = 0
+			  #     	@STL = 0
+			  #     	@BLK = 0
+			  #     	@TO = 0
+			  #     	@PF = 0
+			  #     	@PTS = 0
+	 			# else
+	 			# 	@player_matchup = game.player_matchup_id
+			  #     	@name = game.name
+			  #     	@date = "Total"
+			  #     	@MP = @MP + game.MP
+			  #     	@FG = @FG + game.FG
+			  #     	@FGA = @FGA + game.FGA
+			  #     	@FGP = @FGP + game.FGP
+			  #     	@ThP = @ThP + game.player_matchup.ThP
+			  #     	@ThPA = @ThPA + game.ThPA
+			  #     	@ThPP = @ThPP + game.ThPP
+			  #     	@FT = @FT + game.ThPP
+			  #     	@FTA = @FTA + game.FTA
+			  #     	@FTP = @FTP + game.FTP
+			  #     	@ORB = @ORB + game.ORB
+			  #     	@DRB = @DRB + game.DRB
+			  #     	@AST = @AST + game.AST
+			  #     	@STL = @STL + game.STL
+			  #     	@BLK = @BLK + game.BLK
+			  #     	@TO = @TO + game.TO
+			  #     	@PF = @PF + game.PF
+			  #     	@PTS = @PTS + game.PTS
 	 			# end
 	 			@guard_game << game
 	 		end
+	 		# PlayerMatchupGame.new(:player_matchup_id => @id, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, )
 	 	end
 	 	@forward_matchups.each do |matchup|
 	 		matchup.player_matchup_game.each do |game|

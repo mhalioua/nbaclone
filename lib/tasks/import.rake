@@ -68,10 +68,12 @@ namespace :import do
 					@name = player.text
 				when 3
 					@position = player.text
+				when 4
+					@height = player.text
 					if @position == "SF" || @position == "PF" || @position == "C"
-						Player.create(:team_id => index+1, :name => @name, :position => @position, :forward => true)
+						Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :forward => true)
 					else
-						Player.create(:team_id => index+1, :name => @name, :position => @position, :guard => true)
+						Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :guard => true)
 					end
 				end
 			end

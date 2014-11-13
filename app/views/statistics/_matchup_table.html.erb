@@ -1,42 +1,40 @@
 <table class="table table-bordered table-striped table-hover table-condensed">
-	<tr class = "row">
-		<th>Team</th>
-		<th>Name</th>
-		<th>Date</th>
-		<th>MP</th>
-		<th>FG</th>
-		<th>FGA</th>
-		<th>FG%</th>
-		<th>3P</th>
-		<th>3PA</th>
-		<th>3P%</th>
-		<th>FT</th>
-		<th>FTA</th>
-		<th>FT%</th>
-		<th>ORB</th>
-		<th>DRB</th>
-		<th>AST</th>
-		<th>STL</th>
-		<th>BLK</th>
-		<th>TO</th>
-		<th>PF</th>
-		<th>PTS</th>
-	</tr>
 	<% game.each_with_index do |player, index| %>
 		<% if player.player_matchup_id != @id %>
-			<tr>
-				<td>
-				</td>
+			<tr class="row">
+				<th>Name</th>
+				<th>Team</th>
+				<th>Position</th>
+				<th>Date</th>
+				<th>MP</th>
+				<th>FG</th>
+				<th>FGA</th>
+				<th>FG%</th>
+				<th>3P</th>
+				<th>3PA</th>
+				<th>3P%</th>
+				<th>FT</th>
+				<th>FTA</th>
+				<th>FT%</th>
+				<th>ORB</th>
+				<th>DRB</th>
+				<th>AST</th>
+				<th>STL</th>
+				<th>BLK</th>
+				<th>TO</th>
+				<th>PF</th>
+				<th>PTS</th>
 			</tr>
 		<% end %>
 		<% @id = player.player_matchup_id %>
-		<% if index%2 == 0%>
+		<% if index%2 == 0 %>
 		<tr class="row info">
 		<% else %>
 		<tr class="row warning">
 		<% end %>
-			<td><%= Team.find(Player.find_by_name(player.name).team_id).name %></td>
 			<td><%= player.name %> </td>
+			<td><%= Team.find(Player.find_by_name(player.name).team_id).name %></td>
+			<td><%= Player.find_by_name(player.name).position %></td>
 			<td><%= player.date %> </td>
 			<td><%= player.MP %> </td>
 			<td><%= player.FG %> </td>
