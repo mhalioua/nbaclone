@@ -154,7 +154,7 @@ class StatisticsController < ApplicationController
 			      	@ThP = @ThP + game.ThP
 			      	@ThPA = @ThPA + game.ThPA
 			      	@ThPP = @ThPP + game.ThPP
-			      	@FT = @FT + game.ThPP
+			      	@FT = @FT + game.FT
 			      	@FTA = @FTA + game.FTA
 			      	@FTP = @FTP + game.FTP
 			      	@ORB = @ORB + game.ORB
@@ -175,7 +175,7 @@ class StatisticsController < ApplicationController
 			      	@ThP_2 = @ThP_2 + game.ThP
 			      	@ThPA_2 = @ThPA_2 + game.ThPA
 			      	@ThPP_2 = @ThPP_2 + game.ThPP
-			      	@FT_2 = @FT_2 + game.ThPP
+			      	@FT_2 = @FT_2 + game.FT
 			      	@FTA_2 = @FTA_2 + game.FTA
 			      	@FTP_2 = @FTP_2 + game.FTP
 			      	@ORB_2 = @ORB_2 + game.ORB

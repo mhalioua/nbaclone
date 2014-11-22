@@ -3,6 +3,14 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+		url = "http://www.rotowire.com/basketball/nba_lineups.htm"
+		doc = Nokogiri::HTML(open(url))
+		doc.css(".dlineups-vplayer a").each do |player|
+			puts player.text
+		end
 	end
 
 	task :ajax => :environment do
