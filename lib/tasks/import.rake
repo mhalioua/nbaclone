@@ -3,14 +3,7 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
-		@minutes = 0
-		text = ["11:32", "13:42", "19:09", "2:12"]
-		text.each do |text|
-			index = text.index(":")
-			@minutes = @minutes + text[0..index-1].to_i * 60
-			@minutes = @minutes + text[index+1..-1].to_i
-		end
-		puts (@minutes/60).to_s
+		puts Time.now
 	end
 
 	task :rotowire => :environment do
