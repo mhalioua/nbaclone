@@ -28,7 +28,7 @@
 			</tr>
 		<% end %>
 		<% @id = player.player_matchup_id %>
-		<% if player.MP == "Total" %>
+		<% if player.date.include? "Previous" %>
 		<tr class="row danger">
 		<% elsif index%2 == 0 %>
 		<tr class="row info">

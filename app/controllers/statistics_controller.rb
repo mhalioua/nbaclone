@@ -109,6 +109,7 @@ class StatisticsController < ApplicationController
 	 		matchup.player_matchup_game.each_with_index do |game, index|
 	 			if @id == 0
 	 				@id = game.player_matchup_id
+	 				@MP = 0
 			      	@FG = 0
 			      	@FGA = 0
 			      	@FGP = 0
@@ -126,6 +127,7 @@ class StatisticsController < ApplicationController
 			      	@TO = 0
 			      	@PF = 0
 			      	@PTS = 0
+			      	@MP_2 = 0
 			      	@FG_2 = 0
 			      	@FGA_2 = 0
 			      	@FGP_2 = 0
@@ -147,7 +149,12 @@ class StatisticsController < ApplicationController
 			    if index%2 == 0
 			      	@id = game.player_matchup_id
 			      	@name = game.name
-			      	@MP = "Total"
+			      	text = game.MP
+			      	time = 0
+			      	index = text.index(":")
+					time = time + text[0..index-1].to_i * 60
+					time = time + text[index+1..-1].to_i
+			      	@MP = @MP + time
 			      	@FG = @FG + game.FG
 			      	@FGA = @FGA + game.FGA
 			      	@FGP = @FGP + game.FGP
@@ -168,7 +175,12 @@ class StatisticsController < ApplicationController
 			    else
 			    	@id_2 = game.player_matchup_id
 			      	@name_2 = game.name
-			      	@MP_2 = "Total"
+			      	text = game.MP
+			      	time = 0
+			      	index = text.index(":")
+					time = time + text[0..index-1].to_i * 60
+					time = time + text[index+1..-1].to_i
+			      	@MP_2 = @MP_2 + time
 			      	@FG_2 = @FG_2 + game.FG
 			      	@FGA_2 = @FGA_2 + game.FGA
 			      	@FGP_2 = @FGP_2 + game.FGP
@@ -197,11 +209,23 @@ class StatisticsController < ApplicationController
 	 		@ThPP_2 = (@ThPP_2/@size).round(1)
 	 		@FTP_2 = (@FTP_2/@size).round(1)
 	 		@date = "Previous " + @size.to_s + " Games"
+	 		minutes = (@MP/60).to_s
+	 		seconds = (@MP%60).to_s
+	 		if seconds.size == 1
+	 			seconds = "0" + seconds
+	 		end
+	 		@MP_S = minutes + ":" + seconds
+	 		minutes = (@MP_2/60).to_s
+	 		seconds = (@MP_2%60).to_s
+	 		if seconds.size == 1
+	 			seconds = "0" + seconds
+	 		end
+	 		@MP_2_S = minutes + ":" + seconds
 	 		if @size != 0 && @size != 1
-		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
+		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :MP => @MP_S, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
 		 			:ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST,
 		 			:STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :MP => @MP_2, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
+		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :MP => @MP_2_S, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
 		 			:ThPA => @ThPA_2, :ThPP => @ThPP_2, :FT => @FT_2, :FTA => @FTA_2, :FTP => @FTP_2, :ORB => @ORB_2, :DRB => @DRB_2, :AST => @AST_2,
 		 			:STL => @STL_2, :BLK => @BLK_2, :TO => @TO_2, :PF => @PF_2, :PTS => @PTS_2)
 		 		@guard_game << @total
@@ -213,6 +237,7 @@ class StatisticsController < ApplicationController
 	 		matchup.player_matchup_game.each_with_index do |game, index|
 	 			if @id == 0
 	 				@id = game.player_matchup_id
+	 				@MP = 0
 			      	@FG = 0
 			      	@FGA = 0
 			      	@FGP = 0
@@ -230,6 +255,7 @@ class StatisticsController < ApplicationController
 			      	@TO = 0
 			      	@PF = 0
 			      	@PTS = 0
+			      	@MP_2 = 0
 			      	@FG_2 = 0
 			      	@FGA_2 = 0
 			      	@FGP_2 = 0
@@ -251,7 +277,12 @@ class StatisticsController < ApplicationController
 			    if index%2 == 0
 			      	@id = game.player_matchup_id
 			      	@name = game.name
-			      	@MP = "Total"
+			      	text = game.MP
+			      	time = 0
+			      	index = text.index(":")
+					time = time + text[0..index-1].to_i * 60
+					time = time + text[index+1..-1].to_i
+					@MP = @MP + time
 			      	@FG = @FG + game.FG
 			      	@FGA = @FGA + game.FGA
 			      	@FGP = @FGP + game.FGP
@@ -272,7 +303,12 @@ class StatisticsController < ApplicationController
 			    else
 			    	@id_2 = game.player_matchup_id
 			      	@name_2 = game.name
-			      	@MP_2 = "Total"
+			      	text = game.MP
+			      	time = 0
+			      	index = text.index(":")
+					time = time + text[0..index-1].to_i * 60
+					time = time + text[index+1..-1].to_i
+			      	@MP_2 = @MP_2 + time
 			      	@FG_2 = @FG_2 + game.FG
 			      	@FGA_2 = @FGA_2 + game.FGA
 			      	@FGP_2 = @FGP_2 + game.FGP
@@ -301,11 +337,23 @@ class StatisticsController < ApplicationController
 	 		@ThPP_2 = (@ThPP_2/@size).round(1)
 	 		@FTP_2 = (@FTP_2/@size).round(1)
 	 		@date = "Previous " + @size.to_s + " Games"
+	 		minutes = (@MP/60).to_s
+	 		seconds = (@MP%60).to_s
+	 		if seconds.size == 1
+	 			seconds = "0" + seconds
+	 		end
+	 		@MP_S = minutes + ":" + seconds
+	 		minutes = (@MP_2/60).to_s
+	 		seconds = (@MP_2%60).to_s
+	 		if seconds.size == 1
+	 			seconds = "0" + seconds
+	 		end
+	 		@MP_2_S = minutes + ":" + seconds
 	 		if @size != 0 && @size != 1
-		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
+		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :MP => @MP_S, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
 		 			:ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST,
 		 			:STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :MP => @MP_2, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
+		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :MP => @MP_2_S, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
 		 			:ThPA => @ThPA_2, :ThPP => @ThPP_2, :FT => @FT_2, :FTA => @FTA_2, :FTP => @FTP_2, :ORB => @ORB_2, :DRB => @DRB_2, :AST => @AST_2,
 		 			:STL => @STL_2, :BLK => @BLK_2, :TO => @TO_2, :PF => @PF_2, :PTS => @PTS_2)
 		 		@forward_game << @total

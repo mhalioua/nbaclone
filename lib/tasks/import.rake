@@ -3,13 +3,50 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
+		@minutes = 0
+		text = ["11:32", "13:42", "19:09", "2:12"]
+		text.each do |text|
+			index = text.index(":")
+			@minutes = @minutes + text[0..index-1].to_i * 60
+			@minutes = @minutes + text[index+1..-1].to_i
+		end
+		puts (@minutes/60).to_s
+	end
+
+	task :rotowire => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
+		name = ["Jeff Taylor", "M. Kidd-Gilchrist"]
+		nickname = ["Jeffery Taylor", "Michael Kidd-Gilchrist"]
 		url = "http://www.rotowire.com/basketball/nba_lineups.htm"
 		doc = Nokogiri::HTML(open(url))
-		doc.css(".dlineups-vplayer a").each do |player|
-			puts player.text
+		doc.css(".dlineups-teamsnba+ .span15 a").each do |starter|
+			if name.include? starter.text
+				index = name.index(starter.text)
+				player = Player.find_by_name(nickname[index])
+				player.update_attributes(:starter => true)
+			else
+				if player = Player.find_by_name(starter.text)
+					player.update_attributes(:starter => true)
+				else
+					puts starter.text + " Not Found"
+				end
+			end
+		end
+
+		doc.css(".dlineups-nbainactiveblock a").each do |bench|
+			if name.include? bench.text
+				index = name.index(bench.text)
+				player = Player.find_by_name(nickname[index])
+				player.update_attributes(:starter => false)
+			else
+				if player = Player.find_by_name(bench.text)
+					player.update_attributes(:starter => false)
+				else
+					puts bench.text + " Not Found"
+				end
+			end
 		end
 	end
 
