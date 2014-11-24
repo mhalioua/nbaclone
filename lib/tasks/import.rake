@@ -10,8 +10,8 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		name = ["Jeff Taylor", "M. Kidd-Gilchrist"]
-		nickname = ["Jeffery Taylor", "Michael Kidd-Gilchrist"]
+		name = ["Jeff Taylor", "M. Kidd-Gilchrist", "M. Carter-Williams", "L. Mbah a Moute", "M. Dellavedova"]
+		nickname = ["Jeffery Taylor", "Michael Kidd-Gilchrist", "Michael Carter-Williams", "Luc Mbah a Moute", "Matthew Dellavedova"]
 		url = "http://www.rotowire.com/basketball/nba_lineups.htm"
 		doc = Nokogiri::HTML(open(url))
 		doc.css(".dlineups-teamsnba+ .span15 a").each do |starter|
