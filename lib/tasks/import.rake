@@ -3,7 +3,7 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
-		puts Time.now
+		puts (1/3)
 	end
 
 	task :rotowire => :environment do
@@ -337,6 +337,8 @@ namespace :import do
 							@name = stat.text
 						when 3
 							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
 						when 9
 							@MP = stat.text
 						when 10
@@ -373,7 +375,7 @@ namespace :import do
 							@PF = stat.text.to_i
 						when 0
 							@PTS = stat.text.to_i
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
 								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
 								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
 						end
@@ -401,6 +403,8 @@ namespace :import do
 							@name = stat.text
 						when 3
 							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
 						when 9
 							@MP = stat.text
 						when 10
@@ -437,7 +441,7 @@ namespace :import do
 							@PF = stat.text.to_i
 						when 0
 							@PTS = stat.text.to_i
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :MP => @MP, :FG => @FG,
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
 								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
 								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
 						end

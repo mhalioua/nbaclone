@@ -17,6 +17,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.integer  "player_matchup_id"
     t.string   "name"
     t.string   "date"
+    t.integer  "GS"
     t.string   "MP"
     t.integer  "FG"
     t.integer  "FGA"

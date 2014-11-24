@@ -7,6 +7,7 @@
 				<th>Position</th>
 				<th>Height</th>
 				<th>Date</th>
+				<th>GS</th>
 				<th>MP</th>
 				<th>FG</th>
 				<th>FGA</th>
@@ -42,6 +43,7 @@
 			<td><%= Player.find_by_name(player.name).position %></td>
 			<td><%= Player.find_by_name(player.name).height %></td>
 			<td><%= player.date %></td>
+			<td><%= player.GS %></td>
 			<td><%= player.MP %></td>
 			<td><%= player.FG %></td>
 			<td><%= player.FGA %></td>
