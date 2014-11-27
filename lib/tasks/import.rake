@@ -185,7 +185,7 @@ namespace :import do
 				when 0
 					@PTS = player.text.to_i
 					if player = Player.where(:name => @name, :team_id => index+1).first
-						if var <= 224
+						if var <= 336
 							player.update_attributes(:starter => true, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
 								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
 								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
