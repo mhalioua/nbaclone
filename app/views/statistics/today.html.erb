@@ -2,10 +2,10 @@
 <%= link_to(date + " Matchups", :controller => 'index', :action => 'today') %>
 <h3><%= @home_team.name + " vs " + @away_team.name %></h3>
 <h4>Individual Stats</h4>
-<!-- <h4><%= @home_team.name %></h4>
+<h4><%= @home_team.name %></h4>
 <%= render(:partial => 'table', :locals => {:players => @home_players}) %>
 <h4><%= @away_team.name %></h4>
-<%= render(:partial => 'table', :locals => {:players => @away_players}) %> -->
+<%= render(:partial => 'table', :locals => {:players => @away_players}) %>
 <h4>Guard Matchups</h4>
 <%= render(:partial => 'matchup_table', :locals => {:game => @guard_game}) %>
 <h4>Forward Matchups</h4>
