@@ -5,7 +5,7 @@ class IndexController < ApplicationController
 	layout 'nba'
 
 	def team
-		@teams = Team.all
+		@teams = Team.all.order("name ASC")
 	end
 
 	def yesterday
