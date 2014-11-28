@@ -3,7 +3,10 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
-		puts (1/3)
+		lakers = Team.find_by_name("Lakers")
+		timberwolves = Team.find_by_name("Timberwolves")
+		lakers_players = lakers.player.where(:starter => true)
+		timberwolves_players = timberwolves.player.where(:starter => true)
 	end
 
 	task :rotowire => :environment do
