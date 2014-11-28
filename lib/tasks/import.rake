@@ -10,15 +10,16 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		name = ["Jeff Taylor", "M. Kidd-Gilchrist", "M. Carter-Williams", "L. Mbah a Moute", "M. Dellavedova"]
-		nickname = ["Jeffery Taylor", "Michael Kidd-Gilchrist", "Michael Carter-Williams", "Luc Mbah a Moute", "Matthew Dellavedova"]
+		name = ["Jeff Taylor", "M. Kidd-Gilchrist", "M. Carter-Williams", "L. Mbah a Moute", "M. Dellavedova", "G. Antetokounmpo", "K. Caldwell-Pope", "C. Douglas-Roberts", "Patty Mills"]
+		nickname = ["Jeffery Taylor", "Michael Kidd-Gilchrist", "Michael Carter-Williams", "Luc Mbah a Moute", "Matthew Dellavedova", "Giannis Antetokounmpo", "Kentavius Caldwell-Pope", "Chris Douglas-Roberts", "Patrick Mills"]
 		url = "http://www.rotowire.com/basketball/nba_lineups.htm"
 		doc = Nokogiri::HTML(open(url))
 		doc.css(".dlineups-teamsnba+ .span15 a").each do |starter|
 			if name.include? starter.text
 				index = name.index(starter.text)
-				player = Player.find_by_name(nickname[index])
-				player.update_attributes(:starter => true)
+				if player = Player.find_by_name(nickname[index])
+					player.update_attributes(:starter => true)
+				end
 			else
 				if player = Player.find_by_name(starter.text)
 					player.update_attributes(:starter => true)
@@ -31,8 +32,9 @@ namespace :import do
 		doc.css(".dlineups-nbainactiveblock a").each do |bench|
 			if name.include? bench.text
 				index = name.index(bench.text)
-				player = Player.find_by_name(nickname[index])
-				player.update_attributes(:starter => false)
+				if player = Player.find_by_name(nickname[index])
+					player.update_attributes(:starter => false)
+				end
 			else
 				if player = Player.find_by_name(bench.text)
 					player.update_attributes(:starter => false)
@@ -109,9 +111,13 @@ namespace :import do
 				when 4
 					@height = player.text
 					if @position == "SF" || @position == "PF" || @position == "C"
-						Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :forward => true)
+						if !player = Player.find_by_name(@name)
+							Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :forward => true)
+						end
 					else
-						Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :guard => true)
+						if !player = Player.find_by_name(@name)
+							Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :guard => true)
+						end
 					end
 				end
 			end

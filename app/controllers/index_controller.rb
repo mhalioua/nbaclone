@@ -4,9 +4,6 @@ class IndexController < ApplicationController
 
 	layout 'nba'
 
-	def date
-	end
-
 	def team
 		@teams = Team.all
 	end
@@ -21,14 +18,6 @@ class IndexController < ApplicationController
 
 	def tomorrow
 		@teams = Team.where(:tomorrow => true)
-	end
-
-	def first
-		@teams = Team.all
-	end
-
-	def second
-		@teams = Team.where("id != #{params[:first_id]}")
 	end
 
 end

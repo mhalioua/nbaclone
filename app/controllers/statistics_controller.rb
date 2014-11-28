@@ -194,6 +194,12 @@ class StatisticsController < ApplicationController
 			    @guard_game << game
 			end
 	 		@size = (matchup.player_matchup_game.size)/2
+	 		@FGP = 0
+	 		@ThPP = 0
+	 		@FTP = 0
+	 		@FGP_2 = 0
+	 		@ThPP_2 = 0
+	 		@FTP_2 = 0
 	 		if @FGA != 0
 	 			@FGP = ((@FG.to_f/@FGA.to_f)*100).round(1)
 	 		end
@@ -206,7 +212,7 @@ class StatisticsController < ApplicationController
 	 		if @FGA_2 != 0
 	 			@FGP_2 = ((@FG_2.to_f/@FGA_2.to_f)*100).round(1)
 	 		end
-	 		if @ThPA != 0
+	 		if @ThPA_2 != 0
 	 			@ThPP_2 = ((@ThP_2.to_f/@ThPA_2.to_f)*100).round(1)
 	 		end
 	 		if @FTA_2 != 0
@@ -288,7 +294,7 @@ class StatisticsController < ApplicationController
 			      	@FGA = @FGA + game.FGA
 			      	@ThP = @ThP + game.ThP
 			      	@ThPA = @ThPA + game.ThPA
-			      	@FT = @FT + game.ThPP
+			      	@FT = @FT + game.FT
 			      	@FTA = @FTA + game.FTA
 			      	@ORB = @ORB + game.ORB
 			      	@DRB = @DRB + game.DRB
@@ -312,7 +318,7 @@ class StatisticsController < ApplicationController
 			      	@FGA_2 = @FGA_2 + game.FGA
 			      	@ThP_2 = @ThP_2 + game.ThP
 			      	@ThPA_2 = @ThPA_2 + game.ThPA
-			      	@FT_2 = @FT_2 + game.ThPP
+			      	@FT_2 = @FT_2 + game.FT
 			      	@FTA_2 = @FTA_2 + game.FTA
 			      	@ORB_2 = @ORB_2 + game.ORB
 			      	@DRB_2 = @DRB_2 + game.DRB
@@ -326,6 +332,12 @@ class StatisticsController < ApplicationController
 	 			@forward_game << game
 	 		end
 	 		@size = (matchup.player_matchup_game.size)/2
+	 		@FGP = 0
+	 		@ThPP = 0
+	 		@FTP = 0
+	 		@FGP_2 = 0
+	 		@ThPP_2 = 0
+	 		@FTP_2 = 0
 	 		if @FGA != 0
 	 			@FGP = ((@FG.to_f/@FGA.to_f)*100).round(1)
 	 		end
@@ -338,7 +350,7 @@ class StatisticsController < ApplicationController
 	 		if @FGA_2 != 0
 	 			@FGP_2 = ((@FG_2.to_f/@FGA_2.to_f)*100).round(1)
 	 		end
-	 		if @ThPA != 0
+	 		if @ThPA_2 != 0
 	 			@ThPP_2 = ((@ThP_2.to_f/@ThPA_2.to_f)*100).round(1)
 	 		end
 	 		if @FTA_2 != 0
