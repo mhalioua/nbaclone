@@ -1,57 +1,46 @@
 <table>
 	<tr>
-		<th>Name</th>
-		<th>Height</th>
+		<th>Name and Height</th>
 		<th>ORtg</th>
 		<th>DRtg</th>
-		<th>GS</th>
-		<th>MP</th>
-		<th>FG</th>
-		<th>FGA</th>
+		<th>Total MP</th>
 		<th>FG%</th>
-		<th>3P</th>
-		<th>3PA</th>
+		<th>FGA</th>
+		<th>FGA per Min</th>
 		<th>3P%</th>
-		<th>FT</th>
-		<th>FTA</th>
+		<th>3PA</th>
+		<th>3PA per Min</th>
 		<th>FT%</th>
-		<th>ORB</th>
-		<th>DRB</th>
-		<th>AST</th>
-		<th>STL</th>
-		<th>BLK</th>
+		<th>FTA</th>
+		<th>FTA per Min</th>
 		<th>TO</th>
-		<th>PF</th>
+		<th>TO per Min</th>
+		<th>ORB</th>
+		<th>AST</th>
+		<th>BLK</th>
 		<th>PTS</th>
-		<th>eFG%</th>
-		<th>TS%</th>
 	</tr>
 	<% players.each do |player| %>
 		<tr>
-			<td><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id]) %> </td><td><%= player.height %></td>
+			<td><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id]) + " " + player.height %></td>
 			<td><%= player.ORtg %></td>
 			<td><%= player.DRtg %></td>
-			<td><%= player.GS %></td>
 			<td><%= player.MP %></td>
-			<td><%= player.FG %></td>
-			<td><%= player.FGA %></td>
 			<td><%= player.FGP %></td>
-			<td><%= player.ThP %></td>
-			<td><%= player.ThPA %></td>
+			<td><%= player.FGA %></td>
+			<td><%= (player.FGA.to_f/player.MP.to_f).round(2) %></td>
 			<td><%= player.ThPP %></td>
-			<td><%= player.FT %></td>
-			<td><%= player.FTA %></td>
+			<td><%= player.ThPA %></td>
+			<td><%= (player.ThPA.to_f/player.MP.to_f).round(2) %></td>
 			<td><%= player.FTP %></td>
-			<td><%= player.ORB %></td>
-			<td><%= player.DRB %></td>
-			<td><%= player.AST %></td>
-			<td><%= player.STL %></td>
-			<td><%= player.BLK %></td>
+			<td><%= player.FTA %></td>
+			<td><%= (player.FTA.to_f/player.MP.to_f).round(2) %></td>
 			<td><%= player.TO %></td>
-			<td><%= player.PF %></td>
+			<td><%= (player.TO.to_f/player.MP.to_f).round(2) %></td>
+			<td><%= player.ORB %></td>
+			<td><%= player.AST %></td>
+			<td><%= player.BLK %></td>
 			<td><%= player.PTS %></td>
-			<td><%= player.eFG %></td>
-			<td><%= player.TS %></td>
 		</tr>
 	<% end %>
 </table>
