@@ -3,10 +3,12 @@ namespace :import do
 	desc "import data from websites"
 
 	task :test => :environment do
-		lakers = Team.find_by_name("Lakers")
-		timberwolves = Team.find_by_name("Timberwolves")
-		lakers_players = lakers.player.where(:starter => true)
-		timberwolves_players = timberwolves.player.where(:starter => true)
+		require 'open-uri'
+		require 'nokogiri'
+
+		(Date.new(2014, 10, 28)..Date.today).each do |date|
+  			puts date.day
+		end
 	end
 
 	task :rotowire => :environment do
@@ -171,6 +173,8 @@ namespace :import do
 					@ThPA = player.text.to_i
 				when 12
 					@ThPP = (player.text.to_f*100).round(1)
+				when 16
+					@eFG = (player.text.to_f*100).round(1)
 				when 17
 					@FT = player.text.to_i
 				when 18
@@ -196,7 +200,7 @@ namespace :import do
 					if player = Player.where(:name => @name, :team_id => index+1).first
 						if var <= 336
 							player.update_attributes(:starter => true, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
-								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
+								:ThPP => @ThPP, :eFG => @eFG, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
 								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
 						else
 							player.update_attributes(:starter => false, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
@@ -206,7 +210,39 @@ namespace :import do
 					end
 				end
 			end
+
+			var = 0
+			doc.css("#per_poss td").each do |stat|
+				var += 1
+				case var%30
+				when 2
+					@name = stat.text
+				when 29
+					@ORtg = stat.text.to_i
+				when 0
+					@DRtg = stat.text.to_i
+					if player = Player.find_by_name(@name)
+						player.update_attributes(:ORtg => @ORtg, :DRtg => @DRtg)
+					end
+				end
+			end
+
+			var = 0
+			doc.css("#advanced td").each do |stat|
+				var += 1
+				case var%27
+				when 2
+					@name = stat.text
+				when 7
+					@TS = (stat.text.to_f*100).round(1)
+					if player = Player.find_by_name(@name)
+						player.update_attributes(:TS => @TS)
+					end
+				end
+			end
+			
 		end
+
 	end
 
 	task :starters => :environment do

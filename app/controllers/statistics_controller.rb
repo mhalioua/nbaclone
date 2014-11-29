@@ -4,6 +4,177 @@ class StatisticsController < ApplicationController
 
 	layout 'nba'
 
+	def matchup
+
+		@player = Player.find_by_id(params[:id])
+		@team = @player.team
+		if @team.today == true
+			@opp_team = Team.find_by_name(@team.opp_today)
+		else
+			@opp_team = Team.find_by_id(params[:team_id])
+		end
+		if @player.forward == true
+			@opp_team_players = @opp_team.player.where(:starter => true, :forward => true)
+		else
+			@opp_team_players = @opp_team.player.where(:starter => true, :guard => true)
+		end
+		@matchups = Array.new
+		@opp_team_players.each do |opp_player|
+			matchup = PlayerMatchup.where("(player_one_id = #{@player.id} or player_one_id = #{opp_player.id}) and (player_two_id = #{@player.id} or player_two_id = #{opp_player.id})").first
+			@matchups << matchup
+		end
+
+		@game = Array.new
+
+		@matchups.each do |matchup|
+	 		@id = 0
+	 		matchup.player_matchup_game.each_with_index do |game, index|
+	 			if @id == 0
+	 				@id = game.player_matchup_id
+	 				@GS = 0
+	 				@MP = 0
+			      	@FG = 0
+			      	@FGA = 0
+			      	@ThP = 0
+			      	@ThPA = 0
+			      	@FT = 0
+			      	@FTA = 0
+			      	@ORB = 0
+			      	@DRB = 0
+			      	@AST = 0
+			      	@STL = 0
+			      	@BLK = 0
+			      	@TO = 0
+			      	@PF = 0
+			      	@PTS = 0
+			      	@GS_2 = 0
+			      	@MP_2 = 0
+			      	@FG_2 = 0
+			      	@FGA_2 = 0
+			      	@ThP_2 = 0
+			      	@ThPA_2 = 0
+			      	@FT_2 = 0
+			      	@FTA_2 = 0
+			      	@ORB_2 = 0
+			      	@DRB_2 = 0
+			      	@AST_2 = 0
+			      	@STL_2 = 0
+			      	@BLK_2 = 0
+			      	@TO_2 = 0
+			      	@PF_2 = 0
+			      	@PTS_2 = 0
+			    end
+			    if index%2 == 0
+			      	@id = game.player_matchup_id
+			      	@name = game.name
+			      	@GS = @GS + game.GS
+			      	text = game.MP
+			      	time = 0
+			      	index = text.index(":")
+					time = time + text[0..index-1].to_i * 60
+					time = time + text[index+1..-1].to_i
+			      	@MP = @MP + time
+			      	@FG = @FG + game.FG
+			      	@FGA = @FGA + game.FGA
+			      	@ThP = @ThP + game.ThP
+			      	@ThPA = @ThPA + game.ThPA
+			      	@FT = @FT + game.FT
+			      	@FTA = @FTA + game.FTA
+			      	@ORB = @ORB + game.ORB
+			      	@DRB = @DRB + game.DRB
+			      	@AST = @AST + game.AST
+			      	@STL = @STL + game.STL
+			      	@BLK = @BLK + game.BLK
+			      	@TO = @TO + game.TO
+			      	@PF = @PF + game.PF
+			      	@PTS = @PTS + game.PTS
+			    else
+			    	@id_2 = game.player_matchup_id
+			      	@name_2 = game.name
+			      	@GS_2 = @GS_2 + game.GS
+			      	text = game.MP
+			      	time = 0
+			      	index = text.index(":")
+					time = time + text[0..index-1].to_i * 60
+					time = time + text[index+1..-1].to_i
+			      	@MP_2 = @MP_2 + time
+			      	@FG_2 = @FG_2 + game.FG
+			      	@FGA_2 = @FGA_2 + game.FGA
+			      	@ThP_2 = @ThP_2 + game.ThP
+			      	@ThPA_2 = @ThPA_2 + game.ThPA
+			      	@FT_2 = @FT_2 + game.FT
+			      	@FTA_2 = @FTA_2 + game.FTA
+			      	@ORB_2 = @ORB_2 + game.ORB
+			      	@DRB_2 = @DRB_2 + game.DRB
+			      	@AST_2 = @AST_2 + game.AST
+			      	@STL_2 = @STL_2 + game.STL
+			      	@BLK_2 = @BLK_2 + game.BLK
+			      	@TO_2 = @TO_2 + game.TO
+			      	@PF_2 = @PF_2 + game.PF
+			      	@PTS_2 = @PTS_2 + game.PTS
+			    end
+			    @game << game
+			end
+	 		@size = (matchup.player_matchup_game.size)/2
+	 		@FGP = 0
+	 		@ThPP = 0
+	 		@FTP = 0
+	 		@FGP_2 = 0
+	 		@ThPP_2 = 0
+	 		@FTP_2 = 0
+	 		if @FGA != 0
+	 			@FGP = ((@FG.to_f/@FGA.to_f)*100).round(1)
+	 		end
+	 		if @ThPA != 0
+	 			@ThPP = ((@ThP.to_f/@ThPA.to_f)*100).round(1)
+	 		end
+	 		if @FTA != 0
+	 			@FTP = ((@FT.to_f/@FTA.to_f)*100).round(1)
+	 		end
+	 		if @FGA_2 != 0
+	 			@FGP_2 = ((@FG_2.to_f/@FGA_2.to_f)*100).round(1)
+	 		end
+	 		if @ThPA_2 != 0
+	 			@ThPP_2 = ((@ThP_2.to_f/@ThPA_2.to_f)*100).round(1)
+	 		end
+	 		if @FTA_2 != 0
+	 			@FTP_2 = ((@FT_2.to_f/@FTA_2.to_f)*100).round(1)
+	 		end
+	 		@date = "Previous " + @size.to_s + " Games"
+	 		if !@MP.is_a?(Integer)
+	 			@MP = 0
+	 		end
+	 		minutes = (@MP/60).to_s
+	 		seconds = (@MP%60).to_s
+	 		if seconds.size == 1
+	 			seconds = "0" + seconds
+	 		end
+	 		@MP_S = minutes + ":" + seconds
+	 		if !@MP_2.is_a?(Integer)
+	 			@MP_2 = 0
+	 		end
+	 		minutes = (@MP_2/60).to_s
+	 		seconds = (@MP_2%60).to_s
+	 		if seconds.size == 1
+	 			seconds = "0" + seconds
+	 		end
+	 		@MP_2_S = minutes + ":" + seconds
+	 		if @size != 0 && @size != 1
+		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :GS => @GS, :MP => @MP_S, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
+		 			:ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST,
+		 			:STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :GS => @GS_2, :MP => @MP_2_S, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
+		 			:ThPA => @ThPA_2, :ThPP => @ThPP_2, :FT => @FT_2, :FTA => @FTA_2, :FTP => @FTP_2, :ORB => @ORB_2, :DRB => @DRB_2, :AST => @AST_2,
+		 			:STL => @STL_2, :BLK => @BLK_2, :TO => @TO_2, :PF => @PF_2, :PTS => @PTS_2)
+		 		@game << @total
+		 		@game << @total_2
+	 		end
+	 	end
+
+
+
+	end
+
   	def team
   		@team = Team.find_by_id(params[:id])
   		@players = @team.player
@@ -153,12 +324,18 @@ class StatisticsController < ApplicationController
 	 			@FTP_2 = ((@FT_2.to_f/@FTA_2.to_f)*100).round(1)
 	 		end
 	 		@date = "Previous " + @size.to_s + " Games"
+	 		if !@MP.is_a?(Integer)
+	 			@MP = 0
+	 		end
 	 		minutes = (@MP/60).to_s
 	 		seconds = (@MP%60).to_s
 	 		if seconds.size == 1
 	 			seconds = "0" + seconds
 	 		end
 	 		@MP_S = minutes + ":" + seconds
+	 		if !@MP_2.is_a?(Integer)
+	 			@MP_2 = 0
+	 		end
 	 		minutes = (@MP_2/60).to_s
 	 		seconds = (@MP_2%60).to_s
 	 		if seconds.size == 1

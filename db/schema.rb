@@ -75,6 +75,10 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.integer  "TO"
     t.integer  "PF"
     t.integer  "PTS"
+    t.integer  "ORtg"
+    t.integer  "DRtg"
+    t.float    "eFG",        limit: 24
+    t.float    "TS",         limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end
