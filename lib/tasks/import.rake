@@ -5,7 +5,7 @@ namespace :import do
 	task :hi => :environment do
 		require 'open-uri'
 		require 'nokogiri'
-		url = "http://www.teamrankings.com/nba/stat/possessions-per-game"
+		url = "http://www.basketball-reference.com/teams/MIL/2015.html"
 		doc = Nokogiri::HTML(open(url))
 		doc.css("td").each do |stat|
 			puts stat.text
@@ -116,6 +116,8 @@ namespace :import do
 	end
 
 	task :update_teams => :environment do
+		require 'open-uri'
+		require 'nokogiri'
 		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
 			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
 			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
