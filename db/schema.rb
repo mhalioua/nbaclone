@@ -94,6 +94,17 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "opp_yesterday"
     t.string   "opp_today"
     t.string   "opp_tomorrow"
+    t.integer  "G"
+    t.integer  "PTS"
+    t.float    "FGP",           limit: 24
+    t.float    "opp_FGP",       limit: 24
+    t.float    "ThPP",          limit: 24
+    t.integer  "ThPA"
+    t.float    "opp_ThPP",      limit: 24
+    t.integer  "opp_ThPA"
+    t.integer  "FTA"
+    t.integer  "opp_FTA"
+    t.float    "pace",          limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end

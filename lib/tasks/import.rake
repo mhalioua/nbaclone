@@ -2,12 +2,43 @@ namespace :import do
 
 	desc "import data from websites"
 
+	task :hi => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+		url = "http://www.teamrankings.com/nba/stat/possessions-per-game"
+		doc = Nokogiri::HTML(open(url))
+		doc.css("td").each do |stat|
+			puts stat.text
+		end
+	end
+
 	task :test => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
-		(Date.new(2014, 10, 28)..Date.today).each do |date|
-  			puts date.day
+		url = ["http://www.teamrankings.com/nba/team/milwaukee-bucks/stats", "http://www.teamrankings.com/nba/team/chicago-bulls/stats",
+			"http://www.teamrankings.com/nba/team/cleveland-cavaliers/stats", "http://www.teamrankings.com/nba/team/boston-celtics/stats",
+			"http://www.teamrankings.com/nba/team/los-angeles-clippers/stats", "http://www.teamrankings.com/nba/team/memphis-grizzlies/stats",
+			"http://www.teamrankings.com/nba/team/atlanta-hawks/stats", "http://www.teamrankings.com/nba/team/miami-heat/stats",
+			"http://www.teamrankings.com/nba/team/charlotte-hornets/stats", "http://www.teamrankings.com/nba/team/utah-jazz/stats",
+			"http://www.teamrankings.com/nba/team/sacramento-kings/stats", "http://www.teamrankings.com/nba/team/new-york-knicks/stats",
+			"http://www.teamrankings.com/nba/team/los-angeles-lakers/stats", "http://www.teamrankings.com/nba/team/orlando-magic/stats",
+			"http://www.teamrankings.com/nba/team/dallas-mavericks/stats", "http://www.teamrankings.com/nba/team/brooklyn-nets/stats",
+			"http://www.teamrankings.com/nba/team/denver-nuggets/stats", "http://www.teamrankings.com/nba/team/indiana-pacers/stats",
+			"http://www.teamrankings.com/nba/team/new-orleans-pelicans/stats", "http://www.teamrankings.com/nba/team/detroit-pistons/stats",
+			"http://www.teamrankings.com/nba/team/toronto-raptors/stats", "http://www.teamrankings.com/nba/team/houston-rockets/stats",
+			"http://www.teamrankings.com/nba/team/philadelphia-76ers/stats", "http://www.teamrankings.com/nba/team/san-antonio-spurs/stats",
+			"http://www.teamrankings.com/nba/team/phoenix-suns/stats", "http://www.teamrankings.com/nba/team/oklahoma-city-thunder/stats",
+			"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
+			"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
+
+		url.each_with_index do |url, index|
+			doc = Nokogiri::HTML(open(url))
+			team = Team.find_by_id(index+1)
+			var = 0
+			doc.css("#team_stats td").each do |stat|
+				puts stat.text
+			end
 		end
 	end
 
@@ -81,6 +112,58 @@ namespace :import do
 				"Philadelphia", "San Antonio", "Phoenix", "Oklahoma City", "Minnesota", "Portland", "Golden State", "Washington"]
 		team.zip(city).each do |team, city|
 			Team.create(:name => team, :city => city)
+		end
+	end
+
+	task :update_teams => :environment do
+		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
+			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
+			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
+			"http://www.basketball-reference.com/teams/ATL/2015.html", "http://www.basketball-reference.com/teams/MIA/2015.html",
+		    "http://www.basketball-reference.com/teams/CHO/2015.html", "http://www.basketball-reference.com/teams/UTA/2015.html",
+		    "http://www.basketball-reference.com/teams/SAC/2015.html", "http://www.basketball-reference.com/teams/NYK/2015.html",
+		    "http://www.basketball-reference.com/teams/LAL/2015.html", "http://www.basketball-reference.com/teams/ORL/2015.html",
+		    "http://www.basketball-reference.com/teams/DAL/2015.html", "http://www.basketball-reference.com/teams/BRK/2015.html",
+			"http://www.basketball-reference.com/teams/DEN/2015.html", "http://www.basketball-reference.com/teams/IND/2015.html",
+			"http://www.basketball-reference.com/teams/NOP/2015.html", "http://www.basketball-reference.com/teams/DET/2015.html",
+			"http://www.basketball-reference.com/teams/TOR/2015.html", "http://www.basketball-reference.com/teams/HOU/2015.html",
+			"http://www.basketball-reference.com/teams/PHI/2015.html", "http://www.basketball-reference.com/teams/SAS/2015.html",
+			"http://www.basketball-reference.com/teams/PHO/2015.html", "http://www.basketball-reference.com/teams/OKC/2015.html",
+			"http://www.basketball-reference.com/teams/MIN/2015.html", "http://www.basketball-reference.com/teams/POR/2015.html",
+			"http://www.basketball-reference.com/teams/GSW/2015.html", "http://www.basketball-reference.com/teams/WAS/2015.html"]
+		url.each_with_index do |url, index|
+			doc = Nokogiri::HTML(open(url))
+			team = Team.find_by_id(index+1)
+			var = 0
+			doc.css("#team_stats td").each do |stat|
+				var = var + 1
+				case var
+				when 2
+					@G = stat.text
+				when 6
+					@FGP = (stat.text.to_f*100).round(1)
+				when 8
+					@ThPA = stat.text.to_i
+				when 9
+					@ThPP = (stat.text.to_f*100).round(1)
+				when 24
+					@PTS = stat.text.to_i
+				when 104
+					@opp_ThPA = stat.text.to_i
+				when 105
+					@opp_ThPP = (stat.text.to_f*100).round(1)
+				end	
+			end
+
+			var = 0
+			doc.css("#team_misc td").each do |stat|
+				var = var + 1
+				case var
+				when 9
+					@pace = stat.text.to_f
+				end
+			end
+			team.update_attributes(:G => @G, :FGP => @FGP, :ThPA => @ThPA, :ThPP => @ThPP, :PTS => @PTS, :opp_ThPA => @opp_ThPA, :opp_ThPP => @opp_ThPP, :pace => @pace)
 		end
 	end
 

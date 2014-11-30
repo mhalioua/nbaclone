@@ -1,0 +1,20 @@
+<table>
+	<tr>
+		<th>PTS per Game</th>
+		<th>Team FG%</th>
+		<th>Team 3P%</th>
+		<th>Team 3PA</th>
+		<th>Opponent 3P%</th>
+		<th>Opponent 3PA</th>
+		<th>Pace</th>
+	</tr>
+	<tr>
+		<td><%= (team.PTS.to_f/team.G.to_f).round(1) %></td>
+		<td><%= team.FGP %></td>
+		<td><%= team.ThPP %></td>
+		<td><%= team.ThPA %></td>
+		<td><%= team.opp_ThPP %></td>
+		<td><%= team.opp_ThPA %></td>
+		<td><%= team.pace %></td>
+	</tr>
+</table>
