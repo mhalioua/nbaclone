@@ -5,11 +5,13 @@ namespace :import do
 	task :hi => :environment do
 		require 'open-uri'
 		require 'nokogiri'
-		url = "http://www.basketball-reference.com/teams/MIL/2015.html"
-		doc = Nokogiri::HTML(open(url))
-		doc.css("td").each do |stat|
-			puts stat.text
+		month = Date.today.strftime("%B")[0..2]
+		day = Time.now.strftime("%d")
+		if day[0] == "0"
+			day = day[1]
 		end
+		puts month
+		puts day
 	end
 
 	task :test => :environment do
@@ -118,6 +120,7 @@ namespace :import do
 	task :update_teams => :environment do
 		require 'open-uri'
 		require 'nokogiri'
+
 		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
 			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
 			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
@@ -345,7 +348,7 @@ namespace :import do
 		if day[0] == "0"
 			day = day[1]
 		end
-		date = month + " " + day
+		date = month + " " + day + ","
 		url = "http://www.basketball-reference.com/leagues/NBA_2015_games.html"
 		doc = Nokogiri::HTML(open(url))
 		@bool = false
