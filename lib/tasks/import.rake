@@ -2,16 +2,74 @@ namespace :import do
 
 	desc "import data from websites"
 
-	task :hi => :environment do
+	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
-		month = Date.today.strftime("%B")[0..2]
-		day = Time.now.strftime("%d")
-		if day[0] == "0"
-			day = day[1]
+
+		team = Team.where(:today => true)
+		array = Array.new
+		team.each do |team|
+			array << team
+			array << Team.find_by_name(team.opp_today)
 		end
-		puts month
-		puts day
+
+		array.each do |team|
+			players = team.player.where(:starter => true)
+			players.each_with_index do |player, index|
+
+				url = "http://www.basketball-reference.com/players/#{player.alias[0]}/#{player.alias}/gamelog/2015/"
+
+				doc = Nokogiri::HTML(open(url))
+				size = doc.css("#pgl_basic td").size
+				time_1 = size-((30*0)+21)
+				time_2 = size-((30*1)+21)
+				time_3 = size-((30*2)+21)
+				time_4 = size-((30*3)+21)
+				time_5 = size-((30*4)+21)
+				doc.css("#pgl_basic td").each_with_index do |player, index|
+					if index == time_1
+						@MP_1 = player.text
+					end
+					if index == time_2
+						@MP_2 = player.text
+					end
+					if index == time_3
+						@MP_3 = player.text
+					end
+					if index == time_4
+						@MP_4 = player.text
+					end
+					if index == time_5
+						@MP_5 = player.text
+					end
+				end
+				if !@MP_5.include? ":"
+					@MP_5 = "N/A"
+				end
+				if !@MP_4.include? ":"
+					@MP_4 = "N/A"
+				end
+				if !@MP_3.include? ":"
+					@MP_3 = "N/A"
+				end
+				if !@MP_2.include? ":"
+					@MP_2 = "N/A"
+				end
+				if !@MP_1.include? ":"
+					@MP_1 = "N/A"
+				end
+				update = Player.find_by_name(player.name)
+				update.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5)
+				puts update.name
+			end
+
+		end
+
+	end
+
+	task :whoo => :environment do
+		require 'open-uri'
+		require 'nokogiri'
 	end
 
 	task :test => :environment do
@@ -387,6 +445,7 @@ namespace :import do
 				away = "Trail " + away
 			end
 			team = Team.find_by_name(home)
+			puts team.name + " vs " + away
 			team.update_attributes(:today => true, :opp_today => away)
 		end
 

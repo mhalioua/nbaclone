@@ -32,6 +32,11 @@ class CreatePlayers < ActiveRecord::Migration
       t.integer "DRtg"
       t.float "eFG"
       t.float "TS"
+      t.string "MP_1"
+      t.string "MP_2"
+      t.string "MP_3"
+      t.string "MP_4"
+      t.string "MP_5"
       t.timestamps
     end
     add_index("players", "name")

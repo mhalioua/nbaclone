@@ -79,6 +79,11 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.integer  "DRtg"
     t.float    "eFG",        limit: 24
     t.float    "TS",         limit: 24
+    t.string   "MP_1"
+    t.string   "MP_2"
+    t.string   "MP_3"
+    t.string   "MP_4"
+    t.string   "MP_5"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -97,13 +102,10 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.integer  "G"
     t.integer  "PTS"
     t.float    "FGP",           limit: 24
-    t.float    "opp_FGP",       limit: 24
     t.float    "ThPP",          limit: 24
     t.integer  "ThPA"
     t.float    "opp_ThPP",      limit: 24
     t.integer  "opp_ThPA"
-    t.integer  "FTA"
-    t.integer  "opp_FTA"
     t.float    "pace",          limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
