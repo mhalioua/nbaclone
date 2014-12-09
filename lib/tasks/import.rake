@@ -20,86 +20,90 @@ namespace :import do
 				url = "http://www.basketball-reference.com/players/#{player.alias[0]}/#{player.alias}/gamelog/2015/"
 
 				doc = Nokogiri::HTML(open(url))
-				size = doc.css("#pgl_basic td").size
-				time_1 = size-((30*0)+21)
-				time_2 = size-((30*1)+21)
-				time_3 = size-((30*2)+21)
-				time_4 = size-((30*3)+21)
-				time_5 = size-((30*4)+21)
+				@MP_1 = "N/A"
+				@MP_2 = "N/A"
+				@MP_3 = "N/A"
+				@MP_4 = "N/A"
+				@MP_5 = "N/A"
+
+				@var = 0
 				doc.css("#pgl_basic td").each_with_index do |player, index|
-					if index == time_1
+					@var = @var + 1
+					if @var%30 == 10
+						@MP_5 = @MP_4
+						@MP_4 = @MP_3
+						@MP_3 = @MP_2
+						@MP_2 = @MP_1
 						@MP_1 = player.text
 					end
-					if index == time_2
-						@MP_2 = player.text
-					end
-					if index == time_3
-						@MP_3 = player.text
-					end
-					if index == time_4
-						@MP_4 = player.text
-					end
-					if index == time_5
-						@MP_5 = player.text
+					if player.text == "Inactive" || player.text == "Did Not Play"
+						@var = 0
 					end
 				end
-				if !@MP_5.include? ":"
-					@MP_5 = "N/A"
-				end
-				if !@MP_4.include? ":"
-					@MP_4 = "N/A"
-				end
-				if !@MP_3.include? ":"
-					@MP_3 = "N/A"
-				end
-				if !@MP_2.include? ":"
-					@MP_2 = "N/A"
-				end
-				if !@MP_1.include? ":"
-					@MP_1 = "N/A"
-				end
-				update = Player.find_by_name(player.name)
-				update.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5)
-				puts update.name
+				baller = Player.find_by_name(player.name)
+				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5)
+				puts baller.name
+				puts @MP_5
+				puts @MP_4
+				puts @MP_3
+				puts @MP_2
+				puts @MP_1
 			end
 
 		end
 
-	end
-
-	task :whoo => :environment do
-		require 'open-uri'
-		require 'nokogiri'
 	end
 
 	task :test => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
-		url = ["http://www.teamrankings.com/nba/team/milwaukee-bucks/stats", "http://www.teamrankings.com/nba/team/chicago-bulls/stats",
-			"http://www.teamrankings.com/nba/team/cleveland-cavaliers/stats", "http://www.teamrankings.com/nba/team/boston-celtics/stats",
-			"http://www.teamrankings.com/nba/team/los-angeles-clippers/stats", "http://www.teamrankings.com/nba/team/memphis-grizzlies/stats",
-			"http://www.teamrankings.com/nba/team/atlanta-hawks/stats", "http://www.teamrankings.com/nba/team/miami-heat/stats",
-			"http://www.teamrankings.com/nba/team/charlotte-hornets/stats", "http://www.teamrankings.com/nba/team/utah-jazz/stats",
-			"http://www.teamrankings.com/nba/team/sacramento-kings/stats", "http://www.teamrankings.com/nba/team/new-york-knicks/stats",
-			"http://www.teamrankings.com/nba/team/los-angeles-lakers/stats", "http://www.teamrankings.com/nba/team/orlando-magic/stats",
-			"http://www.teamrankings.com/nba/team/dallas-mavericks/stats", "http://www.teamrankings.com/nba/team/brooklyn-nets/stats",
-			"http://www.teamrankings.com/nba/team/denver-nuggets/stats", "http://www.teamrankings.com/nba/team/indiana-pacers/stats",
-			"http://www.teamrankings.com/nba/team/new-orleans-pelicans/stats", "http://www.teamrankings.com/nba/team/detroit-pistons/stats",
-			"http://www.teamrankings.com/nba/team/toronto-raptors/stats", "http://www.teamrankings.com/nba/team/houston-rockets/stats",
-			"http://www.teamrankings.com/nba/team/philadelphia-76ers/stats", "http://www.teamrankings.com/nba/team/san-antonio-spurs/stats",
-			"http://www.teamrankings.com/nba/team/phoenix-suns/stats", "http://www.teamrankings.com/nba/team/oklahoma-city-thunder/stats",
-			"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
-			"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
-		url.each_with_index do |url, index|
-			doc = Nokogiri::HTML(open(url))
-			team = Team.find_by_id(index+1)
-			var = 0
-			doc.css("#team_stats td").each do |stat|
-				puts stat.text
+		url = "http://www.basketball-reference.com/players/m/mohamna01/gamelog/2015/"
+
+
+		doc = Nokogiri::HTML(open(url))
+
+		@MP_1 = "N/A"
+		@MP_2 = "N/A"
+		@MP_3 = "N/A"
+		@MP_4 = "N/A"
+		@MP_5 = "N/A"
+
+		@var = 0
+		doc.css("#pgl_basic td").each_with_index do |player, index|
+			@var = @var + 1
+			if @var%30 == 10
+				@MP_5 = @MP_4
+				@MP_4 = @MP_3
+				@MP_3 = @MP_2
+				@MP_2 = @MP_1
+				@MP_1 = player.text
+			end
+			if player.text == "Inactive" || player.text == "Did Not Play"
+				@var = 0
 			end
 		end
+
+
+
+
+		# url = ["http://www.teamrankings.com/nba/team/milwaukee-bucks/stats", "http://www.teamrankings.com/nba/team/chicago-bulls/stats",
+		# 	"http://www.teamrankings.com/nba/team/cleveland-cavaliers/stats", "http://www.teamrankings.com/nba/team/boston-celtics/stats",
+		# 	"http://www.teamrankings.com/nba/team/los-angeles-clippers/stats", "http://www.teamrankings.com/nba/team/memphis-grizzlies/stats",
+		# 	"http://www.teamrankings.com/nba/team/atlanta-hawks/stats", "http://www.teamrankings.com/nba/team/miami-heat/stats",
+		# 	"http://www.teamrankings.com/nba/team/charlotte-hornets/stats", "http://www.teamrankings.com/nba/team/utah-jazz/stats",
+		# 	"http://www.teamrankings.com/nba/team/sacramento-kings/stats", "http://www.teamrankings.com/nba/team/new-york-knicks/stats",
+		# 	"http://www.teamrankings.com/nba/team/los-angeles-lakers/stats", "http://www.teamrankings.com/nba/team/orlando-magic/stats",
+		# 	"http://www.teamrankings.com/nba/team/dallas-mavericks/stats", "http://www.teamrankings.com/nba/team/brooklyn-nets/stats",
+		# 	"http://www.teamrankings.com/nba/team/denver-nuggets/stats", "http://www.teamrankings.com/nba/team/indiana-pacers/stats",
+		# 	"http://www.teamrankings.com/nba/team/new-orleans-pelicans/stats", "http://www.teamrankings.com/nba/team/detroit-pistons/stats",
+		# 	"http://www.teamrankings.com/nba/team/toronto-raptors/stats", "http://www.teamrankings.com/nba/team/houston-rockets/stats",
+		# 	"http://www.teamrankings.com/nba/team/philadelphia-76ers/stats", "http://www.teamrankings.com/nba/team/san-antonio-spurs/stats",
+		# 	"http://www.teamrankings.com/nba/team/phoenix-suns/stats", "http://www.teamrankings.com/nba/team/oklahoma-city-thunder/stats",
+		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
+		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
+
 	end
 
 	task :rotowire => :environment do
