@@ -84,6 +84,9 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "MP_3"
     t.string   "MP_4"
     t.string   "MP_5"
+    t.integer  "MP_2014"
+    t.integer  "ORtg_2014"
+    t.integer  "DRtg_2014"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

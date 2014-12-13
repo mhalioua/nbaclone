@@ -37,6 +37,9 @@ class CreatePlayers < ActiveRecord::Migration
       t.string "MP_3"
       t.string "MP_4"
       t.string "MP_5"
+      t.integer "MP_2014", :default => 0
+      t.integer "ORtg_2014", :default => 0
+      t.integer "DRtg_2014", :default => 0
       t.timestamps
     end
     add_index("players", "name")

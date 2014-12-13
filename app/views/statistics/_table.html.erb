@@ -4,15 +4,15 @@
 		<th>ORtg</th>
 		<th>DRtg</th>
 		<th>Total MP</th>
+		<th>ORtg 2014</th>
+		<th>DRtg 2014</th>
+		<th>Total MP 2014</th>
 		<th>FG%</th>
 		<th>FGA</th>
 		<th>FGA per MP</th>
 		<th>3P%</th>
 		<th>3PA</th>
 		<th>3PA per MP</th>
-		<th>FT%</th>
-		<th>FTA</th>
-		<th>FTA per MP</th>
 		<th>TO</th>
 		<th>TO per MP</th>
 		<th>ORB</th>
@@ -35,15 +35,15 @@
 			<td><%= player.ORtg %></td>
 			<td><%= player.DRtg %></td>
 			<td><%= player.MP %></td>
+			<td><%= player.ORtg_2014 %></td>
+			<td><%= player.DRtg_2014 %></td>
+			<td><%= player.MP_2014 %></td>
 			<td><%= player.FGP %></td>
 			<td><%= player.FGA %></td>
 			<td><%= (player.FGA.to_f/player.MP.to_f).round(2) %></td>
 			<td><%= player.ThPP %></td>
 			<td><%= player.ThPA %></td>
 			<td><%= (player.ThPA.to_f/player.MP.to_f).round(2) %></td>
-			<td><%= player.FTP %></td>
-			<td><%= player.FTA %></td>
-			<td><%= (player.FTA.to_f/player.MP.to_f).round(2) %></td>
 			<td><%= player.TO %></td>
 			<td><%= (player.TO.to_f/player.MP.to_f).round(2) %></td>
 			<td><%= player.ORB %></td>

@@ -367,8 +367,57 @@ namespace :import do
 						player.update_attributes(:TS => @TS)
 					end
 				end
+			end	
+		end
+
+		url = ["http://www.basketball-reference.com/teams/MIL/2014.html", "http://www.basketball-reference.com/teams/CHI/2014.html",
+			"http://www.basketball-reference.com/teams/CLE/2014.html", "http://www.basketball-reference.com/teams/BOS/2014.html",
+			"http://www.basketball-reference.com/teams/LAC/2014.html", "http://www.basketball-reference.com/teams/MEM/2014.html",
+			"http://www.basketball-reference.com/teams/ATL/2014.html", "http://www.basketball-reference.com/teams/MIA/2014.html",
+		    "http://www.basketball-reference.com/teams/CHO/2014.html", "http://www.basketball-reference.com/teams/UTA/2014.html",
+		    "http://www.basketball-reference.com/teams/SAC/2014.html", "http://www.basketball-reference.com/teams/NYK/2014.html",
+		    "http://www.basketball-reference.com/teams/LAL/2014.html", "http://www.basketball-reference.com/teams/ORL/2014.html",
+		    "http://www.basketball-reference.com/teams/DAL/2014.html", "http://www.basketball-reference.com/teams/BRK/2014.html",
+			"http://www.basketball-reference.com/teams/DEN/2014.html", "http://www.basketball-reference.com/teams/IND/2014.html",
+			"http://www.basketball-reference.com/teams/NOP/2014.html", "http://www.basketball-reference.com/teams/DET/2014.html",
+			"http://www.basketball-reference.com/teams/TOR/2014.html", "http://www.basketball-reference.com/teams/HOU/2014.html",
+			"http://www.basketball-reference.com/teams/PHI/2014.html", "http://www.basketball-reference.com/teams/SAS/2014.html",
+			"http://www.basketball-reference.com/teams/PHO/2014.html", "http://www.basketball-reference.com/teams/OKC/2014.html",
+			"http://www.basketball-reference.com/teams/MIN/2014.html", "http://www.basketball-reference.com/teams/POR/2014.html",
+			"http://www.basketball-reference.com/teams/GSW/2014.html", "http://www.basketball-reference.com/teams/WAS/2014.html"]
+
+
+		url.each_with_index do |url, index|
+			doc = Nokogiri::HTML(open(url))
+			var = 0
+			doc.css("#totals td").each do |player|
+				var += 1
+				case var%28
+				when 2
+					@name = player.text
+				when 6
+					@MP = player.text.to_i
+					if player = Player.find_by_name(@name)
+						player.update_attributes(:MP_2014 => @MP)
+					end
+				end
 			end
-			
+
+			var = 0
+			doc.css("#per_poss td").each do |stat|
+				var += 1
+				case var%30
+				when 2
+					@name = stat.text
+				when 29
+					@ORtg = stat.text.to_i
+				when 0
+					@DRtg = stat.text.to_i
+					if player = Player.find_by_name(@name)
+						player.update_attributes(:ORtg_2014 => @ORtg, :DRtg_2014 => @DRtg)
+					end
+				end
+			end
 		end
 
 	end
