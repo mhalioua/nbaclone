@@ -1,6 +1,6 @@
 <% @page_title = "#{@home_team.name} vs #{@away_team.name}" %>
-<% date = Time.now.strftime("%B %d") %> 
-<%= link_to(date, :controller => 'index', :action => 'today') %>
+<% date = Time.now.tomorrow.strftime("%B %d") %> 
+<%= link_to(date, :controller => 'index', :action => 'tomorrow') %>
 <h3><%= @home_team.name + " vs " + @away_team.name %></h3>
 <h4><%= @home_team.name %></h4>
 <%= render(:partial => 'table', :locals => {:players => @home_players}) %>

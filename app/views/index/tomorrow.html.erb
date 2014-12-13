@@ -2,13 +2,13 @@
 
 <%= link_to("Home Page", :controller => 'access', :action => 'index') %>
 
-<h2><%= Time.now.tomorrow.strftime("%B %d") %> Matchups</h2>
+<h2><%= Time.now.tomorrow.strftime("%B %d") %></h2>
 <div id="main">
 	<div id="list">
 		<ul>
 			<h3>Home vs Away</h3>
 			<% @teams.each do |team| %>
-			<li><%= link_to(team.name + " vs " + team.opp_tomorrow, {:controller => 'mlb', :action => 'tomorrow', :id => team.id}) %></li>
+			<li><%= link_to(team.name + " vs " + team.tomorrow_team.name, {:controller => 'statistics', :action => 'tomorrow', :id => team.id}) %></li>
 			<% end %>
 		</ul>
 	</div>

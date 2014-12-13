@@ -2,6 +2,28 @@ namespace :import do
 
 	desc "import data from websites"
 
+		# url = ["http://www.teamrankings.com/nba/team/milwaukee-bucks/stats", "http://www.teamrankings.com/nba/team/chicago-bulls/stats",
+		# 	"http://www.teamrankings.com/nba/team/cleveland-cavaliers/stats", "http://www.teamrankings.com/nba/team/boston-celtics/stats",
+		# 	"http://www.teamrankings.com/nba/team/los-angeles-clippers/stats", "http://www.teamrankings.com/nba/team/memphis-grizzlies/stats",
+		# 	"http://www.teamrankings.com/nba/team/atlanta-hawks/stats", "http://www.teamrankings.com/nba/team/miami-heat/stats",
+		# 	"http://www.teamrankings.com/nba/team/charlotte-hornets/stats", "http://www.teamrankings.com/nba/team/utah-jazz/stats",
+		# 	"http://www.teamrankings.com/nba/team/sacramento-kings/stats", "http://www.teamrankings.com/nba/team/new-york-knicks/stats",
+		# 	"http://www.teamrankings.com/nba/team/los-angeles-lakers/stats", "http://www.teamrankings.com/nba/team/orlando-magic/stats",
+		# 	"http://www.teamrankings.com/nba/team/dallas-mavericks/stats", "http://www.teamrankings.com/nba/team/brooklyn-nets/stats",
+		# 	"http://www.teamrankings.com/nba/team/denver-nuggets/stats", "http://www.teamrankings.com/nba/team/indiana-pacers/stats",
+		# 	"http://www.teamrankings.com/nba/team/new-orleans-pelicans/stats", "http://www.teamrankings.com/nba/team/detroit-pistons/stats",
+		# 	"http://www.teamrankings.com/nba/team/toronto-raptors/stats", "http://www.teamrankings.com/nba/team/houston-rockets/stats",
+		# 	"http://www.teamrankings.com/nba/team/philadelphia-76ers/stats", "http://www.teamrankings.com/nba/team/san-antonio-spurs/stats",
+		# 	"http://www.teamrankings.com/nba/team/phoenix-suns/stats", "http://www.teamrankings.com/nba/team/oklahoma-city-thunder/stats",
+		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
+		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
+
+	task :test => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+	end
+
 	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
@@ -10,8 +32,16 @@ namespace :import do
 		array = Array.new
 		team.each do |team|
 			array << team
-			array << Team.find_by_name(team.opp_today)
+			array << team.today_team
 		end
+
+		team = Team.where(:tomorrow => true)
+		team.each do |team|
+			array << team
+			array << team.tomorrow_team
+		end
+
+		array = array.uniq
 
 		array.each do |team|
 			players = team.player.where(:starter => true)
@@ -36,73 +66,21 @@ namespace :import do
 						@MP_2 = @MP_1
 						@MP_1 = player.text
 					end
-					if player.text == "Inactive" || player.text == "Did Not Play"
+					if player.text == "Inactive" || player.text == "Did Not Play" || player.text == "Player Suspended"
 						@var = 0
+						@MP_5 = @MP_4
+						@MP_4 = @MP_3
+						@MP_3 = @MP_2
+						@MP_2 = @MP_1
+						@MP_1 = '0:00'
 					end
 				end
 				baller = Player.find_by_name(player.name)
 				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5)
 				puts baller.name
-				puts @MP_5
-				puts @MP_4
-				puts @MP_3
-				puts @MP_2
-				puts @MP_1
 			end
 
 		end
-
-	end
-
-	task :test => :environment do
-		require 'open-uri'
-		require 'nokogiri'
-
-
-		url = "http://www.basketball-reference.com/players/m/mohamna01/gamelog/2015/"
-
-
-		doc = Nokogiri::HTML(open(url))
-
-		@MP_1 = "N/A"
-		@MP_2 = "N/A"
-		@MP_3 = "N/A"
-		@MP_4 = "N/A"
-		@MP_5 = "N/A"
-
-		@var = 0
-		doc.css("#pgl_basic td").each_with_index do |player, index|
-			@var = @var + 1
-			if @var%30 == 10
-				@MP_5 = @MP_4
-				@MP_4 = @MP_3
-				@MP_3 = @MP_2
-				@MP_2 = @MP_1
-				@MP_1 = player.text
-			end
-			if player.text == "Inactive" || player.text == "Did Not Play"
-				@var = 0
-			end
-		end
-
-
-
-
-		# url = ["http://www.teamrankings.com/nba/team/milwaukee-bucks/stats", "http://www.teamrankings.com/nba/team/chicago-bulls/stats",
-		# 	"http://www.teamrankings.com/nba/team/cleveland-cavaliers/stats", "http://www.teamrankings.com/nba/team/boston-celtics/stats",
-		# 	"http://www.teamrankings.com/nba/team/los-angeles-clippers/stats", "http://www.teamrankings.com/nba/team/memphis-grizzlies/stats",
-		# 	"http://www.teamrankings.com/nba/team/atlanta-hawks/stats", "http://www.teamrankings.com/nba/team/miami-heat/stats",
-		# 	"http://www.teamrankings.com/nba/team/charlotte-hornets/stats", "http://www.teamrankings.com/nba/team/utah-jazz/stats",
-		# 	"http://www.teamrankings.com/nba/team/sacramento-kings/stats", "http://www.teamrankings.com/nba/team/new-york-knicks/stats",
-		# 	"http://www.teamrankings.com/nba/team/los-angeles-lakers/stats", "http://www.teamrankings.com/nba/team/orlando-magic/stats",
-		# 	"http://www.teamrankings.com/nba/team/dallas-mavericks/stats", "http://www.teamrankings.com/nba/team/brooklyn-nets/stats",
-		# 	"http://www.teamrankings.com/nba/team/denver-nuggets/stats", "http://www.teamrankings.com/nba/team/indiana-pacers/stats",
-		# 	"http://www.teamrankings.com/nba/team/new-orleans-pelicans/stats", "http://www.teamrankings.com/nba/team/detroit-pistons/stats",
-		# 	"http://www.teamrankings.com/nba/team/toronto-raptors/stats", "http://www.teamrankings.com/nba/team/houston-rockets/stats",
-		# 	"http://www.teamrankings.com/nba/team/philadelphia-76ers/stats", "http://www.teamrankings.com/nba/team/san-antonio-spurs/stats",
-		# 	"http://www.teamrankings.com/nba/team/phoenix-suns/stats", "http://www.teamrankings.com/nba/team/oklahoma-city-thunder/stats",
-		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
-		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
 	end
 
@@ -448,9 +426,59 @@ namespace :import do
 			if away == "Blazers"
 				away = "Trail " + away
 			end
-			team = Team.find_by_name(home)
-			puts team.name + " vs " + away
-			team.update_attributes(:today => true, :opp_today => away)
+			home_team = Team.find_by_name(home)
+			away_team = Team.find_by_name(away)
+			puts home_team.name + " vs " + away_team.name
+			home_team.update_attributes(:today => true, :today_team_id => away_team.id)
+			away_team.update_attributes(:today_team_id => home_team.id)
+		end
+
+		month = Date.tomorrow.strftime("%B")[0..2]
+		day = Time.now.tomorrow.strftime("%d")
+		if day[0] == "0"
+			day = day[1]
+		end
+		date = month + " " + day + ","
+		@bool = false
+		@var = 0
+		@home = Array.new
+		@away = Array.new
+		doc.css("#games a").each_with_index do |key, value|
+			if key.text.include? ","
+				date_bool = key.text.include? date
+				if date_bool
+					@bool = true
+				else
+					@bool = false
+				end
+			end
+			if @bool
+				if @var%3 == 1
+					@away << key.text
+				end
+				if @var%3 == 2
+					@home << key.text
+				end
+				@var = @var + 1
+			end
+		end
+
+		@home.zip(@away).each do |home, away|
+			last = home.rindex(" ") + 1
+			home = home[last..-1]
+			last = away.rindex(" ") + 1
+			away = away[last..-1]
+			if home == "Blazers"
+				home = "Trail " + home
+			end
+			if away == "Blazers"
+				away = "Trail " + away
+			end
+			home_team = Team.find_by_name(home)
+			away_team = Team.find_by_name(away)
+			puts home_team.name + " vs " + away_team.name
+			home_team.update_attributes(:tomorrow => true, :tomorrow_team_id => away_team.id)
+			away_team.update_attributes(:tomorrow_team_id => home_team.id)
 		end
 
 	end
@@ -511,7 +539,7 @@ namespace :import do
 
 		team = Team.where(:today => true)
 		team.each do |team|
-			opp = Team.find_by_name(team.opp_today)
+			opp = team.today_team
 			puts team.name + " vs " + opp.name
 			players = team.player.where(:starter => true, :forward => true)
 			opp_players = opp.player.where(:starter => true, :forward => true)
@@ -645,5 +673,142 @@ namespace :import do
 				end
 			end
 		end		
+
+		team = Team.where(:tomorrow => true)
+		team.each do |team|
+			opp = team.tomorrow_team
+			puts team.name + " vs " + opp.name
+			players = team.player.where(:starter => true, :forward => true)
+			opp_players = opp.player.where(:starter => true, :forward => true)
+			players.each do |player1|
+				opp_players.each do |player2|
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					puts player1.name + " vs " + player2.name
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
+						end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
+					end
+				end
+			end
+
+			players = team.player.where(:starter => true, :guard => true)
+			opp_players = opp.player.where(:starter => true, :guard => true)
+			players.each do |player1|
+				opp_players.each do |player2|
+					puts player1.name + " vs " + player2.name
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
+						end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
+					end
+				end
+			end
+		end
 	end
 end

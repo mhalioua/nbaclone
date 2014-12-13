@@ -3,6 +3,9 @@ class CreateTeams < ActiveRecord::Migration
     create_table :teams do |t|
     	t.string "name"
       t.string "city"
+      t.references :yesterday_team, :class_name => "Team"
+      t.references :today_team, :class_name => "Team"
+      t.references :tomorrow_team, :class_name => "Team"
 		  t.boolean "yesterday"
 		  t.boolean "today"
 		  t.boolean "tomorrow"

@@ -27,7 +27,11 @@
 	</tr>
 	<% players.each do |player| %>
 		<tr>
-			<td><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id]) + " " + player.height %></td>
+			<% if @var == "today" %>
+			<td><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'today') + " " + player.height %></td>
+			<% else %>
+			<td><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'tomorrow') + " " + player.height %></td>
+			<% end %>
 			<td><%= player.ORtg %></td>
 			<td><%= player.DRtg %></td>
 			<td><%= player.MP %></td>

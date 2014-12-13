@@ -93,6 +93,9 @@ ActiveRecord::Schema.define(version: 20141028033011) do
   create_table "teams", force: true do |t|
     t.string   "name"
     t.string   "city"
+    t.integer  "yesterday_team_id"
+    t.integer  "today_team_id"
+    t.integer  "tomorrow_team_id"
     t.boolean  "yesterday"
     t.boolean  "today"
     t.boolean  "tomorrow"
@@ -101,12 +104,12 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "opp_tomorrow"
     t.integer  "G"
     t.integer  "PTS"
-    t.float    "FGP",           limit: 24
-    t.float    "ThPP",          limit: 24
+    t.float    "FGP",               limit: 24
+    t.float    "ThPP",              limit: 24
     t.integer  "ThPA"
-    t.float    "opp_ThPP",      limit: 24
+    t.float    "opp_ThPP",          limit: 24
     t.integer  "opp_ThPA"
-    t.float    "pace",          limit: 24
+    t.float    "pace",              limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end
