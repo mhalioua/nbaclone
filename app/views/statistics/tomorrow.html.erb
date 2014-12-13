@@ -1,4 +1,5 @@
 <% @page_title = "#{@home_team.name} vs #{@away_team.name}" %>
+<% @var = "tomorrow" %>
 <% date = Time.now.tomorrow.strftime("%B %d") %> 
 <%= link_to(date, :controller => 'index', :action => 'tomorrow') %>
 <h3><%= @home_team.name + " vs " + @away_team.name %></h3>
