@@ -37,6 +37,16 @@ class CreatePlayers < ActiveRecord::Migration
       t.float "MP_3"
       t.float "MP_4"
       t.float "MP_5"
+      t.string "team_1"
+      t.string "team_2"
+      t.string "team_3"
+      t.string "team_4"
+      t.string "team_5"
+      t.string "date_1  "
+      t.string "date_2"
+      t.string "date_3"
+      t.string "date_4"
+      t.string "date_5"
       t.integer "MP_2014", :default => 0
       t.integer "ORtg_2014", :default => 0
       t.integer "DRtg_2014", :default => 0

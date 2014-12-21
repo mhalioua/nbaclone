@@ -19,10 +19,20 @@
 		<th>AST</th>
 		<th>BLK</th>
 		<th>PTS</th>
+		<th><NOBR>Date 1</NOBR></th>
+		<th><NOBR>Team 1</NOBR></th>
 		<th>MP 1</th>
+		<th><NOBR>Date 2</NOBR></th>
+		<th><NOBR>Team 2</NOBR></th>
 		<th>MP 2</th>
+		<th><NOBR>Date 3</NOBR></th>
+		<th><NOBR>Team 3</NOBR></th>
 		<th>MP 3</th>
+		<th><NOBR>Date 4</NOBR></th>
+		<th><NOBR>Team 4</NOBR></th>
 		<th>MP 4</th>
+		<th><NOBR>Date 5</NOBR></th>
+		<th><NOBR>Team 5</NOBR></th>
 		<th>MP 5</th>
 	</tr>
 	<% players.each do |player| %>
@@ -50,10 +60,20 @@
 			<td><%= player.AST %></td>
 			<td><%= player.BLK %></td>
 			<td><%= player.PTS %></td>
+			<td><NOBR><%= player.date_1 %></NOBR></td>
+			<td><%= player.team_1 %></td>
 			<td><%= player.MP_1 %></td>
+			<td><NOBR><%= player.date_2 %></NOBR></td>
+			<td><%= player.team_2 %></td>
 			<td><%= player.MP_2 %></td>
+			<td><NOBR><%= player.date_3 %></NOBR></td>
+			<td><%= player.team_3 %></td>
 			<td><%= player.MP_3 %></td>
+			<td><NOBR><%= player.date_4 %></NOBR></td>
+			<td><%= player.team_4 %></td>
 			<td><%= player.MP_4 %></td>
+			<td><NOBR><%= player.date_5 %></NOBR></td>
+			<td><%= player.team_5 %></td>
 			<td><%= player.MP_5 %></td>
 		</tr>
 	<% end %>

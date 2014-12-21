@@ -69,16 +69,33 @@ namespace :import do
 				@MP_3 = "0:00"
 				@MP_4 = "0:00"
 				@MP_5 = "0:00"
+				@date_1 = "N/A"
+				@date_2 = "N/A"
+				@date_3 = "N/A"
+				@date_4 = "N/A"
+				@date_5 = "N/A"
+				@team_1 = "N/A"
+				@team_2 = "N/A"
+				@team_3 = "N/A"
+				@team_4 = "N/A"
+				@team_5 = "N/A"
 
 				@var = 0
 				doc.css("#pgl_basic td").each_with_index do |player, index|
 					@var = @var + 1
-					if @var%30 == 10
-						@MP_5 = @MP_4
-						@MP_4 = @MP_3
-						@MP_3 = @MP_2
-						@MP_2 = @MP_1
-						@MP_1 = player.text
+					if @var%30 == 3
+						@date_5 = @date_4
+						@date_4 = @date_3
+						@date_3 = @date_2
+						@date_2 = @date_1
+						@date_1 = player.text
+					end
+					if @var%30 == 7
+						@team_5 = @team_4
+						@team_4 = @team_3
+						@team_3 = @team_2
+						@team_2 = @team_1
+						@team_1 = player.text
 					end
 					if player.text == "Inactive" || player.text == "Did Not Play" || player.text == "Player Suspended"
 						@var = 0
@@ -87,6 +104,13 @@ namespace :import do
 						@MP_3 = @MP_2
 						@MP_2 = @MP_1
 						@MP_1 = '0:00'
+					end
+					if @var%30 == 10
+						@MP_5 = @MP_4
+						@MP_4 = @MP_3
+						@MP_3 = @MP_2
+						@MP_2 = @MP_1
+						@MP_1 = player.text
 					end
 				end
 
@@ -120,9 +144,13 @@ namespace :import do
 				seconds = @MP_1[var2..-1].to_f/60
 				@MP_1 = (minutes + seconds).round(2)
 
+				puts @team_5
+
 
 				baller = Player.find_by_name(player.name)
-				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5)
+				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
+					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
+					:date_5 => @date_5[5..-1], :team_1 => @team_1, :team_2 => @team_2, :team_3 => @team_3, :team_4 => @team_4, :team_5 => @team_5)
 				puts baller.name
 			end
 
