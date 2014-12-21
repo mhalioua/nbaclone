@@ -79,14 +79,14 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.integer  "DRtg"
     t.float    "eFG",        limit: 24
     t.float    "TS",         limit: 24
-    t.string   "MP_1"
-    t.string   "MP_2"
-    t.string   "MP_3"
-    t.string   "MP_4"
-    t.string   "MP_5"
-    t.integer  "MP_2014"
-    t.integer  "ORtg_2014"
-    t.integer  "DRtg_2014"
+    t.float    "MP_1",       limit: 24
+    t.float    "MP_2",       limit: 24
+    t.float    "MP_3",       limit: 24
+    t.float    "MP_4",       limit: 24
+    t.float    "MP_5",       limit: 24
+    t.integer  "MP_2014",               default: 0
+    t.integer  "ORtg_2014",             default: 0
+    t.integer  "DRtg_2014",             default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

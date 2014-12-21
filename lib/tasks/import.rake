@@ -22,6 +22,20 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
+		@MP = "12:30"
+
+		def change_minutes(min)
+			var = min.index(":")-1
+			var2 = var + 2
+			minutes = min[0..var].to_f
+			seconds = min[var2..-1].to_f/60
+			min = minutes + seconds
+		end
+
+		change_minutes(@MP)
+
+		puts @MP
+
 	end
 
 	task :minutes => :environment do
@@ -50,11 +64,11 @@ namespace :import do
 				url = "http://www.basketball-reference.com/players/#{player.alias[0]}/#{player.alias}/gamelog/2015/"
 
 				doc = Nokogiri::HTML(open(url))
-				@MP_1 = "N/A"
-				@MP_2 = "N/A"
-				@MP_3 = "N/A"
-				@MP_4 = "N/A"
-				@MP_5 = "N/A"
+				@MP_1 = "0:00"
+				@MP_2 = "0:00"
+				@MP_3 = "0:00"
+				@MP_4 = "0:00"
+				@MP_5 = "0:00"
 
 				@var = 0
 				doc.css("#pgl_basic td").each_with_index do |player, index|
@@ -75,6 +89,38 @@ namespace :import do
 						@MP_1 = '0:00'
 					end
 				end
+
+				var = @MP_5.index(":")-1
+				var2 = var + 2
+				minutes = @MP_5[0..var].to_f
+				seconds = @MP_5[var2..-1].to_f/60
+				@MP_5 = (minutes + seconds).round(2)
+
+				var = @MP_4.index(":")-1
+				var2 = var + 2
+				minutes = @MP_4[0..var].to_f
+				seconds = @MP_4[var2..-1].to_f/60
+				@MP_4 = (minutes + seconds).round(2)
+
+				var = @MP_3.index(":")-1
+				var2 = var + 2
+				minutes = @MP_3[0..var].to_f
+				seconds = @MP_3[var2..-1].to_f/60
+				@MP_3 = (minutes + seconds).round(2)
+
+				var = @MP_2.index(":")-1
+				var2 = var + 2
+				minutes = @MP_2[0..var].to_f
+				seconds = @MP_2[var2..-1].to_f/60
+				@MP_2 = (minutes + seconds).round(2)
+
+				var = @MP_1.index(":")-1
+				var2 = var + 2
+				minutes = @MP_1[0..var].to_f
+				seconds = @MP_1[var2..-1].to_f/60
+				@MP_1 = (minutes + seconds).round(2)
+
+
 				baller = Player.find_by_name(player.name)
 				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5)
 				puts baller.name
@@ -236,9 +282,10 @@ namespace :import do
 			var = 0
 			doc.css("#roster td").each do |player|
 				var += 1
-				case var%8
+				case var%9
 				when 2
 					@name = player.text
+					puts @name
 				when 3
 					@position = player.text
 				when 4
