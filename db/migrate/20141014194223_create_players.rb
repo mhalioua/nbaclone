@@ -42,7 +42,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.string "team_3"
       t.string "team_4"
       t.string "team_5"
-      t.string "date_1  "
+      t.string "date_1"
       t.string "date_2"
       t.string "date_3"
       t.string "date_4"
