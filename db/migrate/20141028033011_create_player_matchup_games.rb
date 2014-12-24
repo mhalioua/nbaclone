@@ -6,7 +6,7 @@ class CreatePlayerMatchupGames < ActiveRecord::Migration
       t.string "name"
       t.string "date"
       t.integer "GS"
-      t.string "MP"
+      t.float "MP"
       t.integer "FG"
       t.integer "FGA"
       t.float "FGP"

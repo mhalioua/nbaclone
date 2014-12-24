@@ -15,6 +15,6 @@
 		<td><%= team.ThPA %></td>
 		<td><%= team.opp_ThPP %></td>
 		<td><%= team.opp_ThPA %></td>
-		<td><%= team.pace %></td>
+		<td><%= team.pace.to_s + " - " + team.rank.ordinalize + " of 30" %></td>
 	</tr>
 </table>

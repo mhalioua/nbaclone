@@ -18,26 +18,6 @@ namespace :import do
 		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
 		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
-	task :test => :environment do
-		require 'open-uri'
-		require 'nokogiri'
-
-		@MP = "12:30"
-
-		def change_minutes(min)
-			var = min.index(":")-1
-			var2 = var + 2
-			minutes = min[0..var].to_f
-			seconds = min[var2..-1].to_f/60
-			min = minutes + seconds
-		end
-
-		change_minutes(@MP)
-
-		puts @MP
-
-	end
-
 	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
@@ -144,14 +124,11 @@ namespace :import do
 				seconds = @MP_1[var2..-1].to_f/60
 				@MP_1 = (minutes + seconds).round(2)
 
-				puts @team_5
-
 
 				baller = Player.find_by_name(player.name)
 				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
 					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
 					:date_5 => @date_5[5..-1], :team_1 => @team_1, :team_2 => @team_2, :team_3 => @team_3, :team_4 => @team_4, :team_5 => @team_5)
-				puts baller.name
 			end
 
 		end
@@ -284,6 +261,13 @@ namespace :import do
 			end
 			team.update_attributes(:G => @G, :FGP => @FGP, :ThPA => @ThPA, :ThPP => @ThPP, :PTS => @PTS, :opp_ThPA => @opp_ThPA, :opp_ThPP => @opp_ThPP, :pace => @pace)
 		end
+
+		team = Team.order("pace DESC")
+		@var = 0
+		team.each do |team|
+			@var += 1
+			team.update_attributes(:rank => @var)
+		end
 	end
 
 	task :create_players => :environment do
@@ -388,12 +372,8 @@ namespace :import do
 					@ORB = player.text.to_i
 				when 21
 					@DRB = player.text.to_i
-				when 23
-					@AST = player.text.to_i
 				when 24
 					@STL = player.text.to_i
-				when 25
-					@BLK = player.text.to_i
 				when 26
 					@TO = player.text.to_i
 				when 27
@@ -403,12 +383,12 @@ namespace :import do
 					if player = Player.where(:name => @name, :team_id => index+1).first
 						if var <= 336
 							player.update_attributes(:starter => true, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
-								:ThPP => @ThPP, :eFG => @eFG, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
-								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+								:ThPP => @ThPP, :eFG => @eFG, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :STL => @STL,
+								:TO => @TO, :PF => @PF, :PTS => @PTS)
 						else
 							player.update_attributes(:starter => false, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
-								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL,
-								:BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :STL => @STL,
+								:TO => @TO, :PF => @PF, :PTS => @PTS)
 						end
 					end
 				end
@@ -490,6 +470,56 @@ namespace :import do
 					@DRtg = stat.text.to_i
 					if player = Player.find_by_name(@name)
 						player.update_attributes(:ORtg_2014 => @ORtg, :DRtg_2014 => @DRtg)
+					end
+				end
+			end
+		end
+
+		url = ["http://www.basketball-reference.com/teams/MIL/2015/on-off/", "http://www.basketball-reference.com/teams/CHI/2015/on-off/",
+			"http://www.basketball-reference.com/teams/CLE/2015/on-off/", "http://www.basketball-reference.com/teams/BOS/2015/on-off/",
+			"http://www.basketball-reference.com/teams/LAC/2015/on-off/", "http://www.basketball-reference.com/teams/MEM/2015/on-off/",
+			"http://www.basketball-reference.com/teams/ATL/2015/on-off/", "http://www.basketball-reference.com/teams/MIA/2015/on-off/",
+		    "http://www.basketball-reference.com/teams/CHO/2015/on-off/", "http://www.basketball-reference.com/teams/UTA/2015/on-off/",
+		    "http://www.basketball-reference.com/teams/SAC/2015/on-off/", "http://www.basketball-reference.com/teams/NYK/2015/on-off/",
+		    "http://www.basketball-reference.com/teams/LAL/2015/on-off/", "http://www.basketball-reference.com/teams/ORL/2015/on-off/",
+		    "http://www.basketball-reference.com/teams/DAL/2015/on-off/", "http://www.basketball-reference.com/teams/BRK/2015/on-off/",
+			"http://www.basketball-reference.com/teams/DEN/2015/on-off/", "http://www.basketball-reference.com/teams/IND/2015/on-off/",
+			"http://www.basketball-reference.com/teams/NOP/2015/on-off/", "http://www.basketball-reference.com/teams/DET/2015/on-off/",
+			"http://www.basketball-reference.com/teams/TOR/2015/on-off/", "http://www.basketball-reference.com/teams/HOU/2015/on-off/",
+			"http://www.basketball-reference.com/teams/PHI/2015/on-off/", "http://www.basketball-reference.com/teams/SAS/2015/on-off/",
+			"http://www.basketball-reference.com/teams/PHO/2015/on-off/", "http://www.basketball-reference.com/teams/OKC/2015/on-off/",
+			"http://www.basketball-reference.com/teams/MIN/2015/on-off/", "http://www.basketball-reference.com/teams/POR/2015/on-off/",
+			"http://www.basketball-reference.com/teams/GSW/2015/on-off/", "http://www.basketball-reference.com/teams/WAS/2015/on-off/"]
+
+		url.each do |url|
+			doc = Nokogiri::HTML(open(url))
+			@var = 0
+			doc.css("td").each do |stat|
+				@var += 1
+				if @var == 1
+					@name = stat.text
+				end
+				if @var == 12
+					@pace = stat.text
+				end
+				if @var == 13
+					@ORtg = stat.text
+				end
+				if @var == 22
+					@opp_pace = stat.text
+				end
+				if @var == 23
+					@opp_ORtg = stat.text
+				end
+				if player = Player.find_by_name(@name)
+					player.update_attributes(:on_court_pace => @pace, :opp_on_court_pace => @opp_pace, :on_court_ORtg => @ORtg, :opp_on_court_ORtg => @opp_ORtg)
+				end
+				if @var == 100
+					if stat.text == ""
+						@var = 0
+					else
+						@var = 1
+						@name = stat.text
 					end
 				end
 			end
@@ -723,6 +753,15 @@ namespace :import do
 							@PF = stat.text.to_i
 						when 0
 							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
 							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
 								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
 								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
@@ -789,6 +828,15 @@ namespace :import do
 							@PF = stat.text.to_i
 						when 0
 							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
 							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
 								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
 								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
@@ -860,6 +908,15 @@ namespace :import do
 							@PF = stat.text.to_i
 						when 0
 							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
 							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
 								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
 								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
@@ -926,6 +983,15 @@ namespace :import do
 							@PF = stat.text.to_i
 						when 0
 							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
 							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
 								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
 								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)

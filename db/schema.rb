@@ -18,7 +18,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "name"
     t.string   "date"
     t.integer  "GS"
-    t.string   "MP"
+    t.float    "MP",                limit: 24
     t.integer  "FG"
     t.integer  "FGA"
     t.float    "FGP",               limit: 24
@@ -49,41 +49,39 @@ ActiveRecord::Schema.define(version: 20141028033011) do
 
   create_table "players", force: true do |t|
     t.integer  "team_id"
-    t.boolean  "starter",               default: false
+    t.boolean  "starter",                      default: false
     t.string   "name"
     t.string   "alias"
     t.string   "height"
     t.string   "position"
-    t.boolean  "forward",               default: false
-    t.boolean  "guard",                 default: false
+    t.boolean  "forward",                      default: false
+    t.boolean  "guard",                        default: false
     t.integer  "GS"
     t.integer  "MP"
     t.integer  "FG"
     t.integer  "FGA"
-    t.float    "FGP",        limit: 24
+    t.float    "FGP",               limit: 24
     t.integer  "ThP"
     t.integer  "ThPA"
-    t.float    "ThPP",       limit: 24
+    t.float    "ThPP",              limit: 24
     t.integer  "FT"
     t.integer  "FTA"
-    t.float    "FTP",        limit: 24
+    t.float    "FTP",               limit: 24
     t.integer  "ORB"
     t.integer  "DRB"
-    t.integer  "AST"
     t.integer  "STL"
-    t.integer  "BLK"
     t.integer  "TO"
     t.integer  "PF"
     t.integer  "PTS"
     t.integer  "ORtg"
     t.integer  "DRtg"
-    t.float    "eFG",        limit: 24
-    t.float    "TS",         limit: 24
-    t.float    "MP_1",       limit: 24
-    t.float    "MP_2",       limit: 24
-    t.float    "MP_3",       limit: 24
-    t.float    "MP_4",       limit: 24
-    t.float    "MP_5",       limit: 24
+    t.float    "eFG",               limit: 24
+    t.float    "TS",                limit: 24
+    t.float    "MP_1",              limit: 24
+    t.float    "MP_2",              limit: 24
+    t.float    "MP_3",              limit: 24
+    t.float    "MP_4",              limit: 24
+    t.float    "MP_5",              limit: 24
     t.string   "team_1"
     t.string   "team_2"
     t.string   "team_3"
@@ -94,9 +92,13 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "date_3"
     t.string   "date_4"
     t.string   "date_5"
-    t.integer  "MP_2014",               default: 0
-    t.integer  "ORtg_2014",             default: 0
-    t.integer  "DRtg_2014",             default: 0
+    t.integer  "MP_2014",                      default: 0
+    t.integer  "ORtg_2014",                    default: 0
+    t.integer  "DRtg_2014",                    default: 0
+    t.float    "on_court_pace",     limit: 24, default: 0.0
+    t.float    "opp_on_court_pace", limit: 24, default: 0.0
+    t.float    "on_court_ORtg",     limit: 24, default: 0.0
+    t.float    "opp_on_court_ORtg", limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -123,6 +125,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.float    "opp_ThPP",          limit: 24
     t.integer  "opp_ThPA"
     t.float    "pace",              limit: 24
+    t.integer  "rank"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

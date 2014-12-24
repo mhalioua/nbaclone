@@ -1,0 +1,44 @@
+<table>
+	<tr>
+		<th><NOBR>Name and Height</NOBR></th>
+		<th><NOBR>Date 1</NOBR></th>
+		<th><NOBR>Team 1</NOBR></th>
+		<th><NOBR>MP 1</NOBR></th>
+		<th><NOBR>Date 2</NOBR></th>
+		<th><NOBR>Team 2</NOBR></th>
+		<th><NOBR>MP 2</NOBR></th>
+		<th><NOBR>Date 3</NOBR></th>
+		<th><NOBR>Team 3</NOBR></th>
+		<th><NOBR>MP 3</NOBR></th>
+		<th><NOBR>Date 4</NOBR></th>
+		<th><NOBR>Team 4</NOBR></th>
+		<th><NOBR>MP 4</NOBR></th>
+		<th><NOBR>Date 5</NOBR></th>
+		<th><NOBR>Team 5</NOBR></th>
+		<th><NOBR>MP 5</NOBR></th>
+	</tr>
+	<% players.each do |player| %>
+		<tr>
+			<% if @var == "today" %>
+			<td><NOBR><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'today') + " " + player.height %></NOBR></td>
+			<% else %>
+			<td><NOBR><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'tomorrow') + " " + player.height %></NOBR></td>
+			<% end %>
+			<td><NOBR><%= player.date_1 %></NOBR></td>
+			<td><%= player.team_1 %></td>
+			<td bgcolor="#00FFFF"	><%= player.MP_1 %></td>
+			<td><NOBR><%= player.date_2 %></NOBR></td>
+			<td><%= player.team_2 %></td>
+			<td><%= player.MP_2 %></td>
+			<td><NOBR><%= player.date_3 %></NOBR></td>
+			<td><%= player.team_3 %></td>
+			<td><%= player.MP_3 %></td>
+			<td><NOBR><%= player.date_4 %></NOBR></td>
+			<td><%= player.team_4 %></td>
+			<td><%= player.MP_4 %></td>
+			<td><NOBR><%= player.date_5 %></NOBR></td>
+			<td><%= player.team_5 %></td>
+			<td><%= player.MP_5 %></td>
+		</tr>
+	<% end %>
+</table>

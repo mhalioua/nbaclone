@@ -69,12 +69,7 @@ class StatisticsController < ApplicationController
 			      	@id = game.player_matchup_id
 			      	@name = game.name
 			      	@GS = @GS + game.GS
-			      	text = game.MP
-			      	time = 0
-			      	index = text.index(":")
-					time = time + text[0..index-1].to_i * 60
-					time = time + text[index+1..-1].to_i
-			      	@MP = @MP + time
+			      	@MP = @MP + game.MP
 			      	@FG = @FG + game.FG
 			      	@FGA = @FGA + game.FGA
 			      	@ThP = @ThP + game.ThP
@@ -93,12 +88,7 @@ class StatisticsController < ApplicationController
 			    	@id_2 = game.player_matchup_id
 			      	@name_2 = game.name
 			      	@GS_2 = @GS_2 + game.GS
-			      	text = game.MP
-			      	time = 0
-			      	index = text.index(":")
-					time = time + text[0..index-1].to_i * 60
-					time = time + text[index+1..-1].to_i
-			      	@MP_2 = @MP_2 + time
+			      	@MP_2 = @MP_2 + game.MP
 			      	@FG_2 = @FG_2 + game.FG
 			      	@FGA_2 = @FGA_2 + game.FGA
 			      	@ThP_2 = @ThP_2 + game.ThP
@@ -142,29 +132,13 @@ class StatisticsController < ApplicationController
 	 			@FTP_2 = ((@FT_2.to_f/@FTA_2.to_f)*100).round(1)
 	 		end
 	 		@date = "Previous " + @size.to_s + " Games"
-	 		if !@MP.is_a?(Integer)
-	 			@MP = 0
-	 		end
-	 		minutes = (@MP/60).to_s
-	 		seconds = (@MP%60).to_s
-	 		if seconds.size == 1
-	 			seconds = "0" + seconds
-	 		end
-	 		@MP_S = minutes + ":" + seconds
-	 		if !@MP_2.is_a?(Integer)
-	 			@MP_2 = 0
-	 		end
-	 		minutes = (@MP_2/60).to_s
-	 		seconds = (@MP_2%60).to_s
-	 		if seconds.size == 1
-	 			seconds = "0" + seconds
-	 		end
-	 		@MP_2_S = minutes + ":" + seconds
+	 		@MP = @MP.round(2)
+	 		@MP_2 = @MP_2.round(2)
 	 		if @size != 0 && @size != 1
-		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :GS => @GS, :MP => @MP_S, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
+		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
 		 			:ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST,
 		 			:STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :GS => @GS_2, :MP => @MP_2_S, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
+		 		@total_2 = PlayerMatchupGame.new(:player_matchup_id => @id_2, :date => @date, :name => @name_2, :GS => @GS_2, :MP => @MP_2, :FG => @FG_2, :FGA => @FGA_2, :FGP => @FGP_2, :ThP => @ThP_2,
 		 			:ThPA => @ThPA_2, :ThPP => @ThPP_2, :FT => @FT_2, :FTA => @FTA_2, :FTP => @FTP_2, :ORB => @ORB_2, :DRB => @DRB_2, :AST => @AST_2,
 		 			:STL => @STL_2, :BLK => @BLK_2, :TO => @TO_2, :PF => @PF_2, :PTS => @PTS_2)
 		 		@game << @total
@@ -180,7 +154,6 @@ class StatisticsController < ApplicationController
  	end
 
  	def today
-
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = @home_team.today_team
  		@home_players = @home_team.player.where(:starter => true)
