@@ -57,6 +57,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.boolean  "forward",                      default: false
     t.boolean  "guard",                        default: false
     t.integer  "GS"
+    t.integer  "G"
     t.integer  "MP"
     t.integer  "FG"
     t.integer  "FGA"

@@ -10,6 +10,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.boolean "forward", :default => false
       t.boolean "guard", :default => false
       t.integer "GS"
+      t.integer "G"
       t.integer "MP"
       t.integer "FG"
       t.integer "FGA"

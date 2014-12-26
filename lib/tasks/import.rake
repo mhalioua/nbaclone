@@ -274,6 +274,12 @@ namespace :import do
 		require 'nokogiri'
 		require 'open-uri'
 
+		players = Player.all
+
+		players.each do |player|
+			player.destroy
+		end
+
 		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
 			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
 			"http://www.basketball-reference.com/teams/LAC/2015.html", "http://www.basketball-reference.com/teams/MEM/2015.html",
@@ -344,6 +350,8 @@ namespace :import do
 				case var%28
 				when 2
 					@name = player.text
+				when 4
+					@G = player.text.to_i
 				when 5
 					@GS = player.text.to_i
 				when 6
@@ -382,11 +390,11 @@ namespace :import do
 					@PTS = player.text.to_i
 					if player = Player.where(:name => @name, :team_id => index+1).first
 						if var <= 336
-							player.update_attributes(:starter => true, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
+							player.update_attributes(:starter => true, :GS => @GS, :G => @G, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
 								:ThPP => @ThPP, :eFG => @eFG, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :STL => @STL,
 								:TO => @TO, :PF => @PF, :PTS => @PTS)
 						else
-							player.update_attributes(:starter => false, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
+							player.update_attributes(:starter => false, :GS => @GS, :G => @G, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
 								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :STL => @STL,
 								:TO => @TO, :PF => @PF, :PTS => @PTS)
 						end
@@ -524,7 +532,6 @@ namespace :import do
 				end
 			end
 		end
-
 	end
 
 	task :starters => :environment do

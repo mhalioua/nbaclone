@@ -8,19 +8,25 @@
 		<th>On Court Opp Pace</th>
 		<th>On Court ORtg</th>
 		<th>On Court Opp ORtg</th>
-		<th><NOBR>Total MP 2014</NOBR></th>
-		<th><NOBR>ORtg 2014</NOBR></th>
-		<th><NOBR>DRtg 2014</NOBR></th>
-		<th>FG%</th>
-		<th>FGA</th>
-		<th><NOBR>FGA per MP</NOBR></th>
-		<th>3P%</th>
-		<th>3PA</th>
-		<th><NOBR>3PA per MP</NOBR></th>
-		<th>TO</th>
-		<th><NOBR>TO per MP</NOBR></th>
-		<th>ORB</th>
-		<th>PTS</th>
+		<th>Total MP 2014</th>
+		<th>ORtg 2014</th>
+		<th>DRtg 2014</th>
+		<th><NOBR>Date 1</NOBR></th>
+		<th><NOBR>Team 1</NOBR></th>
+		<th><NOBR>MP 1</NOBR></th>
+		<th><NOBR>Date 2</NOBR></th>
+		<th><NOBR>Team 2</NOBR></th>
+		<th><NOBR>MP 2</NOBR></th>
+		<th><NOBR>Date 3</NOBR></th>
+		<th><NOBR>Team 3</NOBR></th>
+		<th><NOBR>MP 3</NOBR></th>
+		<th><NOBR>Date 4</NOBR></th>
+		<th><NOBR>Team 4</NOBR></th>
+		<th><NOBR>MP 4</NOBR></th>
+		<th><NOBR>Date 5</NOBR></th>
+		<th><NOBR>Team 5</NOBR></th>
+		<th><NOBR>MP 5</NOBR></th>
+		<th>Position</th>
 	</tr>
 	<% players.each do |player| %>
 		<tr>
@@ -39,16 +45,22 @@
 			<td><%= player.MP_2014 %></td>
 			<td bgcolor="#00FFFF"><%= player.ORtg_2014 %></td>
 			<td bgcolor="#00FFFF"><%= player.DRtg_2014 %></td>
-			<td><%= player.FGP %></td>
-			<td><%= player.FGA %></td>
-			<td><%= (player.FGA.to_f/player.MP.to_f).round(2) %></td>
-			<td><%= player.ThPP %></td>
-			<td><%= player.ThPA %></td>
-			<td><%= (player.ThPA.to_f/player.MP.to_f).round(2) %></td>
-			<td><%= player.TO %></td>
-			<td><%= (player.TO.to_f/player.MP.to_f).round(2) %></td>
-			<td><%= player.ORB %></td>
-			<td><%= player.PTS %></td>
+			<td><NOBR><%= player.date_1 %></NOBR></td>
+			<td><%= player.team_1 %></td>
+			<td bgcolor="#00FFFF"><%= player.MP_1 %></td>
+			<td><NOBR><%= player.date_2 %></NOBR></td>
+			<td><%= player.team_2 %></td>
+			<td bgcolor="#00FFFF"><%= player.MP_2 %></td>
+			<td><NOBR><%= player.date_3 %></NOBR></td>
+			<td><%= player.team_3 %></td>
+			<td bgcolor="#00FFFF"><%= player.MP_3 %></td>
+			<td><NOBR><%= player.date_4 %></NOBR></td>
+			<td><%= player.team_4 %></td>
+			<td bgcolor="#00FFFF"><%= player.MP_4 %></td>
+			<td><NOBR><%= player.date_5 %></NOBR></td>
+			<td><%= player.team_5 %></td>
+			<td bgcolor="#00FFFF"><%= player.MP_5 %></td>
+			<td><%= player.position %></td>
 		</tr>
 	<% end %>
 </table>
