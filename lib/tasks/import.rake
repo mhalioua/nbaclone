@@ -38,7 +38,7 @@ namespace :import do
 		team = Team.where(:yesterday => true)
 		team.each do |team|
 			array << team
-			array << team.today_team
+			array << team.yesterday_team
 		end
 
 
@@ -1239,7 +1239,18 @@ namespace :import do
 
 
 	task :save => :environment do
-		
+		month = Date.today.strftime("%B")[0..2]
+		year = Date.today.strftime("%Y")
+		day = Time.now.strftime("%d")
+		if day[0] == "0"
+			day = day[1]
+		end
+		date = month + " " + day + " " + year
+		team = Team.where(:today => true)
+		team.each do |home|
+			away = home.today_team
+			home_players = home.player
+		end
 	end
 
 
