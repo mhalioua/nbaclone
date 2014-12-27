@@ -8,6 +8,9 @@ class StatisticsController < ApplicationController
 
 		@player = Player.find_by_id(params[:id])
 		@team = @player.team
+		if params[:day] == "yesterday"
+			@opp_team = @team.yesterday_team
+		end
 		if params[:day] == "today"
 			@opp_team = @team.today_team
 		end
@@ -153,21 +156,25 @@ class StatisticsController < ApplicationController
   		@players = @team.player
  	end
 
+ 	def yesterday
+ 		@home_team = Team.find_by_id(params[:id])
+ 		@away_team = @home_team.yesterday_team
+ 		@home_players = @home_team.player.where(:starter => true)
+ 		@away_players = @away_team.player.where(:starter => true)
+ 	end
+
  	def today
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = @home_team.today_team
  		@home_players = @home_team.player.where(:starter => true)
  		@away_players = @away_team.player.where(:starter => true)
-
  	end
 
  	def tomorrow
-
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = @home_team.tomorrow_team
  		@home_players = @home_team.player.where(:starter => true)
  		@away_players = @away_team.player.where(:starter => true)
-
  	end
 
 end

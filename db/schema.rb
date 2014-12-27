@@ -115,9 +115,6 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.boolean  "yesterday"
     t.boolean  "today"
     t.boolean  "tomorrow"
-    t.string   "opp_yesterday"
-    t.string   "opp_today"
-    t.string   "opp_tomorrow"
     t.integer  "G"
     t.integer  "PTS"
     t.float    "FGP",               limit: 24

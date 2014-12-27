@@ -18,12 +18,31 @@ namespace :import do
 		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
 		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
+
+	task :test => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+		url = "http://www.basketball-reference.com/leagues/NBA_2015_games.html"
+		doc = Nokogiri::HTML(open(url))
+
+		
+	end
+
 	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
-		team = Team.where(:today => true)
 		array = Array.new
+
+		team = Team.where(:yesterday => true)
+		team.each do |team|
+			array << team
+			array << team.today_team
+		end
+
+
+		team = Team.where(:today => true)
 		team.each do |team|
 			array << team
 			array << team.today_team
@@ -174,27 +193,27 @@ namespace :import do
 		end
 	end
 
-	task :ajax => :environment do
-		require 'capybara'
-		require 'capybara/poltergeist'
-		require 'open-uri'
-		require 'nokogiri'
+	# task :ajax => :environment do
+	# 	require 'capybara'
+	# 	require 'capybara/poltergeist'
+	# 	require 'open-uri'
+	# 	require 'nokogiri'
 
-		session = Capybara::Session.new(:poltergeist)
-		session.visit "http://www.teamrankings.com/nba/stat/fastbreak-efficiency"
-		counter = 0
-		while session.execute_script("return $.active").to_i > 0
-			counter += 1
-			sleep(3)
-			raise "AJAX request took longer than 5 seconds." if counter >= 50
-		end
+	# 	session = Capybara::Session.new(:poltergeist)
+	# 	session.visit "http://www.teamrankings.com/nba/stat/fastbreak-efficiency"
+	# 	counter = 0
+	# 	while session.execute_script("return $.active").to_i > 0
+	# 		counter += 1
+	# 		sleep(3)
+	# 		raise "AJAX request took longer than 5 seconds." if counter >= 50
+	# 	end
 
-		doc = Nokogiri::HTML(session.html)
-		doc.css(".sortable td").each do |item|
-			puts item.text
-		end
+	# 	doc = Nokogiri::HTML(session.html)
+	# 	doc.css(".sortable td").each do |item|
+	# 		puts item.text
+	# 	end
 
-	end
+	# end
 
 	task :create_teams => :environment do
 		team = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
@@ -642,6 +661,56 @@ namespace :import do
 			away_team.update_attributes(:tomorrow_team_id => home_team.id)
 		end
 
+		month = Date.yesterday.strftime("%B")[0..2]
+		day = Time.now.yesterday.strftime("%d")
+		if day[0] == "0"
+			day = day[1]
+		end
+		date = month + " " + day + ","
+		@bool = false
+		@var = 0
+		@home = Array.new
+		@away = Array.new
+		doc.css("#games a").each_with_index do |key, value|
+			if key.text.include? ","
+				date_bool = key.text.include? date
+				if date_bool
+					@bool = true
+				else
+					@bool = false
+				end
+			end
+			if @bool
+				if @var%4 == 2
+					@away << key.text
+				end
+				if @var%4 == 3
+					@home << key.text
+				end
+				@var = @var + 1
+			end
+		end
+
+		@home.zip(@away).each do |home, away|
+			last = home.rindex(" ") + 1
+			home = home[last..-1]
+			last = away.rindex(" ") + 1
+			away = away[last..-1]
+			if home == "Blazers"
+				home = "Trail " + home
+			end
+			if away == "Blazers"
+				away = "Trail " + away
+			end
+			home_team = Team.find_by_name(home)
+			away_team = Team.find_by_name(away)
+			puts home_team.name + " vs " + away_team.name
+			home_team.update_attributes(:yesterday => true, :yesterday_team_id => away_team.id)
+			away_team.update_attributes(:yesterday_team_id => home_team.id)
+		end
+
+
+
 	end
 
 	task :create_alias => :environment do
@@ -851,7 +920,162 @@ namespace :import do
 					end
 				end
 			end
-		end		
+		end
+
+		team = Team.where(:yesterday => true)
+		team.each do |team|
+			opp = team.yesterday_team
+			puts team.name + " vs " + opp.name
+			players = team.player.where(:starter => true, :forward => true)
+			opp_players = opp.player.where(:starter => true, :forward => true)
+			players.each do |player1|
+				opp_players.each do |player2|
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					puts player1.name + " vs " + player2.name
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
+						end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
+					end
+				end
+			end
+
+			players = team.player.where(:starter => true, :guard => true)
+			opp_players = opp.player.where(:starter => true, :guard => true)
+			players.each do |player1|
+				opp_players.each do |player2|
+					puts player1.name + " vs " + player2.name
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
+						end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
+					end
+				end
+			end
+		end				
 
 		team = Team.where(:tomorrow => true)
 		team.each do |team|
@@ -1008,4 +1232,26 @@ namespace :import do
 			end
 		end
 	end
+
+
+
+
+
+
+	task :save => :environment do
+		
+	end
+
+
+
+
+
+
+
+
+
+
+
+
+
 end

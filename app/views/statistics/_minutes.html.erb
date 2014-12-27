@@ -17,8 +17,10 @@
 		<tr>
 			<% if @var == "today" %>
 			<td><NOBR><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'today') + " " + player.height %></NOBR></td>
-			<% else %>
+			<% elsif @var == "tomorrow" %>
 			<td><NOBR><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'tomorrow') + " " + player.height %></NOBR></td>
+			<% else %>
+			<td><NOBR><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'yesterday') + " " + player.height %></NOBR></td>
 			<% end %>
 			<td><%= player.position %></td>
 			<td><%= player.FGP %></td>
