@@ -1237,7 +1237,6 @@ namespace :import do
 
 
 
-
 	task :save => :environment do
 		month = Date.today.strftime("%B")[0..2]
 		year = Date.today.strftime("%Y")
@@ -1250,6 +1249,9 @@ namespace :import do
 		team.each do |home|
 			away = home.today_team
 			home_players = home.player
+			away_players = away.player
+			home_players.each do |player|
+			end
 		end
 	end
 

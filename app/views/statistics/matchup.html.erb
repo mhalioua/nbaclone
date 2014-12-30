@@ -1,9 +1,10 @@
 <% @page_title = "#{@player.name}" %>
 <% if params[:day] == "today" %>
 <%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'today', :id => params[:team_id]) %>
-<% end %>
-<% if params[:day] == "tomorrow" %>
+<% elsif params[:day] == "tomorrow" %>
 <%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'tomorrow', :id => params[:team_id]) %>
+<% elsif params[:day] == "yesterday" %>
+<%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'yesterday', :id => params[:team_id]) %>
 <% end %>
 <h3> <%= @player.name + " Matchups"%> </h3>
 <%= render(:partial => 'matchup_table', :locals => {:game => @game}) %>
