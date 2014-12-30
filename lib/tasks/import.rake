@@ -23,87 +23,88 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		bool = false
-		home = false
-		away = false
-		days0 = false
-		days1 = false
-		days2 = false
-		days3 = false
-		sunday = false
-		monday = false
-		tuesday = false
-		wednesday = false
-		thursday = false
-		friday = false
-		saturday = false
-		atlanta = false
-		boston = false
-		brooklyn = false
-		charlotte = false
-		chicago = false
-		cleveland = false
-		dallas = false
-		denver = false
-		detroit = false
-		goldenstate = false
-		houston = false
-		indiana = false
-		laclippers = false
-		lalakers = false
-		memphis = false
-		miami = false
-		milwaukee = false
-		minnesota = false
-		neworleans = false
-		newyork = false
-		oklahomacity = false
-		orlando = false
-		philadelphia = false
-		phoenix = false
-		portland = false
-		sacramento = false
-		sanantonio = false
-		toronto = false
-		utah = false
-		washington = false
+		# bool = false
+		# home = false
+		# away = false
+		# days0 = false
+		# days1 = false
+		# days2 = false
+		# days3 = false
+		# sunday = false
+		# monday = false
+		# tuesday = false
+		# wednesday = false
+		# thursday = false
+		# friday = false
+		# saturday = false
+		# atlanta = false
+		# boston = false
+		# brooklyn = false
+		# charlotte = false
+		# chicago = false
+		# cleveland = false
+		# dallas = false
+		# denver = false
+		# detroit = false
+		# goldenstate = false
+		# houston = false
+		# indiana = false
+		# laclippers = false
+		# lalakers = false
+		# memphis = false
+		# miami = false
+		# milwaukee = false
+		# minnesota = false
+		# neworleans = false
+		# newyork = false
+		# oklahomacity = false
+		# orlando = false
+		# philadelphia = false
+		# phoenix = false
+		# portland = false
+		# sacramento = false
+		# sanantonio = false
+		# toronto = false
+		# utah = false
+		# washington = false
 
-		url = "http://www.basketball-reference.com/teams/MIL/2015/splits/"
+		# url = "http://www.basketball-reference.com/teams/MIL/2015/splits/"
 
-		@var = 0
-		doc = Nokogiri::HTML(open(url))
-		doc.css("td").each do |player|
-			@var += 1
-			if bool
-				case @var
-				when @var == 1
-					@G = player.text.to_i
-				when @var == 2
-				when @var == 3
-				when @var == 4
-				when @var == 5
-				when @var == 6
-				when @var == 7
-				when @var == 8
-				when @var == 9
-				end
-			end
-			if player.text == "Home"
-				@var = 0
-				home = true
-				bool = true
-			end
-			if player.text == "Road"
-				@var = 0
-				home = false
-				away = true
-			end
-		end
+		# @var = 0
+		# doc = Nokogiri::HTML(open(url))
+		# doc.css("td").each do |player|
+		# 	@var += 1
+		# 	if bool
+		# 		case @var
+		# 		when @var == 1
+		# 			@G = player.text.to_i
+		# 		when @var == 2
+		# 		when @var == 3
+		# 		when @var == 4
+		# 		when @var == 5
+		# 		when @var == 6
+		# 		when @var == 7
+		# 		when @var == 8
+		# 		when @var == 9
+		# 		when 
+		# 		end
+		# 	end
+		# 	if player.text == "Home"
+		# 		@var = 0
+		# 		home = true
+		# 		bool = true
+		# 	end
+		# 	if player.text == "Road"
+		# 		@var = 0
+		# 		home = false
+		# 		away = true
+		# 	end
+		# end
 
-		team = Team.all
-		team.each do |team|
-			puts team.city
-		end
+		# team = Team.all
+		# team.each do |team|
+		# 	puts team.city
+		# end
 		
 	end
 
