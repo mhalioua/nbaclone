@@ -256,11 +256,11 @@ namespace :import do
 
 		array = Array.new
 
-		team = Team.where(:yesterday => true)
-		team.each do |team|
-			array << team
-			array << team.yesterday_team
-		end
+		# team = Team.where(:yesterday => true)
+		# team.each do |team|
+		# 	array << team
+		# 	array << team.yesterday_team
+		# end
 
 
 		team = Team.where(:today => true)
