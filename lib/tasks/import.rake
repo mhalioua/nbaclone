@@ -23,88 +23,221 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		# bool = false
-		# home = false
-		# away = false
-		# days0 = false
-		# days1 = false
-		# days2 = false
-		# days3 = false
-		# sunday = false
-		# monday = false
-		# tuesday = false
-		# wednesday = false
-		# thursday = false
-		# friday = false
-		# saturday = false
-		# atlanta = false
-		# boston = false
-		# brooklyn = false
-		# charlotte = false
-		# chicago = false
-		# cleveland = false
-		# dallas = false
-		# denver = false
-		# detroit = false
-		# goldenstate = false
-		# houston = false
-		# indiana = false
-		# laclippers = false
-		# lalakers = false
-		# memphis = false
-		# miami = false
-		# milwaukee = false
-		# minnesota = false
-		# neworleans = false
-		# newyork = false
-		# oklahomacity = false
-		# orlando = false
-		# philadelphia = false
-		# phoenix = false
-		# portland = false
-		# sacramento = false
-		# sanantonio = false
-		# toronto = false
-		# utah = false
-		# washington = false
+		bool = false
+		home = false
+		away = false
+		days0 = false
+		days1 = false
+		days2 = false
+		days3 = false
+		sunday = false
+		monday = false
+		tuesday = false
+		wednesday = false
+		thursday = false
+		friday = false
+		saturday = false
+		yesterday = false
+		today = false
+		tomorrow = false
 
-		# url = "http://www.basketball-reference.com/teams/MIL/2015/splits/"
+		url = "http://www.basketball-reference.com/teams/MIL/2015/splits/"
 
-		# @var = 0
-		# doc = Nokogiri::HTML(open(url))
-		# doc.css("td").each do |player|
-		# 	@var += 1
-		# 	if bool
-		# 		case @var
-		# 		when @var == 1
-		# 			@G = player.text.to_i
-		# 		when @var == 2
-		# 		when @var == 3
-		# 		when @var == 4
-		# 		when @var == 5
-		# 		when @var == 6
-		# 		when @var == 7
-		# 		when @var == 8
-		# 		when @var == 9
-		# 		when 
-		# 		end
-		# 	end
-		# 	if player.text == "Home"
-		# 		@var = 0
-		# 		home = true
-		# 		bool = true
-		# 	end
-		# 	if player.text == "Road"
-		# 		@var = 0
-		# 		home = false
-		# 		away = true
-		# 	end
-		# end
+		@var = 0
+		doc = Nokogiri::HTML(open(url))
+		doc.css("td").each do |player|
+			@var += 1
+			if bool
+				case @var
+				when @var == 1
+					@G = player.text.to_i
+				when @var == 2
+					@W = player.text.to_i
+				when @var == 3
+					@L = player.text.to_i
+				when @var == 4
+					@FG = player.text.to_f
+				when @var == 5
+					@FGA = player.text.to_f
+				when @var == 6
+					@ThP = player.text.to_f
+				when @var == 7
+					@ThPA = player.text.to_f
+				when @var == 8
+					@FT = player.text.to_f
+				when @var == 9
+					@FTA = player.text.to_f
+				when @var == 10
+					@ORB = player.text.to_f
+				when @var == 11
+					@TRB = player.text.to_f
+				when @var == 12
+					@AST = player.text.to_f
+				when @var == 13
+					@STL = player.text.to_f
+				when @var == 14
+					@BLK = player.text.to_f
+				when @var == 15
+					@TOV = player.text.to_f
+				when @var == 16
+					@PF = player.text.to_f
+				when @var == 17
+					@PTS = player.text.to_f
+				when @var == 18
+					@opp_FG = player.text.to_f
+				when @var == 19
+					@opp_FGA = player.text.to_f
+				when @var == 20
+					@opp_ThP = player.text.to_f
+				when @var == 21
+					@opp_ThPA = player.text.to_f
+				when @var == 22
+					@opp_FT = player.text.to_f
+				when @var == 23
+					@opp_FTA = player.text.to_f
+				when @var == 24
+					@opp_ORB = player.text.to_f
+				when @var == 25
+					@opp_TRB = player.text.to_f
+				when @var == 26
+					@opp_AST = player.text.to_f
+				when @var == 27
+					@opp_STL = player.text.to_f
+				when @var == 28
+					@opp_BLK = player.text.to_f
+				when @var == 29
+					@opp_TOV = player.text.to_f
+				when @var == 30
+					@opp_PF = player.text.to_f
+				when @var == 31
+					@opp_PTS = player.text.to_f
+				end
+			end
+			if @var == 32
+				if home
+				end
+				if away
+				end
+				if days0
+				end
+				if days1
+				end
+				if days2
+				end
+				if days3
+				end
+				if sunday
+				end
+				if monday
+				end
+				if tuesday
+				end
+				if wednesday
+				end
+				if thursday
+				end
+				if friday
+				end
+				if saturday
+				end
+				if yesterday
+				end
+				if today
+				end
+				if tomorrow
+				end
 
-		# team = Team.all
-		# team.each do |team|
-		# 	puts team.city
-		# end
+			end
+
+
+
+
+
+
+
+			if player.text == "Home"
+				@var = 0
+				home = true
+				bool = true
+			end
+			if player.text == "Road"
+				@var = 0
+				home = false
+				away = true
+				bool = true
+			end
+			if player.text == "Sunday"
+				@var = 0
+				away = false
+				sunday = true
+				bool = true
+			end
+			if player.text == "Monday"
+				@var = 0
+				sunday = false
+				monday = true
+				bool = true
+			end
+			if player.text == "Tuesday"
+				@var = 0
+				monday = false
+				tuesday = true
+				bool = true
+			end
+			if player.text == "Wednesday"
+				@var = 0
+				tuesday = false
+				wednesday = true
+				bool = true
+			end
+			if player.text == "Thursday"
+				@var = 0
+				wednesday = false
+				thursday = true
+				bool = true
+			end
+			if player.text == "Friday"
+				@var = 0
+				thursday = false
+				friday = true
+				bool = true
+			end
+			if player.text == "Saturday"
+				@var = 0
+				friday = false
+				saturday = true
+				bool = true
+			end
+			if player.text == "0 Days"
+				@var = 0
+				saturday = false
+				days0 = true
+				bool = true
+			end
+			if player.text == "1 Day"
+				@var = 0
+				days0 = false
+				days1 = true
+				bool = true
+			end
+			if player.text == "2 Days"
+				@var = 0
+				days1 = false
+				days2 = true
+				bool = true
+			end
+			if player.text == "3+ Days"
+				@var = 0
+				days2 = false
+				days3 = true
+				bool = true
+			end
+
+
+
+
+
+		end
 		
 	end
 
