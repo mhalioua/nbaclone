@@ -153,28 +153,28 @@ class StatisticsController < ApplicationController
 
   	def team
   		@team = Team.find_by_id(params[:id])
-  		@players = @team.player
+  		@players = @team.player.order("MP DESC")
  	end
 
  	def yesterday
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = @home_team.yesterday_team
- 		@home_players = @home_team.player.where(:starter => true)
- 		@away_players = @away_team.player.where(:starter => true)
+ 		@home_players = @home_team.player.where(:starter => true).order("MP DESC")
+ 		@away_players = @away_team.player.where(:starter => true).order("MP DESC")
  	end
 
  	def today
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = @home_team.today_team
- 		@home_players = @home_team.player.where(:starter => true)
- 		@away_players = @away_team.player.where(:starter => true)
+ 		@home_players = @home_team.player.where(:starter => true).order("MP DESC")
+ 		@away_players = @away_team.player.where(:starter => true).order("MP DESC")
  	end
 
  	def tomorrow
  		@home_team = Team.find_by_id(params[:id])
  		@away_team = @home_team.tomorrow_team
- 		@home_players = @home_team.player.where(:starter => true)
- 		@away_players = @away_team.player.where(:starter => true)
+ 		@home_players = @home_team.player.where(:starter => true).order("MP DESC")
+ 		@away_players = @away_team.player.where(:starter => true).order("MP DESC")
  	end
 
 end

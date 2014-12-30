@@ -18,6 +18,15 @@ class CreateTeams < ActiveRecord::Migration
       t.integer "opp_ThPA"
       t.float "pace"
       t.integer "rank"
+      
+
+
+
+
+
+
+
+      
       t.timestamps
     end
     add_index("teams", "name")

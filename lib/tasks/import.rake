@@ -23,15 +23,102 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		url = "http://www.basketball-reference.com/leagues/NBA_2015_games.html"
-		doc = Nokogiri::HTML(open(url))
+		bool = false
+		home = false
+		away = false
+		days0 = false
+		days1 = false
+		days2 = false
+		days3 = false
+		sunday = false
+		monday = false
+		tuesday = false
+		wednesday = false
+		thursday = false
+		friday = false
+		saturday = false
+		atlanta = false
+		boston = false
+		brooklyn = false
+		charlotte = false
+		chicago = false
+		cleveland = false
+		dallas = false
+		denver = false
+		detroit = false
+		goldenstate = false
+		houston = false
+		indiana = false
+		laclippers = false
+		lalakers = false
+		memphis = false
+		miami = false
+		milwaukee = false
+		minnesota = false
+		neworleans = false
+		newyork = false
+		oklahomacity = false
+		orlando = false
+		philadelphia = false
+		phoenix = false
+		portland = false
+		sacramento = false
+		sanantonio = false
+		toronto = false
+		utah = false
+		washington = false
 
+		url = "http://www.basketball-reference.com/teams/MIL/2015/splits/"
+
+		@var = 0
+		doc = Nokogiri::HTML(open(url))
+		doc.css("td").each do |player|
+			@var += 1
+			if bool
+				case @var
+				when @var == 1
+					@G = player.text.to_i
+				when @var == 2
+				when @var == 3
+				when @var == 4
+				when @var == 5
+				when @var == 6
+				when @var == 7
+				when @var == 8
+				when @var == 9
+				end
+			end
+			if player.text == "Home"
+				@var = 0
+				home = true
+				bool = true
+			end
+			if player.text == "Road"
+				@var = 0
+				home = false
+				away = true
+			end
+		end
+
+		team = Team.all
+		team.each do |team|
+			puts team.city
+		end
 		
 	end
 
 	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
+
+		teamname = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
+				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
+				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trail Blazers", "Warriors", "Wizards"]
+
+		nickname = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHO", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
+			"DEN", "IND", "NOP", "DET", "TOR", "HOU", "PHI", "SAS", "PHO", "OKC", "MIN", "POR", "GSW", "WAS"]
+
+		hash = Hash[nickname.map.with_index.to_a]
 
 		array = Array.new
 
@@ -80,7 +167,7 @@ namespace :import do
 				@team_5 = "N/A"
 
 				@var = 0
-				doc.css("#pgl_basic td").each_with_index do |player, index|
+				doc.css("#pgl_basic td").each do |player|
 					@var = @var + 1
 					if @var%30 == 3
 						@date_5 = @date_4
@@ -88,6 +175,9 @@ namespace :import do
 						@date_3 = @date_2
 						@date_2 = @date_1
 						@date_1 = player.text
+					end
+					if @var%30 == 5
+						@team = player.text
 					end
 					if @var%30 == 7
 						@team_5 = @team_4
@@ -143,9 +233,12 @@ namespace :import do
 				seconds = @MP_1[var2..-1].to_f/60
 				@MP_1 = (minutes + seconds).round(2)
 
+				@team = teamname[hash[@team]]
+				@team = Team.find_by_name(@team)
 
 				baller = Player.find_by_name(player.name)
-				baller.update_attributes(:MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
+				puts player.name
+				baller.update_attributes(:team_id => @team.id, :MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
 					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
 					:date_5 => @date_5[5..-1], :team_1 => @team_1, :team_2 => @team_2, :team_3 => @team_3, :team_4 => @team_4, :team_5 => @team_5)
 			end
@@ -192,28 +285,6 @@ namespace :import do
 			end
 		end
 	end
-
-	# task :ajax => :environment do
-	# 	require 'capybara'
-	# 	require 'capybara/poltergeist'
-	# 	require 'open-uri'
-	# 	require 'nokogiri'
-
-	# 	session = Capybara::Session.new(:poltergeist)
-	# 	session.visit "http://www.teamrankings.com/nba/stat/fastbreak-efficiency"
-	# 	counter = 0
-	# 	while session.execute_script("return $.active").to_i > 0
-	# 		counter += 1
-	# 		sleep(3)
-	# 		raise "AJAX request took longer than 5 seconds." if counter >= 50
-	# 	end
-
-	# 	doc = Nokogiri::HTML(session.html)
-	# 	doc.css(".sortable td").each do |item|
-	# 		puts item.text
-	# 	end
-
-	# end
 
 	task :create_teams => :environment do
 		team = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
@@ -287,17 +358,63 @@ namespace :import do
 			@var += 1
 			team.update_attributes(:rank => @var)
 		end
+
+
+		url = ["http://www.basketball-reference.com/teams/MIL/2015/splits/", "http://www.basketball-reference.com/teams/CHI/2015/splits/",
+			"http://www.basketball-reference.com/teams/CLE/2015/splits/", "http://www.basketball-reference.com/teams/BOS/2015/splits/",
+			"http://www.basketball-reference.com/teams/LAC/2015/splits/", "http://www.basketball-reference.com/teams/MEM/2015/splits/",
+			"http://www.basketball-reference.com/teams/ATL/2015/splits/", "http://www.basketball-reference.com/teams/MIA/2015/splits/",
+		    "http://www.basketball-reference.com/teams/CHO/2015/splits/", "http://www.basketball-reference.com/teams/UTA/2015/splits/",
+		    "http://www.basketball-reference.com/teams/SAC/2015/splits/", "http://www.basketball-reference.com/teams/NYK/2015/splits/",
+		    "http://www.basketball-reference.com/teams/LAL/2015/splits/", "http://www.basketball-reference.com/teams/ORL/2015/splits/",
+		    "http://www.basketball-reference.com/teams/DAL/2015/splits/", "http://www.basketball-reference.com/teams/BRK/2015/splits/",
+			"http://www.basketball-reference.com/teams/DEN/2015/splits/", "http://www.basketball-reference.com/teams/IND/2015/splits/",
+			"http://www.basketball-reference.com/teams/NOP/2015/splits/", "http://www.basketball-reference.com/teams/DET/2015/splits/",
+			"http://www.basketball-reference.com/teams/TOR/2015/splits/", "http://www.basketball-reference.com/teams/HOU/2015/splits/",
+			"http://www.basketball-reference.com/teams/PHI/2015/splits/", "http://www.basketball-reference.com/teams/SAS/2015/splits/",
+			"http://www.basketball-reference.com/teams/PHO/2015/splits/", "http://www.basketball-reference.com/teams/OKC/2015/splits/",
+			"http://www.basketball-reference.com/teams/MIN/2015/splits/", "http://www.basketball-reference.com/teams/POR/2015/splits/",
+			"http://www.basketball-reference.com/teams/GSW/2015/splits/", "http://www.basketball-reference.com/teams/WAS/2015/splits/"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	end
 
 	task :create_players => :environment do
 		require 'nokogiri'
 		require 'open-uri'
-
-		players = Player.all
-
-		players.each do |player|
-			player.destroy
-		end
 
 		url = ["http://www.basketball-reference.com/teams/MIL/2015.html", "http://www.basketball-reference.com/teams/CHI/2015.html",
 			"http://www.basketball-reference.com/teams/CLE/2015.html", "http://www.basketball-reference.com/teams/BOS/2015.html",
@@ -681,10 +798,10 @@ namespace :import do
 				end
 			end
 			if @bool
-				if @var%4 == 2
+				if @var%3 == 1
 					@away << key.text
 				end
-				if @var%4 == 3
+				if @var%3 == 2
 					@home << key.text
 				end
 				@var = @var + 1
