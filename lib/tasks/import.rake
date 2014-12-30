@@ -912,53 +912,53 @@ namespace :import do
 			away_team.update_attributes(:tomorrow_team_id => home_team.id)
 		end
 
-		month = Date.yesterday.strftime("%B")[0..2]
-		day = Time.now.yesterday.strftime("%d")
-		if day[0] == "0"
-			day = day[1]
-		end
-		date = month + " " + day + ","
-		@bool = false
-		@var = 0
-		@home = Array.new
-		@away = Array.new
-		doc.css("#games a").each_with_index do |key, value|
-			if key.text.include? ","
-				date_bool = key.text.include? date
-				if date_bool
-					@bool = true
-				else
-					@bool = false
-				end
-			end
-			if @bool
-				if @var%3 == 1
-					@away << key.text
-				end
-				if @var%3 == 2
-					@home << key.text
-				end
-				@var = @var + 1
-			end
-		end
+		# month = Date.yesterday.strftime("%B")[0..2]
+		# day = Time.now.yesterday.strftime("%d")
+		# if day[0] == "0"
+		# 	day = day[1]
+		# end
+		# date = month + " " + day + ","
+		# @bool = false
+		# @var = 0
+		# @home = Array.new
+		# @away = Array.new
+		# doc.css("#games a").each_with_index do |key, value|
+		# 	if key.text.include? ","
+		# 		date_bool = key.text.include? date
+		# 		if date_bool
+		# 			@bool = true
+		# 		else
+		# 			@bool = false
+		# 		end
+		# 	end
+		# 	if @bool
+		# 		if @var%3 == 1
+		# 			@away << key.text
+		# 		end
+		# 		if @var%3 == 2
+		# 			@home << key.text
+		# 		end
+		# 		@var = @var + 1
+		# 	end
+		# end
 
-		@home.zip(@away).each do |home, away|
-			last = home.rindex(" ") + 1
-			home = home[last..-1]
-			last = away.rindex(" ") + 1
-			away = away[last..-1]
-			if home == "Blazers"
-				home = "Trail " + home
-			end
-			if away == "Blazers"
-				away = "Trail " + away
-			end
-			home_team = Team.find_by_name(home)
-			away_team = Team.find_by_name(away)
-			puts home_team.name + " vs " + away_team.name
-			home_team.update_attributes(:yesterday => true, :yesterday_team_id => away_team.id)
-			away_team.update_attributes(:yesterday_team_id => home_team.id)
-		end
+		# @home.zip(@away).each do |home, away|
+		# 	last = home.rindex(" ") + 1
+		# 	home = home[last..-1]
+		# 	last = away.rindex(" ") + 1
+		# 	away = away[last..-1]
+		# 	if home == "Blazers"
+		# 		home = "Trail " + home
+		# 	end
+		# 	if away == "Blazers"
+		# 		away = "Trail " + away
+		# 	end
+		# 	home_team = Team.find_by_name(home)
+		# 	away_team = Team.find_by_name(away)
+		# 	puts home_team.name + " vs " + away_team.name
+		# 	home_team.update_attributes(:yesterday => true, :yesterday_team_id => away_team.id)
+		# 	away_team.update_attributes(:yesterday_team_id => home_team.id)
+		# end
 
 
 
