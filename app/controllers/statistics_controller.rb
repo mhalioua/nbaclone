@@ -153,7 +153,7 @@ class StatisticsController < ApplicationController
 
   	def team
   		@team = Team.find_by_id(params[:id])
-  		@players = @team.player.order("MP DESC")
+  		@players = @team.player
  	end
 
  	def yesterday
