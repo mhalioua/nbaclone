@@ -18,3 +18,221 @@
 		<td><%= team.pace.to_s + " - " + team.rank.ordinalize + " of 30" %></td>
 	</tr>
 </table>
+</br>
+<table>
+	<tr>
+		<th></th>
+		<th colspan="6" style="text-align:center">Team</th>
+		<th colspan="6" style="text-align:center">Opponent</th>
+	</tr>
+	<tr>
+		<th></th>
+		<th>FG</th>
+		<th>FGA</th>
+		<th>FGP</th>
+		<th>FTA</th>
+		<th>TOV</th>
+		<th>PTS</th>
+		<th>FG</th>
+		<th>FGA</th>
+		<th>FGP</th>
+		<th>FTA</th>
+		<th>TOV</th>
+		<th>PTS</th>
+	</tr>
+	<tr>
+		<td>Home</td>
+		<td><%= team.home_FG %></td>
+		<td><%= team.home_FGA %></td>
+		<td><%= (team.home_FG/team.home_FGA).round(2) %></td>
+		<td><%= team.home_FTA %></td>
+		<td><%= team.home_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.home_PTS %></td>
+		<td><%= team.home_opp_FG %></td>
+		<td><%= team.home_opp_FGA %></td>
+		<td><%= (team.home_opp_FG/team.home_opp_FGA).round(2) %></td>
+		<td><%= team.home_opp_FTA %></td>
+		<td><%= team.home_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.home_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Away</td>
+		<td><%= team.away_FG %></td>
+		<td><%= team.away_FGA %></td>
+		<td><%= (team.away_FG/team.away_FGA).round(2)%></td>
+		<td><%= team.away_FTA %></td>
+		<td><%= team.away_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.away_PTS %></td>
+		<td><%= team.away_opp_FG %></td>
+		<td><%= team.away_opp_FGA %></td>
+		<td><%= (team.away_opp_FG/team.away_opp_FGA).round(2) %></td>
+		<td><%= team.away_opp_FTA %></td>
+		<td><%= team.away_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.away_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Sun</td>
+		<td><%= team.sun_FG %></td>
+		<td><%= team.sun_FGA %></td>
+		<td><%= (team.sun_FG/team.sun_FGA).round(2)%></td>
+		<td><%= team.sun_FTA %></td>
+		<td><%= team.sun_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.sun_PTS %></td>
+		<td><%= team.sun_opp_FG %></td>
+		<td><%= team.sun_opp_FGA %></td>
+		<td><%= (team.sun_opp_FG/team.sun_opp_FGA).round(2) %></td>
+		<td><%= team.sun_opp_FTA %></td>
+		<td><%= team.sun_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.sun_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Mon</td>
+		<td><%= team.mon_FG %></td>
+		<td><%= team.mon_FGA %></td>
+		<td><%= (team.mon_FG/team.mon_FGA).round(2)%></td>
+		<td><%= team.mon_FTA %></td>
+		<td><%= team.mon_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.mon_PTS %></td>
+		<td><%= team.mon_opp_FG %></td>
+		<td><%= team.mon_opp_FGA %></td>
+		<td><%= (team.mon_opp_FG/team.mon_opp_FGA).round(2) %></td>
+		<td><%= team.mon_opp_FTA %></td>
+		<td><%= team.mon_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.mon_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Tue</td>
+		<td><%= team.tue_FG %></td>
+		<td><%= team.tue_FGA %></td>
+		<td><%= (team.tue_FG/team.tue_FGA).round(2)%></td>
+		<td><%= team.tue_FTA %></td>
+		<td><%= team.tue_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.tue_PTS %></td>
+		<td><%= team.tue_opp_FG %></td>
+		<td><%= team.tue_opp_FGA %></td>
+		<td><%= (team.tue_opp_FG/team.tue_opp_FGA).round(2) %></td>
+		<td><%= team.tue_opp_FTA %></td>
+		<td><%= team.tue_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.tue_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Wed</td>
+		<td><%= team.wed_FG %></td>
+		<td><%= team.wed_FGA %></td>
+		<td><%= (team.wed_FG/team.wed_FGA).round(2)%></td>
+		<td><%= team.wed_FTA %></td>
+		<td><%= team.wed_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.wed_PTS %></td>
+		<td><%= team.wed_opp_FG %></td>
+		<td><%= team.wed_opp_FGA %></td>
+		<td><%= (team.wed_opp_FG/team.wed_opp_FGA).round(2) %></td>
+		<td><%= team.wed_opp_FTA %></td>
+		<td><%= team.wed_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.wed_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Thu</td>
+		<td><%= team.thu_FG %></td>
+		<td><%= team.thu_FGA %></td>
+		<td><%= (team.thu_FG/team.thu_FGA).round(2)%></td>
+		<td><%= team.thu_FTA %></td>
+		<td><%= team.thu_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.thu_PTS %></td>
+		<td><%= team.thu_opp_FG %></td>
+		<td><%= team.thu_opp_FGA %></td>
+		<td><%= (team.thu_opp_FG/team.thu_opp_FGA).round(2) %></td>
+		<td><%= team.thu_opp_FTA %></td>
+		<td><%= team.thu_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.thu_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Fri</td>
+		<td><%= team.fri_FG %></td>
+		<td><%= team.fri_FGA %></td>
+		<td><%= (team.fri_FG/team.fri_FGA).round(2)%></td>
+		<td><%= team.fri_FTA %></td>
+		<td><%= team.fri_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.fri_PTS %></td>
+		<td><%= team.fri_opp_FG %></td>
+		<td><%= team.fri_opp_FGA %></td>
+		<td><%= (team.fri_opp_FG/team.fri_opp_FGA).round(2) %></td>
+		<td><%= team.fri_opp_FTA %></td>
+		<td><%= team.fri_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.fri_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>Sat</td>
+		<td><%= team.sat_FG %></td>
+		<td><%= team.sat_FGA %></td>
+		<td><%= (team.sat_FG/team.sat_FGA).round(2)%></td>
+		<td><%= team.sat_FTA %></td>
+		<td><%= team.sat_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.sat_PTS %></td>
+		<td><%= team.sat_opp_FG %></td>
+		<td><%= team.sat_opp_FGA %></td>
+		<td><%= (team.sat_opp_FG/team.sat_opp_FGA).round(2) %></td>
+		<td><%= team.sat_opp_FTA %></td>
+		<td><%= team.sat_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.sat_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>0 Days</td>
+		<td><%= team.zero_FG %></td>
+		<td><%= team.zero_FGA %></td>
+		<td><%= (team.zero_FG/team.zero_FGA).round(2)%></td>
+		<td><%= team.zero_FTA %></td>
+		<td><%= team.zero_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.zero_PTS %></td>
+		<td><%= team.zero_opp_FG %></td>
+		<td><%= team.zero_opp_FGA %></td>
+		<td><%= (team.zero_opp_FG/team.zero_opp_FGA).round(2) %></td>
+		<td><%= team.zero_opp_FTA %></td>
+		<td><%= team.zero_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.zero_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>1 Day</td>
+		<td><%= team.one_FG %></td>
+		<td><%= team.one_FGA %></td>
+		<td><%= (team.one_FG/team.one_FGA).round(2)%></td>
+		<td><%= team.one_FTA %></td>
+		<td><%= team.one_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.one_PTS %></td>
+		<td><%= team.one_opp_FG %></td>
+		<td><%= team.one_opp_FGA %></td>
+		<td><%= (team.one_opp_FG/team.one_opp_FGA).round(2) %></td>
+		<td><%= team.one_opp_FTA %></td>
+		<td><%= team.one_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.one_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>2 Days</td>
+		<td><%= team.two_FG %></td>
+		<td><%= team.two_FGA %></td>
+		<td><%= (team.two_FG/team.two_FGA).round(2)%></td>
+		<td><%= team.two_FTA %></td>
+		<td><%= team.two_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.two_PTS %></td>
+		<td><%= team.two_opp_FG %></td>
+		<td><%= team.two_opp_FGA %></td>
+		<td><%= (team.two_opp_FG/team.two_opp_FGA).round(2) %></td>
+		<td><%= team.two_opp_FTA %></td>
+		<td><%= team.two_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.two_opp_PTS %></td>
+	</tr>
+	<tr>
+		<td>3+ Days</td>
+		<td><%= team.three_FG %></td>
+		<td><%= team.three_FGA %></td>
+		<td><%= (team.three_FG/team.three_FGA).round(2)%></td>
+		<td><%= team.three_FTA %></td>
+		<td><%= team.three_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.three_PTS %></td>
+		<td><%= team.three_opp_FG %></td>
+		<td><%= team.three_opp_FGA %></td>
+		<td><%= (team.three_opp_FG/team.three_opp_FGA).round(2) %></td>
+		<td><%= team.three_opp_FTA %></td>
+		<td><%= team.three_opp_TOV %></td>
+		<td bgcolor="#00FFFF"><%= team.three_opp_PTS %></td>
+	</tr>
+</table>

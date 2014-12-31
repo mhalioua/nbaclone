@@ -23,227 +23,14 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		bool = false
-		home = false
-		away = false
-		days0 = false
-		days1 = false
-		days2 = false
-		days3 = false
-		sunday = false
-		monday = false
-		tuesday = false
-		wednesday = false
-		thursday = false
-		friday = false
-		saturday = false
-		yesterday = false
-		today = false
-		tomorrow = false
 
-		url = "http://www.basketball-reference.com/teams/MIL/2015/splits/"
-
-		@var = 0
-		doc = Nokogiri::HTML(open(url))
-		doc.css("td").each do |player|
-			@var += 1
-			if bool
-				case @var
-				when @var == 1
-					@G = player.text.to_i
-				when @var == 2
-					@W = player.text.to_i
-				when @var == 3
-					@L = player.text.to_i
-				when @var == 4
-					@FG = player.text.to_f
-				when @var == 5
-					@FGA = player.text.to_f
-				when @var == 6
-					@ThP = player.text.to_f
-				when @var == 7
-					@ThPA = player.text.to_f
-				when @var == 8
-					@FT = player.text.to_f
-				when @var == 9
-					@FTA = player.text.to_f
-				when @var == 10
-					@ORB = player.text.to_f
-				when @var == 11
-					@TRB = player.text.to_f
-				when @var == 12
-					@AST = player.text.to_f
-				when @var == 13
-					@STL = player.text.to_f
-				when @var == 14
-					@BLK = player.text.to_f
-				when @var == 15
-					@TOV = player.text.to_f
-				when @var == 16
-					@PF = player.text.to_f
-				when @var == 17
-					@PTS = player.text.to_f
-				when @var == 18
-					@opp_FG = player.text.to_f
-				when @var == 19
-					@opp_FGA = player.text.to_f
-				when @var == 20
-					@opp_ThP = player.text.to_f
-				when @var == 21
-					@opp_ThPA = player.text.to_f
-				when @var == 22
-					@opp_FT = player.text.to_f
-				when @var == 23
-					@opp_FTA = player.text.to_f
-				when @var == 24
-					@opp_ORB = player.text.to_f
-				when @var == 25
-					@opp_TRB = player.text.to_f
-				when @var == 26
-					@opp_AST = player.text.to_f
-				when @var == 27
-					@opp_STL = player.text.to_f
-				when @var == 28
-					@opp_BLK = player.text.to_f
-				when @var == 29
-					@opp_TOV = player.text.to_f
-				when @var == 30
-					@opp_PF = player.text.to_f
-				when @var == 31
-					@opp_PTS = player.text.to_f
-				end
-			end
-			if @var == 32
-				if home
-				end
-				if away
-				end
-				if days0
-				end
-				if days1
-				end
-				if days2
-				end
-				if days3
-				end
-				if sunday
-				end
-				if monday
-				end
-				if tuesday
-				end
-				if wednesday
-				end
-				if thursday
-				end
-				if friday
-				end
-				if saturday
-				end
-				if yesterday
-				end
-				if today
-				end
-				if tomorrow
-				end
-
-			end
-
-
-
-
-
-
-
-			if player.text == "Home"
-				@var = 0
-				home = true
-				bool = true
-			end
-			if player.text == "Road"
-				@var = 0
-				home = false
-				away = true
-				bool = true
-			end
-			if player.text == "Sunday"
-				@var = 0
-				away = false
-				sunday = true
-				bool = true
-			end
-			if player.text == "Monday"
-				@var = 0
-				sunday = false
-				monday = true
-				bool = true
-			end
-			if player.text == "Tuesday"
-				@var = 0
-				monday = false
-				tuesday = true
-				bool = true
-			end
-			if player.text == "Wednesday"
-				@var = 0
-				tuesday = false
-				wednesday = true
-				bool = true
-			end
-			if player.text == "Thursday"
-				@var = 0
-				wednesday = false
-				thursday = true
-				bool = true
-			end
-			if player.text == "Friday"
-				@var = 0
-				thursday = false
-				friday = true
-				bool = true
-			end
-			if player.text == "Saturday"
-				@var = 0
-				friday = false
-				saturday = true
-				bool = true
-			end
-			if player.text == "0 Days"
-				@var = 0
-				saturday = false
-				days0 = true
-				bool = true
-			end
-			if player.text == "1 Day"
-				@var = 0
-				days0 = false
-				days1 = true
-				bool = true
-			end
-			if player.text == "2 Days"
-				@var = 0
-				days1 = false
-				days2 = true
-				bool = true
-			end
-			if player.text == "3+ Days"
-				@var = 0
-				days2 = false
-				days3 = true
-				bool = true
-			end
-
-
-
-
-
-		end
-		
 	end
 
 	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
+
+		# set of arrays that would allow me to find their respective teams through their nicknames
 
 		teamname = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
 				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
@@ -256,12 +43,11 @@ namespace :import do
 
 		array = Array.new
 
-		# team = Team.where(:yesterday => true)
-		# team.each do |team|
-		# 	array << team
-		# 	array << team.yesterday_team
-		# end
-
+		team = Team.where(:yesterday => true) # Find all relevant teams and put them into an array
+		team.each do |team|
+			array << team
+			array << team.yesterday_team
+		end
 
 		team = Team.where(:today => true)
 		team.each do |team|
@@ -275,7 +61,7 @@ namespace :import do
 			array << team.tomorrow_team
 		end
 
-		array = array.uniq
+		array = array.uniq # Don't work through teams twice
 
 		array.each do |team|
 			players = team.player.where(:starter => true)
@@ -301,7 +87,7 @@ namespace :import do
 				@team_5 = "N/A"
 
 				@var = 0
-				doc.css("#pgl_basic td").each do |player|
+				doc.css("#pgl_basic td").each do |player| # Iterate through array, and pass through each game until the last five games are reached. Would be more efficient to iterate backwards
 					@var = @var + 1
 					if @var%30 == 3
 						@date_5 = @date_4
@@ -320,7 +106,7 @@ namespace :import do
 						@team_2 = @team_1
 						@team_1 = player.text
 					end
-					if player.text == "Inactive" || player.text == "Did Not Play" || player.text == "Player Suspended"
+					if player.text == "Inactive" || player.text == "Did Not Play" || player.text == "Player Suspended" # Count the games that they did not played and put zero minutes
 						@var = 0
 						@MP_5 = @MP_4
 						@MP_4 = @MP_3
@@ -494,56 +280,312 @@ namespace :import do
 		end
 
 
-		# url = ["http://www.basketball-reference.com/teams/MIL/2015/splits/", "http://www.basketball-reference.com/teams/CHI/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/CLE/2015/splits/", "http://www.basketball-reference.com/teams/BOS/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/LAC/2015/splits/", "http://www.basketball-reference.com/teams/MEM/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/ATL/2015/splits/", "http://www.basketball-reference.com/teams/MIA/2015/splits/",
-		#     "http://www.basketball-reference.com/teams/CHO/2015/splits/", "http://www.basketball-reference.com/teams/UTA/2015/splits/",
-		#     "http://www.basketball-reference.com/teams/SAC/2015/splits/", "http://www.basketball-reference.com/teams/NYK/2015/splits/",
-		#     "http://www.basketball-reference.com/teams/LAL/2015/splits/", "http://www.basketball-reference.com/teams/ORL/2015/splits/",
-		#     "http://www.basketball-reference.com/teams/DAL/2015/splits/", "http://www.basketball-reference.com/teams/BRK/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/DEN/2015/splits/", "http://www.basketball-reference.com/teams/IND/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/NOP/2015/splits/", "http://www.basketball-reference.com/teams/DET/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/TOR/2015/splits/", "http://www.basketball-reference.com/teams/HOU/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/PHI/2015/splits/", "http://www.basketball-reference.com/teams/SAS/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/PHO/2015/splits/", "http://www.basketball-reference.com/teams/OKC/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/MIN/2015/splits/", "http://www.basketball-reference.com/teams/POR/2015/splits/",
-		# 	"http://www.basketball-reference.com/teams/GSW/2015/splits/", "http://www.basketball-reference.com/teams/WAS/2015/splits/"]
+		url = ["http://www.basketball-reference.com/teams/MIL/2015/splits/", "http://www.basketball-reference.com/teams/CHI/2015/splits/",
+			"http://www.basketball-reference.com/teams/CLE/2015/splits/", "http://www.basketball-reference.com/teams/BOS/2015/splits/",
+			"http://www.basketball-reference.com/teams/LAC/2015/splits/", "http://www.basketball-reference.com/teams/MEM/2015/splits/",
+			"http://www.basketball-reference.com/teams/ATL/2015/splits/", "http://www.basketball-reference.com/teams/MIA/2015/splits/",
+		    "http://www.basketball-reference.com/teams/CHO/2015/splits/", "http://www.basketball-reference.com/teams/UTA/2015/splits/",
+		    "http://www.basketball-reference.com/teams/SAC/2015/splits/", "http://www.basketball-reference.com/teams/NYK/2015/splits/",
+		    "http://www.basketball-reference.com/teams/LAL/2015/splits/", "http://www.basketball-reference.com/teams/ORL/2015/splits/",
+		    "http://www.basketball-reference.com/teams/DAL/2015/splits/", "http://www.basketball-reference.com/teams/BRK/2015/splits/",
+			"http://www.basketball-reference.com/teams/DEN/2015/splits/", "http://www.basketball-reference.com/teams/IND/2015/splits/",
+			"http://www.basketball-reference.com/teams/NOP/2015/splits/", "http://www.basketball-reference.com/teams/DET/2015/splits/",
+			"http://www.basketball-reference.com/teams/TOR/2015/splits/", "http://www.basketball-reference.com/teams/HOU/2015/splits/",
+			"http://www.basketball-reference.com/teams/PHI/2015/splits/", "http://www.basketball-reference.com/teams/SAS/2015/splits/",
+			"http://www.basketball-reference.com/teams/PHO/2015/splits/", "http://www.basketball-reference.com/teams/OKC/2015/splits/",
+			"http://www.basketball-reference.com/teams/MIN/2015/splits/", "http://www.basketball-reference.com/teams/POR/2015/splits/",
+			"http://www.basketball-reference.com/teams/GSW/2015/splits/", "http://www.basketball-reference.com/teams/WAS/2015/splits/"]
 
 
+		url.each_with_index do |url, index|
+			#initiate all the boolean variables
+			bool = false
+			home = false
+			away = false
+			days0 = false
+			days1 = false
+			days2 = false
+			days3 = false
+			sunday = false
+			monday = false
+			tuesday = false
+			wednesday = false
+			thursday = false
+			friday = false
+			saturday = false
+			yesterday = false
+			today = false
+			tomorrow = false
+			@var = 0
+			doc = Nokogiri::HTML(open(url))
+			team = Team.find_by_id(index+1)
+			doc.css("td").each do |stat|
+				@var += 1
+				if bool
+					case @var
+					when 1
+						@G = stat.text.to_i
+					when 2
+						@W = stat.text.to_i
+					when 3
+						@L = stat.text.to_i
+					when 4
+						@FG = stat.text.to_f
+					when 5
+						@FGA = stat.text.to_f
+					when 6
+						@ThP = stat.text.to_f
+					when 7
+						@ThPA = stat.text.to_f
+					when 8
+						@FT = stat.text.to_f
+					when 9
+						@FTA = stat.text.to_f
+					when 10
+						@ORB = stat.text.to_f
+					when 11
+						@TRB = stat.text.to_f
+					when 12
+						@AST = stat.text.to_f
+					when 13
+						@STL = stat.text.to_f
+					when 14
+						@BLK = stat.text.to_f
+					when 15
+						@TOV = stat.text.to_f
+					when 16
+						@PF = stat.text.to_f
+					when 17
+						@PTS = stat.text.to_f
+					when 18
+						@opp_FG = stat.text.to_f
+					when 19
+						@opp_FGA = stat.text.to_f
+					when 20
+						@opp_ThP = stat.text.to_f
+					when 21
+						@opp_ThPA = stat.text.to_f
+					when 22
+						@opp_FT = stat.text.to_f
+					when 23
+						@opp_FTA = stat.text.to_f
+					when 24
+						@opp_ORB = stat.text.to_f
+					when 25
+						@opp_TRB = stat.text.to_f
+					when 26
+						@opp_AST = stat.text.to_f
+					when 27
+						@opp_STL = stat.text.to_f
+					when 28
+						@opp_BLK = stat.text.to_f
+					when 29
+						@opp_TOV = stat.text.to_f
+					when 30
+						@opp_PF = stat.text.to_f
+					when 31
+						@opp_PTS = stat.text.to_f
+					when 32
+						if home
+							team.update_attributes(:home_G => @G, :home_W => @W, :home_L => @L, :home_FG => @FG, :home_FGA => @FGA, :home_ThP => @ThP,
+								:home_ThPA => @ThPA, :home_FT => @FT, :home_FTA => @FTA, :home_ORB => @ORB, :home_TRB => @TRB, :home_AST => @AST,
+								:home_STL => @STL, :home_BLK => @BLK, :home_TOV => @TOV, :home_PF => @PF, :home_PTS => @PTS, :home_opp_FG => @opp_FG,
+								:home_opp_FGA => @opp_FGA, :home_opp_ThP => @opp_ThP, :home_opp_ThPA => @opp_ThPA, :home_opp_FT => @opp_FT,
+								:home_opp_FTA => @opp_FTA, :home_opp_ORB => @opp_ORB, :home_opp_TRB => @opp_TRB, :home_opp_AST => @opp_AST,
+								:home_opp_STL => @opp_STL, :home_opp_BLK => @opp_BLK, :home_opp_TOV => @opp_TOV, :home_opp_PF => @opp_PF,
+								:home_opp_PTS => @opp_PTS)
+						end
+						if away
+							team.update_attributes(:away_G => @G, :away_W => @W, :away_L => @L, :away_FG => @FG, :away_FGA => @FGA, :away_ThP => @ThP,
+								:away_ThPA => @ThPA, :away_FT => @FT, :away_FTA => @FTA, :away_ORB => @ORB, :away_TRB => @TRB, :away_AST => @AST,
+								:away_STL => @STL, :away_BLK => @BLK, :away_TOV => @TOV, :away_PF => @PF, :away_PTS => @PTS, :away_opp_FG => @opp_FG,
+								:away_opp_FGA => @opp_FGA, :away_opp_ThP => @opp_ThP, :away_opp_ThPA => @opp_ThPA, :away_opp_FT => @opp_FT,
+								:away_opp_FTA => @opp_FTA, :away_opp_ORB => @opp_ORB, :away_opp_TRB => @opp_TRB, :away_opp_AST => @opp_AST,
+								:away_opp_STL => @opp_STL, :away_opp_BLK => @opp_BLK, :away_opp_TOV => @opp_TOV, :away_opp_PF => @opp_PF,
+								:away_opp_PTS => @opp_PTS)
+						end
+						if days0
+							team.update_attributes(:zero_G => @G, :zero_W => @W, :zero_L => @L, :zero_FG => @FG, :zero_FGA => @FGA, :zero_ThP => @ThP,
+								:zero_ThPA => @ThPA, :zero_FT => @FT, :zero_FTA => @FTA, :zero_ORB => @ORB, :zero_TRB => @TRB, :zero_AST => @AST,
+								:zero_STL => @STL, :zero_BLK => @BLK, :zero_TOV => @TOV, :zero_PF => @PF, :zero_PTS => @PTS, :zero_opp_FG => @opp_FG,
+								:zero_opp_FGA => @opp_FGA, :zero_opp_ThP => @opp_ThP, :zero_opp_ThPA => @opp_ThPA, :zero_opp_FT => @opp_FT,
+								:zero_opp_FTA => @opp_FTA, :zero_opp_ORB => @opp_ORB, :zero_opp_TRB => @opp_TRB, :zero_opp_AST => @opp_AST,
+								:zero_opp_STL => @opp_STL, :zero_opp_BLK => @opp_BLK, :zero_opp_TOV => @opp_TOV, :zero_opp_PF => @opp_PF,
+								:zero_opp_PTS => @opp_PTS)
+						end
+						if days1
+							team.update_attributes(:one_G => @G, :one_W => @W, :one_L => @L, :one_FG => @FG, :one_FGA => @FGA, :one_ThP => @ThP,
+								:one_ThPA => @ThPA, :one_FT => @FT, :one_FTA => @FTA, :one_ORB => @ORB, :one_TRB => @TRB, :one_AST => @AST,
+								:one_STL => @STL, :one_BLK => @BLK, :one_TOV => @TOV, :one_PF => @PF, :one_PTS => @PTS, :one_opp_FG => @opp_FG,
+								:one_opp_FGA => @opp_FGA, :one_opp_ThP => @opp_ThP, :one_opp_ThPA => @opp_ThPA, :one_opp_FT => @opp_FT,
+								:one_opp_FTA => @opp_FTA, :one_opp_ORB => @opp_ORB, :one_opp_TRB => @opp_TRB, :one_opp_AST => @opp_AST,
+								:one_opp_STL => @opp_STL, :one_opp_BLK => @opp_BLK, :one_opp_TOV => @opp_TOV, :one_opp_PF => @opp_PF,
+								:one_opp_PTS => @opp_PTS)
+						end
+						if days2
+							team.update_attributes(:two_G => @G, :two_W => @W, :two_L => @L, :two_FG => @FG, :two_FGA => @FGA, :two_ThP => @ThP,
+								:two_ThPA => @ThPA, :two_FT => @FT, :two_FTA => @FTA, :two_ORB => @ORB, :two_TRB => @TRB, :two_AST => @AST,
+								:two_STL => @STL, :two_BLK => @BLK, :two_TOV => @TOV, :two_PF => @PF, :two_PTS => @PTS, :two_opp_FG => @opp_FG,
+								:two_opp_FGA => @opp_FGA, :two_opp_ThP => @opp_ThP, :two_opp_ThPA => @opp_ThPA, :two_opp_FT => @opp_FT,
+								:two_opp_FTA => @opp_FTA, :two_opp_ORB => @opp_ORB, :two_opp_TRB => @opp_TRB, :two_opp_AST => @opp_AST,
+								:two_opp_STL => @opp_STL, :two_opp_BLK => @opp_BLK, :two_opp_TOV => @opp_TOV, :two_opp_PF => @opp_PF,
+								:two_opp_PTS => @opp_PTS)
+						end
+						if days3
+							team.update_attributes(:three_G => @G, :three_W => @W, :three_L => @L, :three_FG => @FG, :three_FGA => @FGA, :three_ThP => @ThP,
+								:three_ThPA => @ThPA, :three_FT => @FT, :three_FTA => @FTA, :three_ORB => @ORB, :three_TRB => @TRB, :three_AST => @AST,
+								:three_STL => @STL, :three_BLK => @BLK, :three_TOV => @TOV, :three_PF => @PF, :three_PTS => @PTS, :three_opp_FG => @opp_FG,
+								:three_opp_FGA => @opp_FGA, :three_opp_ThP => @opp_ThP, :three_opp_ThPA => @opp_ThPA, :three_opp_FT => @opp_FT,
+								:three_opp_FTA => @opp_FTA, :three_opp_ORB => @opp_ORB, :three_opp_TRB => @opp_TRB, :three_opp_AST => @opp_AST,
+								:three_opp_STL => @opp_STL, :three_opp_BLK => @opp_BLK, :three_opp_TOV => @opp_TOV, :three_opp_PF => @opp_PF,
+								:three_opp_PTS => @opp_PTS)
+						end
+						if sunday
+							team.update_attributes(:sun_G => @G, :sun_W => @W, :sun_L => @L, :sun_FG => @FG, :sun_FGA => @FGA, :sun_ThP => @ThP,
+								:sun_ThPA => @ThPA, :sun_FT => @FT, :sun_FTA => @FTA, :sun_ORB => @ORB, :sun_TRB => @TRB, :sun_AST => @AST,
+								:sun_STL => @STL, :sun_BLK => @BLK, :sun_TOV => @TOV, :sun_PF => @PF, :sun_PTS => @PTS, :sun_opp_FG => @opp_FG,
+								:sun_opp_FGA => @opp_FGA, :sun_opp_ThP => @opp_ThP, :sun_opp_ThPA => @opp_ThPA, :sun_opp_FT => @opp_FT,
+								:sun_opp_FTA => @opp_FTA, :sun_opp_ORB => @opp_ORB, :sun_opp_TRB => @opp_TRB, :sun_opp_AST => @opp_AST,
+								:sun_opp_STL => @opp_STL, :sun_opp_BLK => @opp_BLK, :sun_opp_TOV => @opp_TOV, :sun_opp_PF => @opp_PF,
+								:sun_opp_PTS => @opp_PTS)
+						end
+						if monday
+							team.update_attributes(:mon_G => @G, :mon_W => @W, :mon_L => @L, :mon_FG => @FG, :mon_FGA => @FGA, :mon_ThP => @ThP,
+								:mon_ThPA => @ThPA, :mon_FT => @FT, :mon_FTA => @FTA, :mon_ORB => @ORB, :mon_TRB => @TRB, :mon_AST => @AST,
+								:mon_STL => @STL, :mon_BLK => @BLK, :mon_TOV => @TOV, :mon_PF => @PF, :mon_PTS => @PTS, :mon_opp_FG => @opp_FG,
+								:mon_opp_FGA => @opp_FGA, :mon_opp_ThP => @opp_ThP, :mon_opp_ThPA => @opp_ThPA, :mon_opp_FT => @opp_FT,
+								:mon_opp_FTA => @opp_FTA, :mon_opp_ORB => @opp_ORB, :mon_opp_TRB => @opp_TRB, :mon_opp_AST => @opp_AST,
+								:mon_opp_STL => @opp_STL, :mon_opp_BLK => @opp_BLK, :mon_opp_TOV => @opp_TOV, :mon_opp_PF => @opp_PF,
+								:mon_opp_PTS => @opp_PTS)
+						end
+						if tuesday
+							team.update_attributes(:tue_G => @G, :tue_W => @W, :tue_L => @L, :tue_FG => @FG, :tue_FGA => @FGA, :tue_ThP => @ThP,
+								:tue_ThPA => @ThPA, :tue_FT => @FT, :tue_FTA => @FTA, :tue_ORB => @ORB, :tue_TRB => @TRB, :tue_AST => @AST,
+								:tue_STL => @STL, :tue_BLK => @BLK, :tue_TOV => @TOV, :tue_PF => @PF, :tue_PTS => @PTS, :tue_opp_FG => @opp_FG,
+								:tue_opp_FGA => @opp_FGA, :tue_opp_ThP => @opp_ThP, :tue_opp_ThPA => @opp_ThPA, :tue_opp_FT => @opp_FT,
+								:tue_opp_FTA => @opp_FTA, :tue_opp_ORB => @opp_ORB, :tue_opp_TRB => @opp_TRB, :tue_opp_AST => @opp_AST,
+								:tue_opp_STL => @opp_STL, :tue_opp_BLK => @opp_BLK, :tue_opp_TOV => @opp_TOV, :tue_opp_PF => @opp_PF,
+								:tue_opp_PTS => @opp_PTS)
+						end
+						if wednesday
+							team.update_attributes(:wed_G => @G, :wed_W => @W, :wed_L => @L, :wed_FG => @FG, :wed_FGA => @FGA, :wed_ThP => @ThP,
+								:wed_ThPA => @ThPA, :wed_FT => @FT, :wed_FTA => @FTA, :wed_ORB => @ORB, :wed_TRB => @TRB, :wed_AST => @AST,
+								:wed_STL => @STL, :wed_BLK => @BLK, :wed_TOV => @TOV, :wed_PF => @PF, :wed_PTS => @PTS, :wed_opp_FG => @opp_FG,
+								:wed_opp_FGA => @opp_FGA, :wed_opp_ThP => @opp_ThP, :wed_opp_ThPA => @opp_ThPA, :wed_opp_FT => @opp_FT,
+								:wed_opp_FTA => @opp_FTA, :wed_opp_ORB => @opp_ORB, :wed_opp_TRB => @opp_TRB, :wed_opp_AST => @opp_AST,
+								:wed_opp_STL => @opp_STL, :wed_opp_BLK => @opp_BLK, :wed_opp_TOV => @opp_TOV, :wed_opp_PF => @opp_PF,
+								:wed_opp_PTS => @opp_PTS)
+						end
+						if thursday
+							team.update_attributes(:thu_G => @G, :thu_W => @W, :thu_L => @L, :thu_FG => @FG, :thu_FGA => @FGA, :thu_ThP => @ThP,
+								:thu_ThPA => @ThPA, :thu_FT => @FT, :thu_FTA => @FTA, :thu_ORB => @ORB, :thu_TRB => @TRB, :thu_AST => @AST,
+								:thu_STL => @STL, :thu_BLK => @BLK, :thu_TOV => @TOV, :thu_PF => @PF, :thu_PTS => @PTS, :thu_opp_FG => @opp_FG,
+								:thu_opp_FGA => @opp_FGA, :thu_opp_ThP => @opp_ThP, :thu_opp_ThPA => @opp_ThPA, :thu_opp_FT => @opp_FT,
+								:thu_opp_FTA => @opp_FTA, :thu_opp_ORB => @opp_ORB, :thu_opp_TRB => @opp_TRB, :thu_opp_AST => @opp_AST,
+								:thu_opp_STL => @opp_STL, :thu_opp_BLK => @opp_BLK, :thu_opp_TOV => @opp_TOV, :thu_opp_PF => @opp_PF,
+								:thu_opp_PTS => @opp_PTS)
+						end
+						if friday
+							team.update_attributes(:fri_G => @G, :fri_W => @W, :fri_L => @L, :fri_FG => @FG, :fri_FGA => @FGA, :fri_ThP => @ThP,
+								:fri_ThPA => @ThPA, :fri_FT => @FT, :fri_FTA => @FTA, :fri_ORB => @ORB, :fri_TRB => @TRB, :fri_AST => @AST,
+								:fri_STL => @STL, :fri_BLK => @BLK, :fri_TOV => @TOV, :fri_PF => @PF, :fri_PTS => @PTS, :fri_opp_FG => @opp_FG,
+								:fri_opp_FGA => @opp_FGA, :fri_opp_ThP => @opp_ThP, :fri_opp_ThPA => @opp_ThPA, :fri_opp_FT => @opp_FT,
+								:fri_opp_FTA => @opp_FTA, :fri_opp_ORB => @opp_ORB, :fri_opp_TRB => @opp_TRB, :fri_opp_AST => @opp_AST,
+								:fri_opp_STL => @opp_STL, :fri_opp_BLK => @opp_BLK, :fri_opp_TOV => @opp_TOV, :fri_opp_PF => @opp_PF,
+								:fri_opp_PTS => @opp_PTS)
+						end
+						if saturday
+							team.update_attributes(:sat_G => @G, :sat_W => @W, :sat_L => @L, :sat_FG => @FG, :sat_FGA => @FGA, :sat_ThP => @ThP,
+								:sat_ThPA => @ThPA, :sat_FT => @FT, :sat_FTA => @FTA, :sat_ORB => @ORB, :sat_TRB => @TRB, :sat_AST => @AST,
+								:sat_STL => @STL, :sat_BLK => @BLK, :sat_TOV => @TOV, :sat_PF => @PF, :sat_PTS => @PTS, :sat_opp_FG => @opp_FG,
+								:sat_opp_FGA => @opp_FGA, :sat_opp_ThP => @opp_ThP, :sat_opp_ThPA => @opp_ThPA, :sat_opp_FT => @opp_FT,
+								:sat_opp_FTA => @opp_FTA, :sat_opp_ORB => @opp_ORB, :sat_opp_TRB => @opp_TRB, :sat_opp_AST => @opp_AST,
+								:sat_opp_STL => @opp_STL, :sat_opp_BLK => @opp_BLK, :sat_opp_TOV => @opp_TOV, :sat_opp_PF => @opp_PF,
+								:sat_opp_PTS => @opp_PTS)
+						end
+						bool = false
+					end
+				end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+				if stat.text == "Home"
+					@var = 0
+					home = true
+					bool = true
+				end
+				if stat.text == "Road"
+					@var = 0
+					home = false
+					away = true
+					bool = true
+				end
+				if stat.text == "Sunday"
+					@var = 0
+					away = false
+					sunday = true
+					bool = true
+				end
+				if stat.text == "Monday"
+					@var = 0
+					sunday = false
+					monday = true
+					bool = true
+				end
+				if stat.text == "Tuesday"
+					@var = 0
+					monday = false
+					tuesday = true
+					bool = true
+				end
+				if stat.text == "Wednesday"
+					@var = 0
+					tuesday = false
+					wednesday = true
+					bool = true
+				end
+				if stat.text == "Thursday"
+					@var = 0
+					wednesday = false
+					thursday = true
+					bool = true
+				end
+				if stat.text == "Friday"
+					@var = 0
+					thursday = false
+					friday = true
+					bool = true
+				end
+				if stat.text == "Saturday"
+					@var = 0
+					friday = false
+					saturday = true
+					bool = true
+				end
+				if stat.text == "0 Days"
+					@var = 0
+					saturday = false
+					days0 = true
+					bool = true
+				end
+				if stat.text == "1 Day"
+					@var = 0
+					days0 = false
+					days1 = true
+					bool = true
+				end
+				if stat.text == "2 Days"
+					@var = 0
+					days1 = false
+					days2 = true
+					bool = true
+				end
+				if stat.text == "3+ Days"
+					@var = 0
+					days2 = false
+					days3 = true
+					bool = true
+				end
+			end
+		end		
 	end
 
 	task :create_players => :environment do
@@ -912,55 +954,53 @@ namespace :import do
 			away_team.update_attributes(:tomorrow_team_id => home_team.id)
 		end
 
-		# month = Date.yesterday.strftime("%B")[0..2]
-		# day = Time.now.yesterday.strftime("%d")
-		# if day[0] == "0"
-		# 	day = day[1]
-		# end
-		# date = month + " " + day + ","
-		# @bool = false
-		# @var = 0
-		# @home = Array.new
-		# @away = Array.new
-		# doc.css("#games a").each_with_index do |key, value|
-		# 	if key.text.include? ","
-		# 		date_bool = key.text.include? date
-		# 		if date_bool
-		# 			@bool = true
-		# 		else
-		# 			@bool = false
-		# 		end
-		# 	end
-		# 	if @bool
-		# 		if @var%3 == 1
-		# 			@away << key.text
-		# 		end
-		# 		if @var%3 == 2
-		# 			@home << key.text
-		# 		end
-		# 		@var = @var + 1
-		# 	end
-		# end
+		month = Date.yesterday.strftime("%B")[0..2]
+		day = Time.now.yesterday.strftime("%d")
+		if day[0] == "0"
+			day = day[1]
+		end
+		date = month + " " + day + ","
+		@bool = false
+		@var = 0
+		@home = Array.new
+		@away = Array.new
+		doc.css("#games a").each_with_index do |key, value|
+			if key.text.include? ","
+				date_bool = key.text.include? date
+				if date_bool
+					@bool = true
+				else
+					@bool = false
+				end
+			end
+			if @bool
+				if @var%3 == 1
+					@away << key.text
+				end
+				if @var%3 == 2
+					@home << key.text
+				end
+				@var = @var + 1
+			end
+		end
 
-		# @home.zip(@away).each do |home, away|
-		# 	last = home.rindex(" ") + 1
-		# 	home = home[last..-1]
-		# 	last = away.rindex(" ") + 1
-		# 	away = away[last..-1]
-		# 	if home == "Blazers"
-		# 		home = "Trail " + home
-		# 	end
-		# 	if away == "Blazers"
-		# 		away = "Trail " + away
-		# 	end
-		# 	home_team = Team.find_by_name(home)
-		# 	away_team = Team.find_by_name(away)
-		# 	puts home_team.name + " vs " + away_team.name
-		# 	home_team.update_attributes(:yesterday => true, :yesterday_team_id => away_team.id)
-		# 	away_team.update_attributes(:yesterday_team_id => home_team.id)
-		# end
-
-
+		@home.zip(@away).each do |home, away|
+			last = home.rindex(" ") + 1
+			home = home[last..-1]
+			last = away.rindex(" ") + 1
+			away = away[last..-1]
+			if home == "Blazers"
+				home = "Trail " + home
+			end
+			if away == "Blazers"
+				away = "Trail " + away
+			end
+			home_team = Team.find_by_name(home)
+			away_team = Team.find_by_name(away)
+			puts home_team.name + " vs " + away_team.name
+			home_team.update_attributes(:yesterday => true, :yesterday_team_id => away_team.id)
+			away_team.update_attributes(:yesterday_team_id => home_team.id)
+		end
 
 	end
 
