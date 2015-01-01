@@ -2,7 +2,7 @@
 <% @var = "yesterday" %>
 <% date = Time.now.yesterday.strftime("%B %d") %> 
 <%= link_to(date, :controller => 'index', :action => 'yesterday') %>
-<h3><%= @home_team.name + " vs " + @away_team.name %></h3>
+<h3><%= @away_team.name + " vs " + @home_team.name %></h3>
 <h4><%= @home_team.name %></h4>
 <%= render(:partial => 'team', :locals =>  {:team => @home_team})%>
 <h4><%= @away_team.name %></h4>

@@ -23,6 +23,8 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
+		
+
 
 	end
 
@@ -207,14 +209,16 @@ namespace :import do
 	end
 
 	task :create_teams => :environment do
-		team = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
+		name = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
 				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
 				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trail Blazers", "Warriors", "Wizards"]
-		city = ["Milwaukee", "Chicago", "Cleveland", "Boston", "Los Angeles", "Memphis", "Atlanta", "Miami", "Charlotte", "Utah", "Sacramento",
-				"New York", "Los Angeles", "Orlando", "Dallas", "Brooklyn", "Denver", "Indiana", "New Orleans", "Detroit", "Toronto", "Houston",
+		city = ["Milwaukee", "Chicago", "Cleveland", "Boston", "LA Clippers", "Memphis", "Atlanta", "Miami", "Charlotte", "Utah", "Sacramento",
+				"New York", "LA Lakers", "Orlando", "Dallas", "Brooklyn", "Denver", "Indiana", "New Orleans", "Detroit", "Toronto", "Houston",
 				"Philadelphia", "San Antonio", "Phoenix", "Oklahoma City", "Minnesota", "Portland", "Golden State", "Washington"]
-		team.zip(city).each do |team, city|
-			Team.create(:name => team, :city => city)
+		abbr = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHO", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
+			"DEN", "IND", "NOP", "DET", "TOR", "HOU", "PHI", "SAS", "PHO", "OKC", "MIN", "POR", "GSW", "WAS"]
+		(0..29).each do |n|
+			Team.create(:name => name[n], :city => city[n], :abbr => abbr[n])
 		end
 	end
 
@@ -316,9 +320,17 @@ namespace :import do
 			yesterday = false
 			today = false
 			tomorrow = false
+			today_team = "Nothing"
+			tomorrow_team = "Nothing"
 			@var = 0
 			doc = Nokogiri::HTML(open(url))
 			team = Team.find_by_id(index+1)
+			if team.today_team != nil
+				today_team = team.today_team.city
+			end
+			if team.tomorrow_team != nil
+				tomorrow_team = team.tomorrow_team.city
+			end
 			doc.css("td").each do |stat|
 				@var += 1
 				if bool
@@ -397,6 +409,14 @@ namespace :import do
 						if saturday
 							team.update_attributes(:sat_G => @G, :sat_FG => @FG, :sat_FGA => @FGA, :sat_FTA => @FTA, :sat_TOV => @TOV, :sat_PTS => @PTS,
 								:sat_opp_FG => @opp_FG, :sat_opp_FGA => @opp_FGA, :sat_opp_FTA => @opp_FTA, :sat_opp_TOV => @opp_TOV, :sat_opp_PTS => @opp_PTS)
+						end
+						if today
+							team.update_attributes(:today_G => @G, :today_FG => @FG, :today_FGA => @FGA, :today_FTA => @FTA, :today_TOV => @TOV, :today_PTS => @PTS,
+								:today_opp_FG => @opp_FG, :today_opp_FGA => @opp_FGA, :today_opp_FTA => @opp_FTA, :today_opp_TOV => @opp_TOV, :today_opp_PTS => @opp_PTS)
+						end
+						if tomorrow
+							team.update_attributes(:tomorrow_G => @G, :tomorrow_FG => @FG, :tomorrow_FGA => @FGA, :tomorrow_FTA => @FTA, :tomorrow_TOV => @TOV, :tomorrow_PTS => @PTS,
+								:tomorrow_opp_FG => @opp_FG, :tomorrow_opp_FGA => @opp_FGA, :tomorrow_opp_FTA => @opp_FTA, :tomorrow_opp_TOV => @opp_TOV, :tomorrow_opp_PTS => @opp_PTS)
 						end
 						bool = false
 					end
@@ -500,6 +520,17 @@ namespace :import do
 					days3 = true
 					bool = true
 				end
+				if stat.text == today_team
+					@var = 0
+					today = true
+					tomorrow = false
+				end
+				if stat.text == tomorrow_team
+					@var = 0
+					today = false
+					tomorrow = true
+				end
+
 			end
 		end		
 	end

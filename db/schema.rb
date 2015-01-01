@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
 
   create_table "teams", force: true do |t|
     t.string   "name"
+    t.string   "abbr"
     t.string   "city"
     t.integer  "yesterday_team_id"
     t.integer  "today_team_id"
@@ -267,6 +268,28 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.float    "three_opp_FTA",     limit: 24, default: 0.0
     t.float    "three_opp_TOV",     limit: 24, default: 0.0
     t.float    "three_opp_PTS",     limit: 24, default: 0.0
+    t.integer  "today_G",                      default: 0
+    t.float    "today_FG",          limit: 24, default: 0.0
+    t.float    "today_FGA",         limit: 24, default: 0.0
+    t.float    "today_FTA",         limit: 24, default: 0.0
+    t.float    "today_TOV",         limit: 24, default: 0.0
+    t.float    "today_PTS",         limit: 24, default: 0.0
+    t.float    "today_opp_FG",      limit: 24, default: 0.0
+    t.float    "today_opp_FGA",     limit: 24, default: 0.0
+    t.float    "today_opp_FTA",     limit: 24, default: 0.0
+    t.float    "today_opp_TOV",     limit: 24, default: 0.0
+    t.float    "today_opp_PTS",     limit: 24, default: 0.0
+    t.integer  "tomorrow_G",                   default: 0
+    t.float    "tomorrow_FG",       limit: 24, default: 0.0
+    t.float    "tomorrow_FGA",      limit: 24, default: 0.0
+    t.float    "tomorrow_FTA",      limit: 24, default: 0.0
+    t.float    "tomorrow_TOV",      limit: 24, default: 0.0
+    t.float    "tomorrow_PTS",      limit: 24, default: 0.0
+    t.float    "tomorrow_opp_FG",   limit: 24, default: 0.0
+    t.float    "tomorrow_opp_FGA",  limit: 24, default: 0.0
+    t.float    "tomorrow_opp_FTA",  limit: 24, default: 0.0
+    t.float    "tomorrow_opp_TOV",  limit: 24, default: 0.0
+    t.float    "tomorrow_opp_PTS",  limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

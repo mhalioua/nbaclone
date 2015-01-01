@@ -2,6 +2,7 @@ class CreateTeams < ActiveRecord::Migration
   def up
     create_table :teams do |t|
     	t.string "name"
+      t.string "abbr"
       t.string "city"
       t.references :yesterday_team, :class_name => "Team"
       t.references :today_team, :class_name => "Team"
@@ -161,6 +162,28 @@ class CreateTeams < ActiveRecord::Migration
       t.float "three_opp_FTA", :default => 0
       t.float "three_opp_TOV", :default => 0
       t.float "three_opp_PTS", :default => 0
+      t.integer "today_G", :default => 0
+      t.float "today_FG", :default => 0
+      t.float "today_FGA", :default => 0
+      t.float "today_FTA", :default => 0
+      t.float "today_TOV", :default => 0
+      t.float "today_PTS", :default => 0
+      t.float "today_opp_FG", :default => 0
+      t.float "today_opp_FGA", :default => 0
+      t.float "today_opp_FTA", :default => 0
+      t.float "today_opp_TOV", :default => 0
+      t.float "today_opp_PTS", :default => 0
+      t.integer "tomorrow_G", :default => 0
+      t.float "tomorrow_FG", :default => 0
+      t.float "tomorrow_FGA", :default => 0
+      t.float "tomorrow_FTA", :default => 0
+      t.float "tomorrow_TOV", :default => 0
+      t.float "tomorrow_PTS", :default => 0
+      t.float "tomorrow_opp_FG", :default => 0
+      t.float "tomorrow_opp_FGA", :default => 0
+      t.float "tomorrow_opp_FTA", :default => 0
+      t.float "tomorrow_opp_TOV", :default => 0
+      t.float "tomorrow_opp_PTS", :default => 0
       t.timestamps
     end
     add_index("teams", "name")
