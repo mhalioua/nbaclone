@@ -7,13 +7,15 @@
 <%= render(:partial => 'team', :locals =>  {:team => @away_team})%>
 <h4><%= @home_team.name %></h4>
 <%= render(:partial => 'team', :locals =>  {:team => @home_team})%>
-<h4>Splits</h4>
+<h3>Splits</h3>
 <%= render(:partial => 'splits', :locals => {:home => @home_team, :away => @away_team}) %>
-<h4><%= @away_team.name + " Past Games"%></h4>
+<h3>Minutes and Ratings</h3>
+<h4><%= @away_team.name %></h4>
 <%= render(:partial => 'table', :locals => {:players => @away_players}) %>
-<h4><%= @away_team.name + " Player Stats" %></h4>
-<%= render(:partial => 'minutes', :locals => {:players => @away_players}) %>
-<h4><%= @home_team.name + " Past Games"%></h4>
+<h4><%= @home_team.name%></h4>
 <%= render(:partial => 'table', :locals => {:players => @home_players}) %>
-<h4><%= @home_team.name + " Player Stats"%></h4>
+<h3>Player Stats</h3>
+<h4><%= @away_team.name%></h4>
+<%= render(:partial => 'minutes', :locals => {:players => @away_players}) %>
+<h4><%= @home_team.name%></h4>
 <%= render(:partial => 'minutes', :locals => {:players => @home_players}) %>
