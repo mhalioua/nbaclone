@@ -501,12 +501,14 @@ namespace :import do
 					bool = true
 				end
 				if stat.text == today_team
+					bool = true
 					@var = 0
 					today = true
 					tomorrow = false
 				end
 				if stat.text == tomorrow_team
 					@var = 0
+					bool = true
 					today = false
 					tomorrow = true
 				end
