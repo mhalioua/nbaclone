@@ -19,29 +19,10 @@ namespace :import do
 		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
 
-	task :test => :environment do
-		require 'open-uri'
-		require 'nokogiri'
-
-		
-
-
-	end
-
 	task :minutes => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
-		# set of arrays that would allow me to find their respective teams through their nicknames
-
-		teamname = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
-				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
-				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trail Blazers", "Warriors", "Wizards"]
-
-		nickname = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHO", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
-			"DEN", "IND", "NOP", "DET", "TOR", "HOU", "PHI", "SAS", "PHO", "OKC", "MIN", "POR", "GSW", "WAS"]
-
-		hash = Hash[nickname.map.with_index.to_a]
 
 		array = Array.new
 
@@ -155,8 +136,7 @@ namespace :import do
 				seconds = @MP_1[var2..-1].to_f/60
 				@MP_1 = (minutes + seconds).round(2)
 
-				@team = teamname[hash[@team]]
-				@team = Team.find_by_name(@team)
+				@team = Team.find_by_abbr(@team)
 
 				baller = Player.find_by_name(player.name)
 				puts player.name

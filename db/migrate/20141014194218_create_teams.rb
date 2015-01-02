@@ -187,6 +187,8 @@ class CreateTeams < ActiveRecord::Migration
       t.timestamps
     end
     add_index("teams", "name")
+    add_index("teams", "abbr")
+    add_index("teams", "city")
   end
 
   def down

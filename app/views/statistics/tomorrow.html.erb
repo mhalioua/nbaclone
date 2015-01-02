@@ -7,6 +7,8 @@
 <%= render(:partial => 'team', :locals =>  {:team => @away_team})%>
 <h4><%= @home_team.name %></h4>
 <%= render(:partial => 'team', :locals =>  {:team => @home_team})%>
+<h4>Splits</h4>
+<%= render(:partial => 'splits', :locals => {:home => @home_team, :away => @away_team}) %>
 <h4><%= @away_team.name + " Past Games"%></h4>
 <%= render(:partial => 'table', :locals => {:players => @away_players}) %>
 <h4><%= @away_team.name + " Player Stats" %></h4>
