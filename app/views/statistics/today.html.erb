@@ -3,19 +3,14 @@
 <% date = Time.now.strftime("%B %d") %> 
 <%= link_to(date, :controller => 'index', :action => 'today') %>
 <h3><%= @away_team.name + " vs " + @home_team.name %></h3>
-<h4><%= @away_team.name %></h4>
+<h3 align="center">Team Stats</h3>
 <%= render(:partial => 'team', :locals =>  {:team => @away_team})%>
-<h4><%= @home_team.name %></h4>
 <%= render(:partial => 'team', :locals =>  {:team => @home_team})%>
-<h3>Splits</h3>
+<h3 align="center">Splits</h3>
 <%= render(:partial => 'splits', :locals => {:home => @home_team, :away => @away_team}) %>
-<h3>Minutes and Ratings</h3>
-<h4><%= @away_team.name %></h4>
-<%= render(:partial => 'table', :locals => {:players => @away_players}) %>
-<h4><%= @home_team.name%></h4>
-<%= render(:partial => 'table', :locals => {:players => @home_players}) %>
-<h3>Player Stats</h3>
-<h4><%= @away_team.name%></h4>
-<%= render(:partial => 'minutes', :locals => {:players => @away_players}) %>
-<h4><%= @home_team.name%></h4>
-<%= render(:partial => 'minutes', :locals => {:players => @home_players}) %>
+<h3 align="center">Minutes and Ratings</h3>
+<%= render(:partial => 'table', :locals => {:players => @away_players, :team => @away_team}) %>
+<%= render(:partial => 'table', :locals => {:players => @home_players, :team => @home_team}) %>
+<h3 align="center">Player Stats</h3>
+<%= render(:partial => 'minutes', :locals => {:players => @away_players, :team => @away_team}) %>
+<%= render(:partial => 'minutes', :locals => {:players => @home_players, :team => @home_team}) %>
