@@ -1,4 +1,6 @@
 <% @page_title = @team.name + " Stats"%>
+<div align="center">
 <%= link_to("Teams", :controller => 'index', :action => 'team') %> </br>
-<h2><%= @team.name %></h2>
+</div>
+<h2 align="center"><%= @team.name %></h2>
 <%= render(:partial => 'teamtable', :locals => {:players => @players}) %>

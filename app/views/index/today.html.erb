@@ -1,15 +1,16 @@
 <% @page_title = Time.now.strftime("%B %d") %>
-
+<div align="center">
 <%= link_to("Home Page", :controller => 'access', :action => 'index') %>
+</div>
 
 <div id="main">
 	<div id="list">
-		<h2><%= Time.now.strftime("%B %d") %></h2>
-		<ul>
-			<h4>Home vs Away</h4>
+		<h2 align="center"><%= Time.now.strftime("%B %d") %></h2>
+		<div align="center">
+			<h4 align="center">Home vs Away</h4>
 			<% @teams.each do |team| %>
 			<li><%= link_to(team.today_team.name + " vs " + team.name, {:controller => 'statistics', :action => 'today', :id => team.id}) %></li>
 			<% end %>
-		</ul>
+		</div>
 	</div>
 </div>

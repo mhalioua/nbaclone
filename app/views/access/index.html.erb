@@ -3,16 +3,13 @@
 <%tomorrow = Time.now.tomorrow.strftime("%B %d")%>
 <%yesterday = Time.now.yesterday.strftime("%B %d")%>
 
-<div class="menu">
+<div class="menu" align="center">
 	<h2>Home Page</h2>
 	<div class="identity">Logged in as: <%= session[:username] %></div>
 	<nav>
-		<ul>
-			<li><%= link_to("Team", :controller => 'index', :action => 'team') %></li>
-			<li><%= link_to(yesterday, :controller => 'index', :action => 'yesterday') %></li>
-			<li><%= link_to(today, :controller => 'index', :action => 'today') %></li>
-			<li><%= link_to(tomorrow, :controller => 'index', :action => 'tomorrow') %></li>
-			<li><%= link_to("Logout", :action => 'logout')%></li>
-		</ul>
+		<li><%= link_to("Team", :controller => 'index', :action => 'team') %></li>
+		<li><%= link_to(today, :controller => 'index', :action => 'today') %></li>
+		<li><%= link_to(tomorrow, :controller => 'index', :action => 'tomorrow') %></li>
+		<li><%= link_to("Logout", :action => 'logout')%></li>
 	</nav>
 </div>

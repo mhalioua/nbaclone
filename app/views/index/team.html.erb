@@ -1,14 +1,12 @@
 <% @page_title = "Teams" %>
-
+<div align="center">
 <%= link_to("Home Page", :controller => 'access', :action => 'index') %>
-
-<h2>Teams</h2>
-<div id="main">
+</div>
+<h2 align="center">Teams</h2>
+<div id="main" align="center">
 	<div id="list">
-		<ul>
-			<% @teams.each do |team| %>
-			<li><%= link_to(team.name, :controller => 'statistics', :action => 'team', :id => team.id) %></li>
-			<% end %>
-		</ul>
+		<% @teams.each do |team| %>
+		<li><%= link_to(team.name, :controller => 'statistics', :action => 'team', :id => team.id) %></li>
+		<% end %>
 	</div>
 </div>
