@@ -273,13 +273,21 @@
 		<td><%= away.three_G %></td>
 		<td><%= away.three_FG %></td>
 		<td><%= away.three_FGA %></td>
+		<% if away.three_FGA != 0%>
 		<td><%= (away.three_FG/away.three_FGA).round(2)%></td>
+		<% else %>
+		<td>0.0</td>
+		<% end %>
 		<td><%= away.three_FTA %></td>
 		<td><%= away.three_TOV %></td>
 		<td bgcolor="#00FFFF"><%= away.three_PTS %></td>
 		<td><%= away.three_opp_FG %></td>
 		<td><%= away.three_opp_FGA %></td>
+		<% if away.three_opp_FGA != 0%>
 		<td><%= (away.three_opp_FG/away.three_opp_FGA).round(2) %></td>
+		<% else %>
+		<td>0.0</td>
+		<% end %>
 		<td><%= away.three_opp_FTA %></td>
 		<td><%= away.three_opp_TOV %></td>
 		<td bgcolor="#00FFFF"><%= away.three_opp_PTS %></td>
@@ -614,13 +622,21 @@
 		<td><%= home.three_G %></td>
 		<td><%= home.three_FG %></td>
 		<td><%= home.three_FGA %></td>
+		<% if home.three_FGA != 0%>
 		<td><%= (home.three_FG/home.three_FGA).round(2)%></td>
+		<% else %>
+		<td>0.0</td>
+		<% end %> 
 		<td><%= home.three_FTA %></td>
 		<td><%= home.three_TOV %></td>
 		<td bgcolor="#00FFFF"><%= home.three_PTS %></td>
 		<td><%= home.three_opp_FG %></td>
 		<td><%= home.three_opp_FGA %></td>
+		<% if home.three_opp_FGA != 0 %>
 		<td><%= (home.three_opp_FG/home.three_opp_FGA).round(2) %></td>
+		<% else %>
+		<td>0.0</td>
+		<% end %>
 		<td><%= home.three_opp_FTA %></td>
 		<td><%= home.three_opp_TOV %></td>
 		<td bgcolor="#00FFFF"><%= home.three_opp_PTS %></td>

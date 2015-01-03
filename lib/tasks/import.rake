@@ -308,8 +308,8 @@ namespace :import do
 			puts team.name
 			if team.today_team != nil
 				today_team = team.today_team.city
-				puts today_team
 			end
+			puts today_team
 			if team.tomorrow_team != nil
 				tomorrow_team = team.tomorrow_team.city
 			end
