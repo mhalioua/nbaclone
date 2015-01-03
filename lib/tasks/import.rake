@@ -24,7 +24,8 @@ namespace :import do
 
 		url = "http://www.basketball-reference.com/teams/LAL/2015/splits/"
 		doc = Nokogiri::HTML(open(url))
-		team = Team.find_by_name("Grizzlies")
+		team = Team.find_by_name("Lakers")
+		team = team.today_team
 		doc.css("td").each do |stat|
 			if stat.text == team.city
 				puts stat.text
@@ -516,6 +517,7 @@ namespace :import do
 					bool = true
 				end
 				if stat.text == today_team
+					days3 = false
 					bool = true
 					@var = 0
 					today = true
