@@ -22,13 +22,114 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
-		url = "http://www.basketball-reference.com/teams/LAL/2015/splits/"
-		doc = Nokogiri::HTML(open(url))
-		team = Team.find_by_name("Lakers")
-		team = team.today_team
-		doc.css("td").each do |stat|
-			if stat.text == team.city
-				puts stat.text
+		url = ["http://www.basketball-reference.com/teams/MIL/2015/splits/", "http://www.basketball-reference.com/teams/CHI/2015/splits/",
+			"http://www.basketball-reference.com/teams/CLE/2015/splits/", "http://www.basketball-reference.com/teams/BOS/2015/splits/",
+			"http://www.basketball-reference.com/teams/LAC/2015/splits/", "http://www.basketball-reference.com/teams/MEM/2015/splits/",
+			"http://www.basketball-reference.com/teams/ATL/2015/splits/", "http://www.basketball-reference.com/teams/MIA/2015/splits/",
+		    "http://www.basketball-reference.com/teams/CHO/2015/splits/", "http://www.basketball-reference.com/teams/UTA/2015/splits/",
+		    "http://www.basketball-reference.com/teams/SAC/2015/splits/", "http://www.basketball-reference.com/teams/NYK/2015/splits/",
+		    "http://www.basketball-reference.com/teams/LAL/2015/splits/", "http://www.basketball-reference.com/teams/ORL/2015/splits/",
+		    "http://www.basketball-reference.com/teams/DAL/2015/splits/", "http://www.basketball-reference.com/teams/BRK/2015/splits/",
+			"http://www.basketball-reference.com/teams/DEN/2015/splits/", "http://www.basketball-reference.com/teams/IND/2015/splits/",
+			"http://www.basketball-reference.com/teams/NOP/2015/splits/", "http://www.basketball-reference.com/teams/DET/2015/splits/",
+			"http://www.basketball-reference.com/teams/TOR/2015/splits/", "http://www.basketball-reference.com/teams/HOU/2015/splits/",
+			"http://www.basketball-reference.com/teams/PHI/2015/splits/", "http://www.basketball-reference.com/teams/SAS/2015/splits/",
+			"http://www.basketball-reference.com/teams/PHO/2015/splits/", "http://www.basketball-reference.com/teams/OKC/2015/splits/",
+			"http://www.basketball-reference.com/teams/MIN/2015/splits/", "http://www.basketball-reference.com/teams/POR/2015/splits/",
+			"http://www.basketball-reference.com/teams/GSW/2015/splits/", "http://www.basketball-reference.com/teams/WAS/2015/splits/"]
+
+
+		url.each_with_index do |url, index|
+			#initiate all the boolean variables
+			bool = false
+			home = false
+			away = false
+			days0 = false
+			days1 = false
+			days2 = false
+			days3 = false
+			sunday = false
+			monday = false
+			tuesday = false
+			wednesday = false
+			thursday = false
+			friday = false
+			saturday = false
+			yesterday = false
+			today = false
+			tomorrow = false
+			today_team = "Nothing"
+			tomorrow_team = "Nothing"
+			@var = 0
+			doc = Nokogiri::HTML(open(url))
+			team = Team.find_by_id(index+1)
+			if team.today_team != nil
+				today_team = team.today_team.city
+			end
+			if team.tomorrow_team != nil
+				tomorrow_team = team.tomorrow_team.city
+			end
+			doc.css("td").each do |stat|
+				@var += 1
+				if bool
+					case @var
+					when 1
+						@G = stat.text.to_i
+					when 4
+						@FG = stat.text.to_f
+					when 5
+						@FGA = stat.text.to_f
+					when 9
+						@FTA = stat.text.to_f
+					when 15
+						@TOV = stat.text.to_f
+					when 17
+						@PTS = stat.text.to_f
+					when 18
+						@opp_FG = stat.text.to_f
+					when 19
+						@opp_FGA = stat.text.to_f
+					when 23
+						@opp_FTA = stat.text.to_f
+					when 29
+						@opp_TOV = stat.text.to_f
+					when 31
+						@opp_PTS = stat.text.to_f
+					when 32
+						if today
+							puts team.name
+							puts today_team
+						end
+						bool = false
+						home = false
+						away = false
+						days0 = false
+						days1 = false
+						days2 = false
+						days3 = false
+						sunday = false
+						monday = false
+						tuesday = false
+						wednesday = false
+						thursday = false
+						friday = false
+						saturday = false
+						yesterday = false
+						today = false
+						tomorrow = false
+					end
+				end
+				if stat.text == today_team
+					@var = 0
+					today = true
+					bool = true
+				end
+				if stat.text == tomorrow_team
+					@var = 0
+					tomorrow = true
+					bool = true
+				end
+
 			end
 		end
 	end
