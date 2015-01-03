@@ -415,6 +415,22 @@ namespace :import do
 								:tomorrow_opp_FG => @opp_FG, :tomorrow_opp_FGA => @opp_FGA, :tomorrow_opp_FTA => @opp_FTA, :tomorrow_opp_TOV => @opp_TOV, :tomorrow_opp_PTS => @opp_PTS)
 						end
 						bool = false
+						home = false
+						away = false
+						days0 = false
+						days1 = false
+						days2 = false
+						days3 = false
+						sunday = false
+						monday = false
+						tuesday = false
+						wednesday = false
+						thursday = false
+						friday = false
+						saturday = false
+						yesterday = false
+						today = false
+						tomorrow = false
 					end
 				end
 
@@ -425,108 +441,72 @@ namespace :import do
 				end
 				if stat.text == "Road"
 					@var = 0
-					home = false
 					away = true
 					bool = true
 				end
 				if stat.text == "Sunday"
 					@var = 0
-					away = false
 					sunday = true
 					bool = true
 				end
 				if stat.text == "Monday"
 					@var = 0
-					sunday = false
 					monday = true
 					bool = true
 				end
 				if stat.text == "Tuesday"
 					@var = 0
-					sunday = false
-					monday = false
 					tuesday = true
 					bool = true
 				end
 				if stat.text == "Wednesday"
 					@var = 0
-					sunday = false
-					monday = false
-					tuesday = false
 					wednesday = true
 					bool = true
 				end
 				if stat.text == "Thursday"
 					@var = 0
-					sunday = false
-					monday = false
-					tuesday = false
-					wednesday = false
 					thursday = true
 					bool = true
 				end
 				if stat.text == "Friday"
 					@var = 0
-					sunday = false
-					monday = false
-					tuesday = false
-					wednesday = false
-					thursday = false
 					friday = true
 					bool = true
 				end
 				if stat.text == "Saturday"
 					@var = 0
-					sunday = false
-					monday = false
-					tuesday = false
-					wednesday = false
-					thursday = false
-					friday = false
 					saturday = true
 					bool = true
 				end
 				if stat.text == "0 Days"
 					@var = 0
-					sunday = false
-					monday = false
-					tuesday = false
-					wednesday = false
-					thursday = false
-					friday = false
-					saturday = false
 					days0 = true
 					bool = true
 				end
 				if stat.text == "1 Day"
 					@var = 0
-					days0 = false
 					days1 = true
 					bool = true
 				end
 				if stat.text == "2 Days"
 					@var = 0
-					days1 = false
 					days2 = true
 					bool = true
 				end
 				if stat.text == "3+ Days"
 					@var = 0
-					days2 = false
 					days3 = true
 					bool = true
 				end
 				if stat.text == today_team
-					days3 = false
-					bool = true
 					@var = 0
 					today = true
-					tomorrow = false
+					bool = true
 				end
 				if stat.text == tomorrow_team
 					@var = 0
 					bool = true
-					today = false
 					tomorrow = true
 				end
 
