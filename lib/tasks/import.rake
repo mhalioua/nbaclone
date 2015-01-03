@@ -18,6 +18,18 @@ namespace :import do
 		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
 		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
+	task :test => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+		url = "http://www.basketball-reference.com/teams/LAL/2015/splits/"
+		doc = Nokogiri::HTML(open(url))
+		doc.css("td").each do |stat|
+			if stat.text == "Memphis"
+				puts stat.text
+			end
+		end
+	end
 
 	task :minutes => :environment do
 		require 'open-uri'
