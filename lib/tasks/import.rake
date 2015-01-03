@@ -24,8 +24,9 @@ namespace :import do
 
 		url = "http://www.basketball-reference.com/teams/LAL/2015/splits/"
 		doc = Nokogiri::HTML(open(url))
+		team = Team.find_by_name("Grizzlies")
 		doc.css("td").each do |stat|
-			if stat.text == "Memphis"
+			if stat.text == team.city
 				puts stat.text
 			end
 		end
