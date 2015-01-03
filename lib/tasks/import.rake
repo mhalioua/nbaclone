@@ -99,6 +99,7 @@ namespace :import do
 						if today
 							puts team.name
 							puts today_team
+							puts @opp_PTS
 						end
 						bool = false
 						home = false
