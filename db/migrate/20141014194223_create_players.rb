@@ -36,6 +36,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.float "MP_3"
       t.float "MP_4"
       t.float "MP_5"
+      t.float "MP_AVG"
       t.string "team_1"
       t.string "team_2"
       t.string "team_3"

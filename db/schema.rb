@@ -83,6 +83,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.float    "MP_3",              limit: 24
     t.float    "MP_4",              limit: 24
     t.float    "MP_5",              limit: 24
+    t.float    "MP_AVG",            limit: 24
     t.string   "team_1"
     t.string   "team_2"
     t.string   "team_3"
@@ -294,6 +295,8 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.datetime "updated_at"
   end
 
+  add_index "teams", ["abbr"], name: "index_teams_on_abbr", using: :btree
+  add_index "teams", ["city"], name: "index_teams_on_city", using: :btree
   add_index "teams", ["name"], name: "index_teams_on_name", using: :btree
 
   create_table "users", force: true do |t|
