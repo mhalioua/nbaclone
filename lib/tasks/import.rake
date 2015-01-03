@@ -509,6 +509,9 @@ namespace :import do
 								:sat_opp_FG => @opp_FG, :sat_opp_FGA => @opp_FGA, :sat_opp_FTA => @opp_FTA, :sat_opp_TOV => @opp_TOV, :sat_opp_PTS => @opp_PTS)
 						end
 						if today
+							puts team.name
+							puts team.today_team.name
+							puts @FG
 							team.update_attributes(:today_G => @G, :today_FG => @FG, :today_FGA => @FGA, :today_FTA => @FTA, :today_TOV => @TOV, :today_PTS => @PTS,
 								:today_opp_FG => @opp_FG, :today_opp_FGA => @opp_FGA, :today_opp_FTA => @opp_FTA, :today_opp_TOV => @opp_TOV, :today_opp_PTS => @opp_PTS)
 						end
