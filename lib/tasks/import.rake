@@ -18,121 +18,55 @@ namespace :import do
 		# 	"http://www.teamrankings.com/nba/team/minnesota-timberwolves/stats", "http://www.teamrankings.com/nba/team/portland-trail-blazers/stats",
 		# 	"http://www.teamrankings.com/nba/team/golden-state-warriors/stats", "http://www.teamrankings.com/nba/team/washington-wizards/stats"]
 
-	task :test => :environment do
+
+	task :box => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
-		url = ["http://www.basketball-reference.com/teams/MIL/2015/splits/", "http://www.basketball-reference.com/teams/CHI/2015/splits/",
-			"http://www.basketball-reference.com/teams/CLE/2015/splits/", "http://www.basketball-reference.com/teams/BOS/2015/splits/",
-			"http://www.basketball-reference.com/teams/LAC/2015/splits/", "http://www.basketball-reference.com/teams/MEM/2015/splits/",
-			"http://www.basketball-reference.com/teams/ATL/2015/splits/", "http://www.basketball-reference.com/teams/MIA/2015/splits/",
-		    "http://www.basketball-reference.com/teams/CHO/2015/splits/", "http://www.basketball-reference.com/teams/UTA/2015/splits/",
-		    "http://www.basketball-reference.com/teams/SAC/2015/splits/", "http://www.basketball-reference.com/teams/NYK/2015/splits/",
-		    "http://www.basketball-reference.com/teams/LAL/2015/splits/", "http://www.basketball-reference.com/teams/ORL/2015/splits/",
-		    "http://www.basketball-reference.com/teams/DAL/2015/splits/", "http://www.basketball-reference.com/teams/BRK/2015/splits/",
-			"http://www.basketball-reference.com/teams/DEN/2015/splits/", "http://www.basketball-reference.com/teams/IND/2015/splits/",
-			"http://www.basketball-reference.com/teams/NOP/2015/splits/", "http://www.basketball-reference.com/teams/DET/2015/splits/",
-			"http://www.basketball-reference.com/teams/TOR/2015/splits/", "http://www.basketball-reference.com/teams/HOU/2015/splits/",
-			"http://www.basketball-reference.com/teams/PHI/2015/splits/", "http://www.basketball-reference.com/teams/SAS/2015/splits/",
-			"http://www.basketball-reference.com/teams/PHO/2015/splits/", "http://www.basketball-reference.com/teams/OKC/2015/splits/",
-			"http://www.basketball-reference.com/teams/MIN/2015/splits/", "http://www.basketball-reference.com/teams/POR/2015/splits/",
-			"http://www.basketball-reference.com/teams/GSW/2015/splits/", "http://www.basketball-reference.com/teams/WAS/2015/splits/"]
+		url = "http://www.basketball-reference.com/boxscores/201501020BOS.html"
 
+		doc = Nokogiri::HTML(open(url))
 
-		url.each_with_index do |url, index|
-			#initiate all the boolean variables
-			bool = false
-			home = false
-			away = false
-			days0 = false
-			days1 = false
-			days2 = false
-			days3 = false
-			sunday = false
-			monday = false
-			tuesday = false
-			wednesday = false
-			thursday = false
-			friday = false
-			saturday = false
-			yesterday = false
-			today = false
-			tomorrow = false
-			today_team = "Nothing"
-			tomorrow_team = "Nothing"
-			@var = 0
-			doc = Nokogiri::HTML(open(url))
-			team = Team.find_by_id(index+1)
-			if team.today_team != nil
-				today_team = team.today_team.city
-			end
-			if team.tomorrow_team != nil
-				tomorrow_team = team.tomorrow_team.city
-			end
-			doc.css("td").each do |stat|
-				@var += 1
-				if bool
-					case @var
-					when 1
-						@G = stat.text.to_i
-					when 4
-						@FG = stat.text.to_f
-					when 5
-						@FGA = stat.text.to_f
-					when 9
-						@FTA = stat.text.to_f
-					when 15
-						@TOV = stat.text.to_f
-					when 17
-						@PTS = stat.text.to_f
-					when 18
-						@opp_FG = stat.text.to_f
-					when 19
-						@opp_FGA = stat.text.to_f
-					when 23
-						@opp_FTA = stat.text.to_f
-					when 29
-						@opp_TOV = stat.text.to_f
-					when 31
-						@opp_PTS = stat.text.to_f
-					when 32
-						if today
-							puts team.name
-							puts today_team
-							puts @opp_PTS
-						end
-						bool = false
-						home = false
-						away = false
-						days0 = false
-						days1 = false
-						days2 = false
-						days3 = false
-						sunday = false
-						monday = false
-						tuesday = false
-						wednesday = false
-						thursday = false
-						friday = false
-						saturday = false
-						yesterday = false
-						today = false
-						tomorrow = false
-					end
-				end
-				if stat.text == today_team
-					@var = 0
-					today = true
-					bool = true
-				end
-				if stat.text == tomorrow_team
-					@var = 0
-					tomorrow = true
-					bool = true
-				end
-
-			end
+		doc.css(".sortable a").each do |stat|
+			puts stat.text
 		end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	end
+
+	task :test => :environment do
+		require 'open-uri'
+		require 'nokogiri'
 	end
 
 	task :minutes => :environment do
@@ -259,6 +193,13 @@ namespace :import do
 				baller.update_attributes(:team_id => @team.id, :MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
 					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
 					:date_5 => @date_5[5..-1], :team_1 => @team_1, :team_2 => @team_2, :team_3 => @team_3, :team_4 => @team_4, :team_5 => @team_5)
+				if baller.MP_1 == 0
+					baller.update_attributes(:starter => false)
+					puts baller.name + " did not play last game"
+				else
+					baller.update_attributes(:starter => true)
+				end
+					
 			end
 
 		end
@@ -507,9 +448,6 @@ namespace :import do
 								:sat_opp_FG => @opp_FG, :sat_opp_FGA => @opp_FGA, :sat_opp_FTA => @opp_FTA, :sat_opp_TOV => @opp_TOV, :sat_opp_PTS => @opp_PTS)
 						end
 						if today
-							puts team.name
-							puts team.today_team.name
-							puts @FG
 							team.update_attributes(:today_G => @G, :today_FG => @FG, :today_FGA => @FGA, :today_FTA => @FTA, :today_TOV => @TOV, :today_PTS => @PTS,
 								:today_opp_FG => @opp_FG, :today_opp_FGA => @opp_FGA, :today_opp_FTA => @opp_FTA, :today_opp_TOV => @opp_TOV, :today_opp_PTS => @opp_PTS)
 						end
