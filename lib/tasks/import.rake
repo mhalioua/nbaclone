@@ -305,8 +305,10 @@ namespace :import do
 			@var = 0
 			doc = Nokogiri::HTML(open(url))
 			team = Team.find_by_id(index+1)
+			puts team.name
 			if team.today_team != nil
 				today_team = team.today_team.city
+				puts today_team
 			end
 			if team.tomorrow_team != nil
 				tomorrow_team = team.tomorrow_team.city
