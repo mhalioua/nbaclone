@@ -60,6 +60,18 @@ namespace :import do
 
 		array = array.uniq # Don't work through teams twice
 
+=begin
+			
+			This code brings the minutes that each player played the last 5 games using the gamelog website at basketball-reference.
+			Then it sets the boolean starters to true for all the players who have have a positive number in MP_1.
+			This indicates that the player played in the last game.
+
+			Right now it iterates through the entire array before reaching the last 5 games. A more efficient way to code this
+			would be to iterate through the array backwards and ending it once it has reached the last five games. I will code this
+			later when I get the chance. For now it gets the job done.
+
+=end
+
 		array.each do |team|
 			players = team.player.where(:starter => true)
 			players.each_with_index do |player, index|
@@ -188,10 +200,10 @@ namespace :import do
 					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
 					:date_5 => @date_5[5..-1], :team_1 => @team_1, :team_2 => @team_2, :team_3 => @team_3, :team_4 => @team_4, :team_5 => @team_5,
 					:MP_AVG => avg)
-				if @MP_1 == 0
-					player.update_attributes(:starter => false)
-				else
+				if @MP_1 != 0
 					player.update_attributes(:starter => true)
+				else
+					player.update_attributes(:starter => false)
 				end
 					
 			end

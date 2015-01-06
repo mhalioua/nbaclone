@@ -54,6 +54,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.float "opp_on_court_pace", :default => 0
       t.float "on_court_ORtg", :default => 0
       t.float "opp_on_court_ORtg", :default => 0
+
       t.timestamps
     end
     add_index("players", "name")
