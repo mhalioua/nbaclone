@@ -8,5 +8,9 @@
 <%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'yesterday', :id => params[:team_id]) %>
 <% end %>
 </div>
-<h3 align="center"> <%= @player.name + " Matchups"%> </h3>
+<% if @player.position != 'C' && @player.position != 'PF' %>
+<h3 align="center"> <%= @player.name + " " +  @player.position + " Matchups"%> </h3>
+<% else %>
+<h3 align="center"> <%= @player.name + " PF and C Matchups"%> </h3>
+<% end %>
 <%= render(:partial => 'matchup_table', :locals => {:game => @game}) %>

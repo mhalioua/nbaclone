@@ -73,7 +73,7 @@ namespace :import do
 =end
 
 		array.each do |team|
-			players = team.player.where(:starter => true)
+			players = team.player
 			players.each_with_index do |player, index|
 
 				url = "http://www.basketball-reference.com/players/#{player.alias[0]}/#{player.alias}/gamelog/2015/"
@@ -831,37 +831,38 @@ namespace :import do
 
 		month = Date.today.strftime("%B")[0..2]
 		day = Time.now.strftime("%d")
+
 		if day[0] == "0"
 			day = day[1]
 		end
 		date = month + " " + day + ","
 		url = "http://www.basketball-reference.com/leagues/NBA_2015_games.html"
 		doc = Nokogiri::HTML(open(url))
-		@bool = false
-		@var = 0
-		@home = Array.new
-		@away = Array.new
+		bool = false
+		var = 0
+		home = Array.new
+		away = Array.new
 		doc.css("#games a").each_with_index do |key, value|
 			if key.text.include? ","
 				date_bool = key.text.include? date
 				if date_bool
-					@bool = true
+					bool = true
 				else
-					@bool = false
+					bool = false
 				end
 			end
-			if @bool
-				if @var%3 == 1
-					@away << key.text
+			if bool
+				if var%3 == 1
+					away << key.text
 				end
-				if @var%3 == 2
-					@home << key.text
+				if var%3 == 2
+					home << key.text
 				end
-				@var = @var + 1
+				var = var + 1
 			end
 		end
 
-		@home.zip(@away).each do |home, away|
+		home.zip(away).each do |home, away|
 			last = home.rindex(" ") + 1
 			home = home[last..-1]
 			last = away.rindex(" ") + 1
@@ -885,31 +886,31 @@ namespace :import do
 			day = day[1]
 		end
 		date = month + " " + day + ","
-		@bool = false
-		@var = 0
-		@home = Array.new
-		@away = Array.new
+		bool = false
+		var = 0
+		home = Array.new
+		away = Array.new
 		doc.css("#games a").each_with_index do |key, value|
 			if key.text.include? ","
 				date_bool = key.text.include? date
 				if date_bool
-					@bool = true
+					bool = true
 				else
-					@bool = false
+					bool = false
 				end
 			end
-			if @bool
-				if @var%3 == 1
-					@away << key.text
+			if bool
+				if var%3 == 1
+					away << key.text
 				end
-				if @var%3 == 2
-					@home << key.text
+				if var%3 == 2
+					home << key.text
 				end
-				@var = @var + 1
+				var = var + 1
 			end
 		end
 
-		@home.zip(@away).each do |home, away|
+		home.zip(away).each do |home, away|
 			last = home.rindex(" ") + 1
 			home = home[last..-1]
 			last = away.rindex(" ") + 1
@@ -933,10 +934,10 @@ namespace :import do
 			day = day[1]
 		end
 		date = month + " " + day + ","
-		@bool = false
-		@var = 0
-		@home = Array.new
-		@away = Array.new
+		bool = false
+		var = 0
+		home = Array.new
+		away = Array.new
 		doc.css("#games a").each_with_index do |key, value|
 			if key.text.include? ","
 				date_bool = key.text.include? date
@@ -946,18 +947,18 @@ namespace :import do
 					@bool = false
 				end
 			end
-			if @bool
-				if @var%3 == 1
-					@away << key.text
+			if bool
+				if var%3 == 1
+					away << key.text
 				end
-				if @var%3 == 2
-					@home << key.text
+				if var%3 == 2
+					home << key.text
 				end
-				@var = @var + 1
+				var = var + 1
 			end
 		end
 
-		@home.zip(@away).each do |home, away|
+		home.zip(away).each do |home, away|
 			last = home.rindex(" ") + 1
 			home = home[last..-1]
 			last = away.rindex(" ") + 1
@@ -1020,6 +1021,108 @@ namespace :import do
 		require 'open-uri'
 		require 'nokogiri'
 
+		def createMatchups(players, opp_players)
+			players.each do |player1|
+				opp_players.each do |player2|
+					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
+					puts player1.name + " vs " + player2.name
+					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
+					doc = Nokogiri::HTML(open(url))
+					var = 0
+					size = doc.css("#stats_games td").size
+					doc.css("#stats_games td").each do |stat|
+						var += 1
+						if var <= (size - 270)
+							next
+						end
+						case var%27
+						when 2
+							@name = stat.text
+						when 3
+							@date = stat.text
+						when 8
+							@GS = stat.text.to_i
+						when 9
+							@MP = stat.text
+						when 10
+							@FG = stat.text.to_i
+						when 11
+							@FGA = stat.text.to_i
+						when 12
+							@FGP = (stat.text.to_f*100).round(1)
+						when 13
+							@ThP = stat.text.to_i
+						when 14
+							@ThPA = stat.text.to_i
+						when 15
+							@ThPP = (stat.text.to_f*100).round(1)
+						when 16
+							@FT = stat.text.to_i
+						when 17
+							@FTA = stat.text.to_i
+						when 18
+							@FTP = (stat.text.to_f*100).round(1)
+						when 19
+							@ORB = stat.text.to_i
+						when 20
+							@DRB = stat.text.to_i
+						when 22
+							@AST = stat.text.to_i
+						when 23
+							@STL = stat.text.to_i
+						when 24
+							@BLK = stat.text.to_i
+						when 25
+							@TO = stat.text.to_i
+						when 26
+							@PF = stat.text.to_i
+						when 0
+							@PTS = stat.text.to_i
+							if @MP.index(":") != nil
+								var1 = @MP.index(":")-1
+								var2 = var1 + 2
+								minutes = @MP[0..var1].to_f
+								seconds = @MP[var2..-1].to_f/60
+								@MP = (minutes + seconds).round(2)
+							else
+								@MP = 0
+							end
+							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
+								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
+								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
+						end
+					end
+				end
+			end
+		end
+
+		# this method uses a team to and grabs it's players and creates matchups between the players according to their position
+
+		def teamMatchup(team)
+			team.each do |team|
+				opp = team.today_team
+				puts team.name + " vs " + opp.name
+				players = team.player.where(:starter => true, :position => 'PG')
+				opp_players = opp.player.where(:starter => true, :position => 'PG')
+				createMatchups(players, opp_players)
+
+				players = team.player.where(:starter => true, :position => 'SG')
+				opp_players = opp.player.where(:starter => true, :position => 'SG')
+				createMatchups(players, opp_players)
+
+				players = team.player.where(:starter => true, :position => 'SF')
+				opp_players = opp.player.where(:starter => true, :position => 'SF')
+				createMatchups(players, opp_players)
+
+				players = team.player.where(:starter => true, :position => 'PF')
+				players = players + team.player.where(:starter => true, :position => 'C')
+				opp_players = opp.player.where(:starter => true, :position => 'PF')
+				opp_players = opp_players + opp.player.where(:starter => true, :position => 'C')
+				createMatchups(players, opp_players)
+
+			end
+		end
+
 		playermatchup = PlayerMatchup.all
 		playermatchupgame = PlayerMatchupGame.all
 
@@ -1031,470 +1134,16 @@ namespace :import do
 			matchup.destroy
 		end
 
-		team = Team.where(:today => true)
-		team.each do |team|
-			opp = team.today_team
-			puts team.name + " vs " + opp.name
-			players = team.player.where(:starter => true, :forward => true)
-			opp_players = opp.player.where(:starter => true, :forward => true)
-			players.each do |player1|
-				opp_players.each do |player2|
-					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-					puts player1.name + " vs " + player2.name
-					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-					doc = Nokogiri::HTML(open(url))
-					var = 0
-					size = doc.css("#stats_games td").size
-					doc.css("#stats_games td").each do |stat|
-						var += 1
-						if var <= (size - 270)
-							next
-						end
-						case var%27
-						when 2
-							@name = stat.text
-						when 3
-							@date = stat.text
-						when 8
-							@GS = stat.text.to_i
-						when 9
-							@MP = stat.text
-						when 10
-							@FG = stat.text.to_i
-						when 11
-							@FGA = stat.text.to_i
-						when 12
-							@FGP = (stat.text.to_f*100).round(1)
-						when 13
-							@ThP = stat.text.to_i
-						when 14
-							@ThPA = stat.text.to_i
-						when 15
-							@ThPP = (stat.text.to_f*100).round(1)
-						when 16
-							@FT = stat.text.to_i
-						when 17
-							@FTA = stat.text.to_i
-						when 18
-							@FTP = (stat.text.to_f*100).round(1)
-						when 19
-							@ORB = stat.text.to_i
-						when 20
-							@DRB = stat.text.to_i
-						when 22
-							@AST = stat.text.to_i
-						when 23
-							@STL = stat.text.to_i
-						when 24
-							@BLK = stat.text.to_i
-						when 25
-							@TO = stat.text.to_i
-						when 26
-							@PF = stat.text.to_i
-						when 0
-							@PTS = stat.text.to_i
-							if @MP.index(":") != nil
-								var1 = @MP.index(":")-1
-								var2 = var1 + 2
-								minutes = @MP[0..var1].to_f
-								seconds = @MP[var2..-1].to_f/60
-								@MP = (minutes + seconds).round(2)
-							else
-								@MP = 0
-							end
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
-								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-						end
-					end
-				end
-			end
+		# pick teams that are playing the three days around today
 
-			players = team.player.where(:starter => true, :guard => true)
-			opp_players = opp.player.where(:starter => true, :guard => true)
-			players.each do |player1|
-				opp_players.each do |player2|
-					puts player1.name + " vs " + player2.name
-					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-					doc = Nokogiri::HTML(open(url))
-					var = 0
-					size = doc.css("#stats_games td").size
-					doc.css("#stats_games td").each do |stat|
-						var += 1
-						if var <= (size - 270)
-							next
-						end
-						case var%27
-						when 2
-							@name = stat.text
-						when 3
-							@date = stat.text
-						when 8
-							@GS = stat.text.to_i
-						when 9
-							@MP = stat.text
-						when 10
-							@FG = stat.text.to_i
-						when 11
-							@FGA = stat.text.to_i
-						when 12
-							@FGP = (stat.text.to_f*100).round(1)
-						when 13
-							@ThP = stat.text.to_i
-						when 14
-							@ThPA = stat.text.to_i
-						when 15
-							@ThPP = (stat.text.to_f*100).round(1)
-						when 16
-							@FT = stat.text.to_i
-						when 17
-							@FTA = stat.text.to_i
-						when 18
-							@FTP = (stat.text.to_f*100).round(1)
-						when 19
-							@ORB = stat.text.to_i
-						when 20
-							@DRB = stat.text.to_i
-						when 22
-							@AST = stat.text.to_i
-						when 23
-							@STL = stat.text.to_i
-						when 24
-							@BLK = stat.text.to_i
-						when 25
-							@TO = stat.text.to_i
-						when 26
-							@PF = stat.text.to_i
-						when 0
-							@PTS = stat.text.to_i
-							if @MP.index(":") != nil
-								var1 = @MP.index(":")-1
-								var2 = var1 + 2
-								minutes = @MP[0..var1].to_f
-								seconds = @MP[var2..-1].to_f/60
-								@MP = (minutes + seconds).round(2)
-							else
-								@MP = 0
-							end
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
-								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-						end
-					end
-				end
-			end
-		end
+		team = Team.where(:today => true)
+		teamMatchup(team)
 
 		team = Team.where(:yesterday => true)
-		team.each do |team|
-			opp = team.yesterday_team
-			puts team.name + " vs " + opp.name
-			players = team.player.where(:starter => true, :forward => true)
-			opp_players = opp.player.where(:starter => true, :forward => true)
-			players.each do |player1|
-				opp_players.each do |player2|
-					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-					puts player1.name + " vs " + player2.name
-					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-					doc = Nokogiri::HTML(open(url))
-					var = 0
-					size = doc.css("#stats_games td").size
-					doc.css("#stats_games td").each do |stat|
-						var += 1
-						if var <= (size - 270)
-							next
-						end
-						case var%27
-						when 2
-							@name = stat.text
-						when 3
-							@date = stat.text
-						when 8
-							@GS = stat.text.to_i
-						when 9
-							@MP = stat.text
-						when 10
-							@FG = stat.text.to_i
-						when 11
-							@FGA = stat.text.to_i
-						when 12
-							@FGP = (stat.text.to_f*100).round(1)
-						when 13
-							@ThP = stat.text.to_i
-						when 14
-							@ThPA = stat.text.to_i
-						when 15
-							@ThPP = (stat.text.to_f*100).round(1)
-						when 16
-							@FT = stat.text.to_i
-						when 17
-							@FTA = stat.text.to_i
-						when 18
-							@FTP = (stat.text.to_f*100).round(1)
-						when 19
-							@ORB = stat.text.to_i
-						when 20
-							@DRB = stat.text.to_i
-						when 22
-							@AST = stat.text.to_i
-						when 23
-							@STL = stat.text.to_i
-						when 24
-							@BLK = stat.text.to_i
-						when 25
-							@TO = stat.text.to_i
-						when 26
-							@PF = stat.text.to_i
-						when 0
-							@PTS = stat.text.to_i
-							if @MP.index(":") != nil
-								var1 = @MP.index(":")-1
-								var2 = var1 + 2
-								minutes = @MP[0..var1].to_f
-								seconds = @MP[var2..-1].to_f/60
-								@MP = (minutes + seconds).round(2)
-							else
-								@MP = 0
-							end
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
-								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-						end
-					end
-				end
-			end
-
-			players = team.player.where(:starter => true, :guard => true)
-			opp_players = opp.player.where(:starter => true, :guard => true)
-			players.each do |player1|
-				opp_players.each do |player2|
-					puts player1.name + " vs " + player2.name
-					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-					doc = Nokogiri::HTML(open(url))
-					var = 0
-					size = doc.css("#stats_games td").size
-					doc.css("#stats_games td").each do |stat|
-						var += 1
-						if var <= (size - 270)
-							next
-						end
-						case var%27
-						when 2
-							@name = stat.text
-						when 3
-							@date = stat.text
-						when 8
-							@GS = stat.text.to_i
-						when 9
-							@MP = stat.text
-						when 10
-							@FG = stat.text.to_i
-						when 11
-							@FGA = stat.text.to_i
-						when 12
-							@FGP = (stat.text.to_f*100).round(1)
-						when 13
-							@ThP = stat.text.to_i
-						when 14
-							@ThPA = stat.text.to_i
-						when 15
-							@ThPP = (stat.text.to_f*100).round(1)
-						when 16
-							@FT = stat.text.to_i
-						when 17
-							@FTA = stat.text.to_i
-						when 18
-							@FTP = (stat.text.to_f*100).round(1)
-						when 19
-							@ORB = stat.text.to_i
-						when 20
-							@DRB = stat.text.to_i
-						when 22
-							@AST = stat.text.to_i
-						when 23
-							@STL = stat.text.to_i
-						when 24
-							@BLK = stat.text.to_i
-						when 25
-							@TO = stat.text.to_i
-						when 26
-							@PF = stat.text.to_i
-						when 0
-							@PTS = stat.text.to_i
-							if @MP.index(":") != nil
-								var1 = @MP.index(":")-1
-								var2 = var1 + 2
-								minutes = @MP[0..var1].to_f
-								seconds = @MP[var2..-1].to_f/60
-								@MP = (minutes + seconds).round(2)
-							else
-								@MP = 0
-							end
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
-								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-						end
-					end
-				end
-			end
-		end				
+		teamMatchup(team)			
 
 		team = Team.where(:tomorrow => true)
-		team.each do |team|
-			opp = team.tomorrow_team
-			puts team.name + " vs " + opp.name
-			players = team.player.where(:starter => true, :forward => true)
-			opp_players = opp.player.where(:starter => true, :forward => true)
-			players.each do |player1|
-				opp_players.each do |player2|
-					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-					puts player1.name + " vs " + player2.name
-					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-					doc = Nokogiri::HTML(open(url))
-					var = 0
-					size = doc.css("#stats_games td").size
-					doc.css("#stats_games td").each do |stat|
-						var += 1
-						if var <= (size - 270)
-							next
-						end
-						case var%27
-						when 2
-							@name = stat.text
-						when 3
-							@date = stat.text
-						when 8
-							@GS = stat.text.to_i
-						when 9
-							@MP = stat.text
-						when 10
-							@FG = stat.text.to_i
-						when 11
-							@FGA = stat.text.to_i
-						when 12
-							@FGP = (stat.text.to_f*100).round(1)
-						when 13
-							@ThP = stat.text.to_i
-						when 14
-							@ThPA = stat.text.to_i
-						when 15
-							@ThPP = (stat.text.to_f*100).round(1)
-						when 16
-							@FT = stat.text.to_i
-						when 17
-							@FTA = stat.text.to_i
-						when 18
-							@FTP = (stat.text.to_f*100).round(1)
-						when 19
-							@ORB = stat.text.to_i
-						when 20
-							@DRB = stat.text.to_i
-						when 22
-							@AST = stat.text.to_i
-						when 23
-							@STL = stat.text.to_i
-						when 24
-							@BLK = stat.text.to_i
-						when 25
-							@TO = stat.text.to_i
-						when 26
-							@PF = stat.text.to_i
-						when 0
-							@PTS = stat.text.to_i
-							if @MP.index(":") != nil
-								var1 = @MP.index(":")-1
-								var2 = var1 + 2
-								minutes = @MP[0..var1].to_f
-								seconds = @MP[var2..-1].to_f/60
-								@MP = (minutes + seconds).round(2)
-							else
-								@MP = 0
-							end
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
-								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-						end
-					end
-				end
-			end
-
-			players = team.player.where(:starter => true, :guard => true)
-			opp_players = opp.player.where(:starter => true, :guard => true)
-			players.each do |player1|
-				opp_players.each do |player2|
-					puts player1.name + " vs " + player2.name
-					matchup = PlayerMatchup.create(:player_one_id => player1.id, :player_two_id => player2.id)
-					url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{player1.alias}&p2=#{player2.alias}"
-					doc = Nokogiri::HTML(open(url))
-					var = 0
-					size = doc.css("#stats_games td").size
-					doc.css("#stats_games td").each do |stat|
-						var += 1
-						if var <= (size - 270)
-							next
-						end
-						case var%27
-						when 2
-							@name = stat.text
-						when 3
-							@date = stat.text
-						when 8
-							@GS = stat.text.to_i
-						when 9
-							@MP = stat.text
-						when 10
-							@FG = stat.text.to_i
-						when 11
-							@FGA = stat.text.to_i
-						when 12
-							@FGP = (stat.text.to_f*100).round(1)
-						when 13
-							@ThP = stat.text.to_i
-						when 14
-							@ThPA = stat.text.to_i
-						when 15
-							@ThPP = (stat.text.to_f*100).round(1)
-						when 16
-							@FT = stat.text.to_i
-						when 17
-							@FTA = stat.text.to_i
-						when 18
-							@FTP = (stat.text.to_f*100).round(1)
-						when 19
-							@ORB = stat.text.to_i
-						when 20
-							@DRB = stat.text.to_i
-						when 22
-							@AST = stat.text.to_i
-						when 23
-							@STL = stat.text.to_i
-						when 24
-							@BLK = stat.text.to_i
-						when 25
-							@TO = stat.text.to_i
-						when 26
-							@PF = stat.text.to_i
-						when 0
-							@PTS = stat.text.to_i
-							if @MP.index(":") != nil
-								var1 = @MP.index(":")-1
-								var2 = var1 + 2
-								minutes = @MP[0..var1].to_f
-								seconds = @MP[var2..-1].to_f/60
-								@MP = (minutes + seconds).round(2)
-							else
-								@MP = 0
-							end
-							PlayerMatchupGame.create(:player_matchup_id => matchup.id, :name => @name, :date => @date, :GS => @GS, :MP => @MP, :FG => @FG,
-								:FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP,
-								:ORB => @ORB, :DRB => @DRB, :AST => @AST, :STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)
-						end
-					end
-				end
-			end
-		end
+		teamMatchup(team)
 	end
 
 
@@ -1517,6 +1166,21 @@ namespace :import do
 			home_players.each do |player|
 			end
 		end
+	end
+
+	task :test => :environment do
+		
+		def a(x,y)
+   			return x+y
+		end
+
+		def x(b)
+   			return b.call(3,4)
+		end
+
+		p x(method(:a))
+
+
 	end
 
 

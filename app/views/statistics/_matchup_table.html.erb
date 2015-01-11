@@ -29,9 +29,7 @@
 			</tr>
 		<% end %>
 		<% @id = player.player_matchup_id %>
-		<% if player.date.include? "Previous" %>
-		<tr class="row danger">
-		<% elsif index%2 == 0 %>
+		<% if index%2 == 0 %>
 		<tr class="row info">
 		<% else %>
 		<tr class="row warning">
