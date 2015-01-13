@@ -204,7 +204,7 @@ namespace :import do
 
 				puts @current_team.name
 
-				player.update_attributes(:team_id => @team_1.id, :MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
+				player.update_attributes(:team_id => @current_team.id, :MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
 					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
 					:date_5 => @date_5[5..-1], :team_1 => @team_1, :team_2 => @team_2, :team_3 => @team_3, :team_4 => @team_4, :team_5 => @team_5,
 					:MP_AVG => avg)
