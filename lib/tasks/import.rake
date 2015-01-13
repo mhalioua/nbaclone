@@ -105,6 +105,8 @@ namespace :import do
 						@MP = player.text
 					when 24
 						@team = player.text
+					when 26
+						@my_team = player.text
 					when 28
 						@date = player.text
 					end
@@ -114,6 +116,7 @@ namespace :import do
 						@MP_1 = @MP
 						@date_1 = @date
 						@team_1 = @team 
+						@current_team = @my_team
 					when 60
 						@MP_2 = @MP
 						@date_2 = @date
@@ -197,9 +200,9 @@ namespace :import do
 
 				puts player.name
 
-				@team_1 = Team.find_by_abbr(@team_1)
+				@current_team = Team.find_by_abbr(@current_team)
 
-				puts @team_1.name
+				puts @current_team.name
 
 				player.update_attributes(:team_id => @team_1.id, :MP_1 => @MP_1, :MP_2 => @MP_2, :MP_3 => @MP_3, :MP_4 => @MP_4, :MP_5 => @MP_5,
 					:date_1 => @date_1[5..-1], :date_2 => @date_2[5..-1], :date_3 => @date_3[5..-1], :date_4 => @date_4[5..-1],
