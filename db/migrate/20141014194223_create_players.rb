@@ -6,6 +6,7 @@ class CreatePlayers < ActiveRecord::Migration
     	t.string "name"
       t.string "alias"
       t.string "height"
+      t.string "abbr"
       t.string "position"
       t.boolean "forward", :default => false
       t.boolean "guard", :default => false

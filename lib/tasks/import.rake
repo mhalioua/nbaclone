@@ -40,12 +40,6 @@ namespace :import do
 
 		array = Array.new
 
-		team = Team.where(:yesterday => true) # Find all relevant teams and put them into an array
-		team.each do |team|
-			array << team
-			array << team.yesterday_team
-		end
-
 		team = Team.where(:today => true)
 		team.each do |team|
 			array << team
@@ -71,6 +65,7 @@ namespace :import do
 		array.each do |team|
 			players = team.player
 			players.each_with_index do |player, index|
+				puts player.name
 
 				url = "http://www.basketball-reference.com/players/#{player.alias[0]}/#{player.alias}/gamelog/2015/"
 
@@ -197,8 +192,6 @@ namespace :import do
 				else
 					avg = 0
 				end
-
-				puts player.name
 
 				@current_team = Team.find_by_abbr(@current_team)
 
@@ -601,13 +594,15 @@ namespace :import do
 					@position = player.text
 				when 4
 					@height = player.text
+					space = @name.index(' ') + 1
+					abbr = @name[0] + ". " + @name[space..-1]
 					if @position == "SF" || @position == "PF" || @position == "C"
 						if !player = Player.find_by_name(@name)
-							Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :forward => true)
+							Player.create(:team_id => index+1, :name => @name, :abbr => abbr, :position => @position, :height => @height, :forward => true)
 						end
 					else
 						if !player = Player.find_by_name(@name)
-							Player.create(:team_id => index+1, :name => @name, :position => @position, :height => @height, :guard => true)
+							Player.create(:team_id => index+1, :name => @name, :abbr => abbr, :position => @position, :height => @height, :guard => true)
 						end
 					end
 				end
@@ -834,7 +829,7 @@ namespace :import do
 		team = Team.all
 
 		team.each do |team|
-			team.update_attributes(:today => false, :yesterday => false, :tomorrow => false)
+			team.update_attributes(:today => false, :tomorrow => false)
 		end
 
 		month = Date.today.strftime("%B")[0..2]
@@ -934,54 +929,6 @@ namespace :import do
 			puts home_team.name + " vs " + away_team.name
 			home_team.update_attributes(:tomorrow => true, :tomorrow_team_id => away_team.id)
 			away_team.update_attributes(:tomorrow_team_id => home_team.id)
-		end
-
-		month = Date.yesterday.strftime("%B")[0..2]
-		day = Time.now.yesterday.strftime("%d")
-		if day[0] == "0"
-			day = day[1]
-		end
-		date = month + " " + day + ","
-		bool = false
-		var = 0
-		home = Array.new
-		away = Array.new
-		doc.css("#games a").each_with_index do |key, value|
-			if key.text.include? ","
-				date_bool = key.text.include? date
-				if date_bool
-					@bool = true
-				else
-					@bool = false
-				end
-			end
-			if bool
-				if var%3 == 1
-					away << key.text
-				end
-				if var%3 == 2
-					home << key.text
-				end
-				var = var + 1
-			end
-		end
-
-		home.zip(away).each do |home, away|
-			last = home.rindex(" ") + 1
-			home = home[last..-1]
-			last = away.rindex(" ") + 1
-			away = away[last..-1]
-			if home == "Blazers"
-				home = "Trail " + home
-			end
-			if away == "Blazers"
-				away = "Trail " + away
-			end
-			home_team = Team.find_by_name(home)
-			away_team = Team.find_by_name(away)
-			puts home_team.name + " vs " + away_team.name
-			home_team.update_attributes(:yesterday => true, :yesterday_team_id => away_team.id)
-			away_team.update_attributes(:yesterday_team_id => home_team.id)
 		end
 
 	end
@@ -1108,7 +1055,12 @@ namespace :import do
 
 		def teamMatchup(team)
 			team.each do |team|
-				opp = team.today_team
+				if @day == 'today'
+					opp = team.today_team
+				elsif @day == 'tomorrow'
+					opp = team.tomorrow_team
+				end
+					
 				puts team.name + " vs " + opp.name
 				players = team.player.where(:starter => true, :position => 'PG')
 				opp_players = opp.player.where(:starter => true, :position => 'PG')
@@ -1144,14 +1096,13 @@ namespace :import do
 
 		# pick teams that are playing the three days around today
 
-		team = Team.where(:today => true)
-		teamMatchup(team)
+		@day = 'today'
+		today = Team.where(:today => true)
+		teamMatchup(today)
+		@day = 'tomorrow'
 
-		team = Team.where(:yesterday => true)
-		teamMatchup(team)			
-
-		team = Team.where(:tomorrow => true)
-		teamMatchup(team)
+		tomorrow = Team.where(:tomorrow => true)
+		teamMatchup(tomorrow)
 	end
 
 
@@ -1159,20 +1110,11 @@ namespace :import do
 
 
 	task :save => :environment do
-		month = Date.today.strftime("%B")[0..2]
-		year = Date.today.strftime("%Y")
-		day = Time.now.strftime("%d")
-		if day[0] == "0"
-			day = day[1]
-		end
-		date = month + " " + day + " " + year
 		team = Team.where(:today => true)
-		team.each do |home|
-			away = home.today_team
-			home_players = home.player
-			away_players = away.player
-			home_players.each do |player|
-			end
+		tomorrow = Team.where(:tomorrow => true)
+
+		tomo.each do |team|
+			puts team.name
 		end
 	end
 

@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "name"
     t.string   "alias"
     t.string   "height"
+    t.string   "abbr"
     t.string   "position"
     t.boolean  "forward",                      default: false
     t.boolean  "guard",                        default: false
