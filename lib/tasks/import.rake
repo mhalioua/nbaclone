@@ -455,10 +455,12 @@ namespace :import do
 								:sat_opp_FG => @opp_FG, :sat_opp_FGA => @opp_FGA, :sat_opp_FTA => @opp_FTA, :sat_opp_TOV => @opp_TOV, :sat_opp_PTS => @opp_PTS)
 						end
 						if today
+							puts @G
 							team.update_attributes(:today_G => @G, :today_FG => @FG, :today_FGA => @FGA, :today_FTA => @FTA, :today_TOV => @TOV, :today_PTS => @PTS,
 								:today_opp_FG => @opp_FG, :today_opp_FGA => @opp_FGA, :today_opp_FTA => @opp_FTA, :today_opp_TOV => @opp_TOV, :today_opp_PTS => @opp_PTS)
 						end
 						if tomorrow
+							puts @G
 							team.update_attributes(:tomorrow_G => @G, :tomorrow_FG => @FG, :tomorrow_FGA => @FGA, :tomorrow_FTA => @FTA, :tomorrow_TOV => @TOV, :tomorrow_PTS => @PTS,
 								:tomorrow_opp_FG => @opp_FG, :tomorrow_opp_FGA => @opp_FGA, :tomorrow_opp_FTA => @opp_FTA, :tomorrow_opp_TOV => @opp_TOV, :tomorrow_opp_PTS => @opp_PTS)
 						end
@@ -548,11 +550,13 @@ namespace :import do
 					bool = true
 				end
 				if stat.text == today_team
+					puts today_team + " playing today vs " + team.name
 					@var = 0
 					today = true
 					bool = true
 				end
 				if stat.text == tomorrow_team
+					puts tomorrow_team + " playing tomorrow vs " + team.name
 					@var = 0
 					bool = true
 					tomorrow = true
