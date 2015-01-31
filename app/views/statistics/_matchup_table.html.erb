@@ -27,6 +27,8 @@
 					<th>TO</th>
 					<th>PF</th>
 					<th>PTS</th>
+					<th>Posessions</th>
+					<th>OE</th>
 				</tr>
 			<% end %>
 			<% @id = player.player_matchup_id %>
@@ -61,6 +63,8 @@
 				<td><%= player.TO %></td>
 				<td><%= player.PF %></td>
 				<td><%= player.PTS %></td>
+				<td><%= player.possessions %></td>
+				<td><%= player.OE %></td>
 			</tr>
 		<% end %>
 	</table>

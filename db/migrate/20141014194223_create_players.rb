@@ -9,7 +9,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.string "abbr"
       t.string "position"
       t.boolean "forward", :default => false
-      t.boolean "guard", :default => false
+      t.boolean "guard"
       t.integer "GS"
       t.integer "G"
       t.integer "MP"
@@ -28,6 +28,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.integer "TO"
       t.integer "PF"
       t.integer "PTS"
+      t.integer "AST"
       t.integer "ORtg"
       t.integer "DRtg"
       t.float "eFG"

@@ -11,7 +11,52 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141028033011) do
+ActiveRecord::Schema.define(version: 20150128011248) do
+
+  create_table "actions", force: true do |t|
+    t.integer  "game_id"
+    t.integer  "quarter"
+    t.float    "time",       limit: 24
+    t.string   "action"
+    t.string   "player1"
+    t.string   "player2"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "games", force: true do |t|
+    t.integer  "away_team_id"
+    t.integer  "home_team_id"
+    t.string   "date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "lineups", force: true do |t|
+    t.integer  "game_id"
+    t.integer  "quarter"
+    t.integer  "player1"
+    t.integer  "player2"
+    t.integer  "player3"
+    t.integer  "player4"
+    t.integer  "player5"
+    t.integer  "player6"
+    t.integer  "player7"
+    t.integer  "player8"
+    t.integer  "player9"
+    t.integer  "player10"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "past_teams", force: true do |t|
+    t.string   "name"
+    t.string   "abbr"
+    t.string   "city"
+    t.string   "year"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "player_matchup_games", force: true do |t|
     t.integer  "player_matchup_id"
@@ -56,7 +101,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.string   "abbr"
     t.string   "position"
     t.boolean  "forward",                      default: false
-    t.boolean  "guard",                        default: false
+    t.boolean  "guard"
     t.integer  "GS"
     t.integer  "G"
     t.integer  "MP"
@@ -75,6 +120,7 @@ ActiveRecord::Schema.define(version: 20141028033011) do
     t.integer  "TO"
     t.integer  "PF"
     t.integer  "PTS"
+    t.integer  "AST"
     t.integer  "ORtg"
     t.integer  "DRtg"
     t.float    "eFG",               limit: 24

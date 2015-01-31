@@ -668,6 +668,8 @@ namespace :import do
 					@ORB = player.text.to_i
 				when 21
 					@DRB = player.text.to_i
+				when 23
+					@AST = player.text.to_i
 				when 24
 					@STL = player.text.to_i
 				when 26
@@ -680,11 +682,11 @@ namespace :import do
 						if var <= 336
 							player.update_attributes(:starter => true, :GS => @GS, :G => @G, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
 								:ThPP => @ThPP, :eFG => @eFG, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :STL => @STL,
-								:TO => @TO, :PF => @PF, :PTS => @PTS)
+								:TO => @TO, :PF => @PF, :PTS => @PTS, :AST => @AST)
 						else
 							player.update_attributes(:starter => false, :GS => @GS, :G => @G, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP, :ThPA => @ThPA,
 								:ThPP => @ThPP,:FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :STL => @STL,
-								:TO => @TO, :PF => @PF, :PTS => @PTS)
+								:TO => @TO, :PF => @PF, :PTS => @PTS, :AST => @AST)
 						end
 					end
 				end
@@ -1116,6 +1118,17 @@ namespace :import do
 		tomo.each do |team|
 			puts team.name
 		end
+	end
+
+	task :test => :environment do
+		player = Player.find(1)
+
+		puts player.FG
+		puts player.AST
+		puts player.FGA
+		puts player.ORB
+
+		puts (player.FG + player.AST)/(player.FGA - player.ORB + player.AST + player.TO)
 	end
 
 

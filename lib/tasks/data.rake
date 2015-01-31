@@ -211,6 +211,13 @@ namespace :data do
 		end
 
 		starters = away_starters + home_starters
+		players = away_players + home_players
+
+		abbr = Hash.new
+
+		players.each do |player|
+			abbr[player.abbr] = player
+		end
 
 		setFalse()
 
@@ -228,7 +235,6 @@ namespace :data do
 		end
 
 		actions = Array.new
-		starters = Set.new
 
 		play_doc.css(".stats_table td").each_with_index do |line, index|
 
@@ -295,12 +301,8 @@ namespace :data do
 					@away_second_name = nil
 				end
 
-				player1 = Player.find_by_abbr(@away_name)
-				player2 = Player.find_by_abbr(@away_second_name)
-				if @sub
-					starters << player1
-					starters.delete?(player2)
-				end
+				player1 = abbr[@away_name]
+				player2 = abbr[@away_second_name]
 				action = findAction()
 				if @starters.size < 10
 					if player1 != nil
@@ -351,12 +353,8 @@ namespace :data do
 					@home_second_name = nil
 				end
 
-				player1 = Player.find_by_abbr(@home_name)
-				player2 = Player.find_by_abbr(@home_second_name)
-				if @sub
-					starters << player1
-					starters.delete?(player2)
-				end
+				player1 = abbr[@home_name]
+				player2 = abbr[@home_second_name]
 				action = findAction()
 				if @starters.size < 10
 					if player1 != nil
@@ -407,6 +405,7 @@ namespace :data do
 		end_time = 0.0
 		first_quarter_actions.each do |action|
 			puts action.player1.name
+			puts action.action
 			end_time = action.time
 			if action.action == 'substitution'
 				first_quarter_lineup << action.player1
@@ -442,5 +441,244 @@ namespace :data do
 
 
 	end
+
+	task :stat => :environment do
+		require 'nokogiri'
+		require 'open-uri'
+
+		def over_or_under(ps, cl, fs)
+
+			under = false
+			over = false
+
+			if ps >= (cl+3)
+				over = true
+			elsif ps <= (cl-3)
+				under = true
+			else
+				return 0
+			end
+
+			if under
+				if fs < cl
+					return 1
+				elsif fs > cl
+					return -1
+				else
+					return 0
+				end
+			end
+
+			if over
+				if fs > cl
+					return 1
+				elsif fs < cl
+					return -1
+				else
+					return 0
+				end
+			end
+
+		end
+
+		puts over_or_under(107, 103, 103)
+
+
+	end
+
+
+	task :date => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+
+		urls = Array.new
+
+		month = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+		hash = Hash.new
+		month.each_with_index do |value, index|
+			hash[value] = index+1
+		end
+
+		(1990..2014).each do |n|
+			num = n.to_s
+
+			url = "http://www.basketball-reference.com/leagues/NBA_#{num}_games.html"
+
+			doc = Nokogiri::HTML(open(url))
+
+			var = 0
+			doc.css("td").each do |stat|
+				var += 1
+				if var%8 == 1
+					date = stat.text[5..-1]
+					@mon = date[0..2]
+					@mon = hash[@mon].to_s
+					if @mon.size == 1
+						@mon = "0" + @mon
+					end
+					comma = date.index(",")
+					if comma == 6
+						@day = date[comma-2..comma-1]
+					else
+						@day = "0" + date[comma-1]
+					end
+					@year = date[-4..-1]
+				end
+				if var%8 == 5
+					team = stat.text
+					case team
+					when "Charlotte Bobcats"
+						@abbr = "CHA"
+						next
+					when "New Orleans Hornets"
+						@abbr = "NOH"
+						next
+					when "New Jersey Nets"
+						@abbr = "NJN"
+						next
+					when "Washington Bullets"
+						@abbr = "WSB"
+						next
+					when "Charlotte Hornets"
+						@abbr = "CHH"
+						next
+					when "Seattle SuperSonics"
+						@abbr = "SEA"
+						next
+					end
+					last = team.rindex(" ") + 1
+					team_name = team[last..-1]
+					if team_name == "Blazers"
+						team_name = "Trail " + team_name
+					end
+					if home = Team.find_by_name(team_name)
+						@abbr = home.abbr
+					end
+				end
+				if var%8 == 6
+					urls << (@year + @mon + @day + "0" + @abbr)
+				end
+			end
+
+			urls.each do |date|
+				url = "http://www.basketball-reference.com/boxscores/#{date}.html"
+
+				box_doc = Nokogiri::HTML(open(url))
+
+				away_team = ""
+				home_team = ""
+				away_abbr = ""
+				home_abbr = ""
+
+
+				# This block of code grabs the home and away teams of the game.
+				box_doc.css(".background_yellow a").each_with_index do |stat, index|
+					if index == 0
+						away_abbr = stat.text[0..2]
+						home_abbr = stat.text[3..-1]
+						away_team = Team.find_by_abbr(away_abbr)
+						home_team = Team.find_by_abbr(home_abbr)
+					end
+				end
+
+				if away_team == nil
+					if away_abbr == 'NOH'
+						away_team = Team.new(:name => 'Hornets', :abbr => 'NOH')
+					elsif away_abbr == 'CHA'
+						away_team = Team.new(:name => 'Bobcats', :abbr => 'CHA')
+					elsif away_abbr == 'NJN'
+						away_team = Team.new(:name => 'Nets', :abbr => 'NJN')
+					elsif away_abbr == 'WSB'
+						away_team = Team.new(:name => 'Bullets', :abbr => 'WSB')
+					elsif away_abbr == 'CHH'
+						away_team = Team.new(:name => 'Hornets', :abbr => 'CHH')
+					elsif away_abbr == 'SEA'
+						away_team = Team.new(:name => 'SuperSonics', :abbr => 'SEA')
+					end
+				end
+				if home_team == nil
+					if home_abbr == 'NOH'
+						home_team = Team.new(:name => 'Hornets', :abbr => 'NOH')
+					elsif home_abbr == 'CHA'
+						home_team = Team.new(:name => 'Bobcats', :abbr => 'CHA')
+					elsif home_abbr == 'NJN'
+						home_team = Team.new(:name => 'Nets', :abbr => 'NJN')
+					elsif home_abbr == 'WSB'
+						home_team = Team.new(:name => 'Bullets', :abbr => 'WSB')
+					elsif home_abbr == 'CHH'
+						home_team = Team.new(:name => 'Hornets', :abbr => 'CHH')
+					elsif home_abbr == 'SEA'
+						home_team = Team.new(:name => 'SuperSonics', :abbr => 'SEA')
+					end
+				end
+
+				away_players = Array.new
+				home_players = Array.new
+
+				# These two arrays only contain the starters
+				away_starters = Array.new
+				home_starters = Array.new
+
+				puts url
+
+				# This array iterates through the names of the away team's starters.
+				box_doc.css("##{away_team.abbr}_basic a").each_with_index do |stat, index|
+
+					# Find the player in the database by name if he's there.
+					if player = Player.find_by_name(stat.text)
+						away_players << player
+					# Otherwise create a new player with that name and create his abbreviation.
+					else
+						name = stat.text
+						space = name.index(' ') + 1
+						abbr = name[0] + ". " + name[space..-1]
+						player = Player.create(:team_id => away_team.id, :name => name, :abbr => abbr)
+						away_players << player
+					end
+					# If the index of the array containg the player's names
+					if index < 5
+						away_starters << player
+						puts player.name
+					end
+
+				end
+
+				# Same as last block of code but for the home team.
+				box_doc.css("##{home_team.abbr}_basic a").each_with_index do |stat, index|
+
+					if player = Player.find_by_name(stat.text)
+						home_players << player
+					else
+						name = stat.text
+						space = name.index(' ') + 1
+						abbr = name[0] + ". " + name[space..-1]
+						player = Player.create(:team_id => home_team.id, :name => name, :abbr => abbr)
+						home_players << player
+					end
+					if index < 5
+						home_starters << player
+						puts player.name
+					end
+
+				end
+
+
+			end
+		end
+
+	end
+
+
+	task :create_past_teams => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+
+
+
+	end
+
+
 
 end
