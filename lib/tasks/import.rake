@@ -364,8 +364,8 @@ namespace :import do
 			yesterday = false
 			today = false
 			tomorrow = false
-			today_team = "Nothing"
-			tomorrow_team = "Nothing"
+			today_team = nil
+			tomorrow_team = nil
 			@var = 0
 			doc = Nokogiri::HTML(open(url))
 			team = Team.find_by_id(index+1)
@@ -401,7 +401,6 @@ namespace :import do
 						@opp_TOV = stat.text.to_f
 					when 31
 						@opp_PTS = stat.text.to_f
-					when 32
 						if home
 							team.update_attributes(:home_G => @G, :home_FG => @FG, :home_FGA => @FGA, :home_FTA => @FTA, :home_TOV => @TOV, :home_PTS => @PTS,
 								:home_opp_FG => @opp_FG, :home_opp_FGA => @opp_FGA, :home_opp_FTA => @opp_FTA, :home_opp_TOV => @opp_TOV, :home_opp_PTS => @opp_PTS)
@@ -456,11 +455,14 @@ namespace :import do
 						end
 						if today
 							puts @G
+							puts @G
+							puts @FG
+							puts @FGA
 							team.update_attributes(:today_G => @G, :today_FG => @FG, :today_FGA => @FGA, :today_FTA => @FTA, :today_TOV => @TOV, :today_PTS => @PTS,
 								:today_opp_FG => @opp_FG, :today_opp_FGA => @opp_FGA, :today_opp_FTA => @opp_FTA, :today_opp_TOV => @opp_TOV, :today_opp_PTS => @opp_PTS)
+							puts team.today_G
 						end
 						if tomorrow
-							puts @G
 							team.update_attributes(:tomorrow_G => @G, :tomorrow_FG => @FG, :tomorrow_FGA => @FGA, :tomorrow_FTA => @FTA, :tomorrow_TOV => @TOV, :tomorrow_PTS => @PTS,
 								:tomorrow_opp_FG => @opp_FG, :tomorrow_opp_FGA => @opp_FGA, :tomorrow_opp_FTA => @opp_FTA, :tomorrow_opp_TOV => @opp_TOV, :tomorrow_opp_PTS => @opp_PTS)
 						end
@@ -556,7 +558,6 @@ namespace :import do
 					bool = true
 				end
 				if stat.text == tomorrow_team
-					puts tomorrow_team + " playing tomorrow vs " + team.name
 					@var = 0
 					bool = true
 					tomorrow = true
