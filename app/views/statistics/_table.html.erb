@@ -3,7 +3,7 @@
 		<th colspan="20", style="text-align:center"><%= team.name %></th>
 	</tr>
 	<tr>
-		<th>Name and Height</th>
+		<th style="text-align:center">Name and Height</th>
 		<th><NOBR>Total MP</NOBR></th>
 		<th>ORtg</th>
 		<th>DRtg</th>
@@ -34,21 +34,21 @@
 			<td><NOBR><%= link_to(player.name, :controller => 'statistics', :action => 'matchup', :id => player.id, :team_id => params[:id], :day => 'yesterday') + " " + player.height %></NOBR></td>
 			<% end %>
 			<td><%= player.MP %></td>
-			<td bgcolor="#00FFFF"><%= player.ORtg %></td>
-			<td bgcolor="#00FFFF"><%= player.DRtg %></td>
+			<td id="lightblue"><%= player.ORtg %></td>
+			<td id="lightblue"><%= player.DRtg %></td>
 			<td><%= player.on_court_pace %></td>
 			<td><%= player.opp_on_court_pace %></td>
-			<td bgcolor="#00FFFF"><%= player.on_court_ORtg %></td>
-			<td bgcolor="#00FFFF"><%= player.opp_on_court_ORtg %></td>
+			<td id="lightblue"><%= player.on_court_ORtg %></td>
+			<td id="lightblue"><%= player.opp_on_court_ORtg %></td>
 			<td><%= player.MP_2014 %></td>
-			<td bgcolor="#00FFFF"><%= player.ORtg_2014 %></td>
-			<td bgcolor="#00FFFF"><%= player.DRtg_2014 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_1 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_2 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_3 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_4 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_5 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_AVG %></td>
+			<td id="lightblue"><%= player.ORtg_2014 %></td>
+			<td id="lightblue"><%= player.DRtg_2014 %></td>
+			<td id="lightblue"><%= player.MP_1 %></td>
+			<td id="lightblue"><%= player.MP_2 %></td>
+			<td id="lightblue"><%= player.MP_3 %></td>
+			<td id="lightblue"><%= player.MP_4 %></td>
+			<td id="lightblue"><%= player.MP_5 %></td>
+			<td id="lightblue"><%= player.MP_AVG %></td>
 			<td><%= player.position %></td>
 			<td><%= player.possessions %></td>
 			<td><%= player.OE %></td>

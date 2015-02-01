@@ -454,13 +454,8 @@ namespace :import do
 								:sat_opp_FG => @opp_FG, :sat_opp_FGA => @opp_FGA, :sat_opp_FTA => @opp_FTA, :sat_opp_TOV => @opp_TOV, :sat_opp_PTS => @opp_PTS)
 						end
 						if today
-							puts @G
-							puts @G
-							puts @FG
-							puts @FGA
 							team.update_attributes(:today_G => @G, :today_FG => @FG, :today_FGA => @FGA, :today_FTA => @FTA, :today_TOV => @TOV, :today_PTS => @PTS,
 								:today_opp_FG => @opp_FG, :today_opp_FGA => @opp_FGA, :today_opp_FTA => @opp_FTA, :today_opp_TOV => @opp_TOV, :today_opp_PTS => @opp_PTS)
-							puts team.today_G
 						end
 						if tomorrow
 							team.update_attributes(:tomorrow_G => @G, :tomorrow_FG => @FG, :tomorrow_FGA => @FGA, :tomorrow_FTA => @FTA, :tomorrow_TOV => @TOV, :tomorrow_PTS => @PTS,
@@ -552,7 +547,6 @@ namespace :import do
 					bool = true
 				end
 				if stat.text == today_team
-					puts today_team + " playing today vs " + team.name
 					@var = 0
 					today = true
 					bool = true
@@ -601,6 +595,12 @@ namespace :import do
 					@height = player.text
 					space = @name.index(' ') + 1
 					abbr = @name[0] + ". " + @name[space..-1]
+					if @position == "G"
+						@position = "SG"
+					end
+					if @position == "F"
+						@position = "SF"
+					end
 					if @position == "SF" || @position == "PF" || @position == "C"
 						if !player = Player.find_by_name(@name)
 							Player.create(:team_id => index+1, :name => @name, :abbr => abbr, :position => @position, :height => @height, :forward => true)

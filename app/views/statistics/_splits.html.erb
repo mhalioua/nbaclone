@@ -28,13 +28,13 @@
 		<td><%= (away.home_FG/away.home_FGA).round(2) %></td>
 		<td><%= away.home_FTA %></td>
 		<td><%= away.home_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.home_PTS %></td>
+		<td id="lightblue"><%= away.home_PTS %></td>
 		<td><%= away.home_opp_FG %></td>
 		<td><%= away.home_opp_FGA %></td>
 		<td><%= (away.home_opp_FG/away.home_opp_FGA).round(2) %></td>
 		<td><%= away.home_opp_FTA %></td>
 		<td><%= away.home_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.home_opp_PTS %></td>
+		<td id="lightblue"><%= away.home_opp_PTS %></td>
 	</tr>
 	<tr style="border-bottom: 4px solid">
 		<td>Away</td>
@@ -44,13 +44,13 @@
 		<td><%= (away.away_FG/away.away_FGA).round(2)%></td>
 		<td><%= away.away_FTA %></td>
 		<td><%= away.away_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.away_PTS %></td>
+		<td id="lightblue"><%= away.away_PTS %></td>
 		<td><%= away.away_opp_FG %></td>
 		<td><%= away.away_opp_FGA %></td>
 		<td><%= (away.away_opp_FG/away.away_opp_FGA).round(2) %></td>
 		<td><%= away.away_opp_FTA %></td>
 		<td><%= away.away_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.away_opp_PTS %></td>
+		<td id="lightblue"><%= away.away_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>Sun</td>
@@ -64,7 +64,7 @@
 		<% end %>
 		<td><%= away.sun_FTA %></td>
 		<td><%= away.sun_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.sun_PTS %></td>
+		<td id="lightblue"><%= away.sun_PTS %></td>
 		<td><%= away.sun_opp_FG %></td>
 		<td><%= away.sun_opp_FGA %></td>
 		<% if away.sun_opp_FGA == 0 %>
@@ -74,7 +74,7 @@
 		<% end %>
 		<td><%= away.sun_opp_FTA %></td>
 		<td><%= away.sun_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.sun_opp_PTS %></td>
+		<td id="lightblue"><%= away.sun_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>Mon</td>
@@ -88,7 +88,7 @@
 		<% end %>
 		<td><%= away.mon_FTA %></td>
 		<td><%= away.mon_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.mon_PTS %></td>
+		<td id="lightblue"><%= away.mon_PTS %></td>
 		<td><%= away.mon_opp_FG %></td>
 		<td><%= away.mon_opp_FGA %></td>
 		<% if away.mon_opp_FGA == 0 %>
@@ -98,7 +98,7 @@
 		<% end %>
 		<td><%= away.mon_opp_FTA %></td>
 		<td><%= away.mon_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.mon_opp_PTS %></td>
+		<td id="lightblue"><%= away.mon_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>Tue</td>
@@ -112,7 +112,7 @@
 		<% end %>
 		<td><%= away.tue_FTA %></td>
 		<td><%= away.tue_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.tue_PTS %></td>
+		<td id="lightblue"><%= away.tue_PTS %></td>
 		<td><%= away.tue_opp_FG %></td>
 		<td><%= away.tue_opp_FGA %></td>
 		<% if away.tue_opp_FGA == 0 %>
@@ -122,7 +122,7 @@
 		<% end %>
 		<td><%= away.tue_opp_FTA %></td>
 		<td><%= away.tue_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.tue_opp_PTS %></td>
+		<td id="lightblue"><%= away.tue_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>Wed</td>
@@ -136,7 +136,7 @@
 		<% end %>
 		<td><%= away.wed_FTA %></td>
 		<td><%= away.wed_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.wed_PTS %></td>
+		<td id="lightblue"><%= away.wed_PTS %></td>
 		<td><%= away.wed_opp_FG %></td>
 		<td><%= away.wed_opp_FGA %></td>
 		<% if away.wed_opp_FGA == 0 %>
@@ -146,7 +146,7 @@
 		<% end %>
 		<td><%= away.wed_opp_FTA %></td>
 		<td><%= away.wed_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.wed_opp_PTS %></td>
+		<td id="lightblue"><%= away.wed_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>Thu</td>
@@ -160,7 +160,7 @@
 		<% end %>
 		<td><%= away.thu_FTA %></td>
 		<td><%= away.thu_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.thu_PTS %></td>
+		<td id="lightblue"><%= away.thu_PTS %></td>
 		<td><%= away.thu_opp_FG %></td>
 		<td><%= away.thu_opp_FGA %></td>
 		<% if away.thu_opp_FGA == 0 %>
@@ -170,7 +170,7 @@
 		<% end %>
 		<td><%= away.thu_opp_FTA %></td>
 		<td><%= away.thu_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.thu_opp_PTS %></td>
+		<td id="lightblue"><%= away.thu_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>Fri</td>
@@ -184,7 +184,7 @@
 		<% end %>
 		<td><%= away.fri_FTA %></td>
 		<td><%= away.fri_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.fri_PTS %></td>
+		<td id="lightblue"><%= away.fri_PTS %></td>
 		<td><%= away.fri_opp_FG %></td>
 		<td><%= away.fri_opp_FGA %></td>
 		<% if away.fri_opp_FGA == 0 %>
@@ -194,7 +194,7 @@
 		<% end %>
 		<td><%= away.fri_opp_FTA %></td>
 		<td><%= away.fri_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.fri_opp_PTS %></td>
+		<td id="lightblue"><%= away.fri_opp_PTS %></td>
 	</tr>
 	<tr style="border-bottom: 4px solid">
 		<td>Sat</td>
@@ -208,7 +208,7 @@
 		<% end %>
 		<td><%= away.sat_FTA %></td>
 		<td><%= away.sat_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.sat_PTS %></td>
+		<td id="lightblue"><%= away.sat_PTS %></td>
 		<td><%= away.sat_opp_FG %></td>
 		<td><%= away.sat_opp_FGA %></td>
 		<% if away.sat_opp_FGA == 0 %>
@@ -228,13 +228,13 @@
 		<td><%= (away.zero_FG/away.zero_FGA).round(2)%></td>
 		<td><%= away.zero_FTA %></td>
 		<td><%= away.zero_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.zero_PTS %></td>
+		<td id="lightblue"><%= away.zero_PTS %></td>
 		<td><%= away.zero_opp_FG %></td>
 		<td><%= away.zero_opp_FGA %></td>
 		<td><%= (away.zero_opp_FG/away.zero_opp_FGA).round(2) %></td>
 		<td><%= away.zero_opp_FTA %></td>
 		<td><%= away.zero_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.zero_opp_PTS %></td>
+		<td id="lightblue"><%= away.zero_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>1 Day</td>
@@ -244,13 +244,13 @@
 		<td><%= (away.one_FG/away.one_FGA).round(2) %></td>
 		<td><%= away.one_FTA %></td>
 		<td><%= away.one_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.one_PTS %></td>
+		<td id="lightblue"><%= away.one_PTS %></td>
 		<td><%= away.one_opp_FG %></td>
 		<td><%= away.one_opp_FGA %></td>
 		<td><%= (away.one_opp_FG/away.one_opp_FGA).round(2) %></td>
 		<td><%= away.one_opp_FTA %></td>
 		<td><%= away.one_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.one_opp_PTS %></td>
+		<td id="lightblue"><%= away.one_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>2 Days</td>
@@ -260,13 +260,13 @@
 		<td><%= (away.two_FG/away.two_FGA).round(2)%></td>
 		<td><%= away.two_FTA %></td>
 		<td><%= away.two_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.two_PTS %></td>
+		<td id="lightblue"><%= away.two_PTS %></td>
 		<td><%= away.two_opp_FG %></td>
 		<td><%= away.two_opp_FGA %></td>
 		<td><%= (away.two_opp_FG/away.two_opp_FGA).round(2) %></td>
 		<td><%= away.two_opp_FTA %></td>
 		<td><%= away.two_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.two_opp_PTS %></td>
+		<td id="lightblue"><%= away.two_opp_PTS %></td>
 	</tr>
 	<tr>
 		<td>3+ Days</td>
@@ -280,7 +280,7 @@
 		<% end %>
 		<td><%= away.three_FTA %></td>
 		<td><%= away.three_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.three_PTS %></td>
+		<td id="lightblue"><%= away.three_PTS %></td>
 		<td><%= away.three_opp_FG %></td>
 		<td><%= away.three_opp_FGA %></td>
 		<% if away.three_opp_FGA != 0%>
@@ -290,7 +290,7 @@
 		<% end %>
 		<td><%= away.three_opp_FTA %></td>
 		<td><%= away.three_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.three_opp_PTS %></td>
+		<td id="lightblue"><%= away.three_opp_PTS %></td>
 	</tr>
 	<% if params[:action] == "today" %>
 	<tr>
@@ -305,7 +305,7 @@
 		<% end %>
 		<td><%= away.today_FTA %></td>
 		<td><%= away.today_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.today_PTS %></td>
+		<td id="lightblue"><%= away.today_PTS %></td>
 		<td><%= away.today_opp_FG %></td>
 		<td><%= away.today_opp_FGA %></td>
 		<% if away.today_opp_FGA != 0 %>
@@ -315,7 +315,7 @@
 		<% end %>
 		<td><%= away.today_opp_FTA %></td>
 		<td><%= away.today_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.today_opp_PTS %></td>
+		<td id="lightblue"><%= away.today_opp_PTS %></td>
 	</tr>
 	<% end %>
 	<% if params[:action] == "tomorrow" %>
@@ -331,7 +331,7 @@
 		<% end %>
 		<td><%= away.tomorrow_FTA %></td>
 		<td><%= away.tomorrow_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.tomorrow_PTS %></td>
+		<td id="lightblue"><%= away.tomorrow_PTS %></td>
 		<td><%= away.tomorrow_opp_FG %></td>
 		<td><%= away.tomorrow_opp_FGA %></td>
 		<% if away.tomorrow_opp_FGA != 0 %>
@@ -341,7 +341,7 @@
 		<% end %>
 		<td><%= away.tomorrow_opp_FTA %></td>
 		<td><%= away.tomorrow_opp_TOV %></td>
-		<td bgcolor="#00FFFF"><%= away.tomorrow_opp_PTS %></td>
+		<td id="lightblue"><%= away.tomorrow_opp_PTS %></td>
 	</tr>
 	<% end %>
 </table>

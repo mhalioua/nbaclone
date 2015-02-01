@@ -1,7 +1,7 @@
 <% if game.size != 0 %>
 	<table class="table table-bordered table-striped table-hover table-condensed">
 		<% game.each_with_index do |player, index| %>
-			<% if player.player_matchup_id != @id %>
+			<% if player.player_matchup_id != @id || index == 0 %>
 				<tr class="row">
 					<th>Name</th>
 					<th>Team</th>
@@ -32,10 +32,12 @@
 				</tr>
 			<% end %>
 			<% @id = player.player_matchup_id %>
-			<% if index%2 == 0 %>
-			<tr class="row info">
-			<% else %>
-			<tr class="row warning">
+			<% if player.date.include?("Previous") %>
+			<tr class="row danger parent">
+			<% elsif index%2 == 0 %>
+			<tr class="row info child">
+			<% elsif index%2 == 1 %>
+			<tr class="row warning child">
 			<% end %>
 				<td><%= player.name %> </td>
 				<% if player.name != "Total" %>

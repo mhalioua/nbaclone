@@ -4,8 +4,6 @@
 <%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'today', :id => params[:team_id]) %>
 <% elsif params[:day] == "tomorrow" %>
 <%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'tomorrow', :id => params[:team_id]) %>
-<% elsif params[:day] == "yesterday" %>
-<%= link_to("#{@team.name} vs #{@opp_team.name}", :controller => 'statistics', :action => 'yesterday', :id => params[:team_id]) %>
 <% end %>
 </div>
 <% if @player.position != 'C' && @player.position != 'PF' %>

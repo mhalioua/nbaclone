@@ -46,9 +46,6 @@ class StatisticsController < ApplicationController
 
 		@team = @player.team # this code checks to see what team the team is playing by checking the day attribute.
 		# This could have easily been changed to the controller name which could have us get rid of a url variable altogether.
-		if params[:day] == "yesterday"
-			@opp_team = @team.yesterday_team
-		end
 		if params[:day] == "today"
 			@opp_team = @team.today_team
 		end
@@ -133,6 +130,7 @@ class StatisticsController < ApplicationController
 			      	@PF_2 = @PF_2 + game.PF
 			      	@PTS_2 = @PTS_2 + game.PTS
 			    end
+			    @game << game
 			end
 
 			#initialize variables for percentage
@@ -168,7 +166,7 @@ class StatisticsController < ApplicationController
 	 		end
 	 		@MP = @MP.round(2)
 	 		@MP_2 = @MP_2.round(2)
-	 		if @size != 0
+	 		if @size != 0 && @size != 1
 		 		@total = PlayerMatchupGame.new(:player_matchup_id => @id, :date => @date, :name => @name, :GS => @GS, :MP => @MP, :FG => @FG, :FGA => @FGA, :FGP => @FGP, :ThP => @ThP,
 		 			:ThPA => @ThPA, :ThPP => @ThPP, :FT => @FT, :FTA => @FTA, :FTP => @FTP, :ORB => @ORB, :DRB => @DRB, :AST => @AST,
 		 			:STL => @STL, :BLK => @BLK, :TO => @TO, :PF => @PF, :PTS => @PTS)

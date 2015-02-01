@@ -21,6 +21,7 @@
   background: #f6f6f6;
   text-align:center;
   }
+  
 table.matchup tr:nth-of-type(odd) td {
     border-bottom: 3px solid #000000;
 }
@@ -28,8 +29,10 @@ table.matchup tr:nth-of-type(odd) td {
 table tr td {
     border-bottom: 1px solid #000000;
 }
+
 tbody th, tbody td {
-padding:5px;
+  text-align:center;
+  padding:5px;
 }
 
 td
@@ -40,4 +43,10 @@ td
 th
 {
     border: 1px solid black;
+}
+
+#lightblue {
+
+  background-color: #00FFFF;
+
 }
