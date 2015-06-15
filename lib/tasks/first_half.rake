@@ -447,10 +447,13 @@ namespace :first_half do
 			@opp_ORTG.clear
 			@opp_DRTG.clear
 			puts game.url
+			# get the lineups of the game in question
 			lineups = game.lineups.where(:quarter => 0)
 			lineups.each_with_index do |lineup, lindex|
 				@players.clear
+				# iterate through each starter
 				lineup.starters.each do |starter|
+					# get all the pastplayers that have the player
 					player = starter.past_player.player
 					past_players = PastPlayer.where(:player_id => player.id)
 					# Create query string to find the past players in database
@@ -462,7 +465,7 @@ namespace :first_half do
 							query += " OR past_player_id = #{past_player.id}"
 						end
 					end
-					# Find games that were played before the game we are looking for
+					# Find games that were played before the game we are looking for by getting the current lineup and grabbing the ones created before that one
 					lineup = Lineup.where(:game_id => game.id).first
 
 					# Find starters with stats for the whole game that occurred before the game in question and that are of the player in question
@@ -473,13 +476,13 @@ namespace :first_half do
 					starters.each_with_index do |zero_starter, index|
 						# find the game that the starter is playing in
 						starter_game = zero_starter.lineup.game
-						# find second quarter lineup from first quarter lineup
+						# find quarter lineup from full game lineup
 						first_quarter_lineup = starter_game.lineups.where(:quarter => 1, :away => zero_starter.lineup.away).first 
 						second_quarter_lineup = starter_game.lineups.where(:quarter => 2, :away => first_quarter_lineup.away).first
 						# find opposing team lineups for both first and second quarters
 						opp_first_quarter_lineup = starter_game.lineups.where(:quarter => 1, :away => !first_quarter_lineup.away).first
 						opp_second_quarter_lineup = starter_game.lineups.where(:quarter => 2, :away => !first_quarter_lineup.away).first
-						# find second quarter starter
+						# find quarter starter
 						first_starter = first_quarter_lineup.starters.where(:name => zero_starter.name).first
 						second_starter = second_quarter_lineup.starters.where(:name => zero_starter.name).first
 
@@ -546,6 +549,7 @@ namespace :first_half do
 							mp = 0
 						end
 
+						# add the second quarter stats
 						if second_starter != nil
 							pts += second_starter.pts
 							ast += second_starter.ast
@@ -563,7 +567,7 @@ namespace :first_half do
 							mp += second_starter.mp
 						end
 
-						# if it's the first game, add first game's minutes
+						# if it's the previous game, add last game's minutes
 						if index == 0
 							store_player.addLastGame(mp)
 						end
@@ -612,7 +616,7 @@ namespace :first_half do
 						store_player.addMP(mp)
 
 					end
-					# Calculate each players statistics
+					# Calculate each player's statistics
 					store_player.addORTG(player_ORTG(store_player, store_team, store_opponent))
 					store_player.addDRTG(player_DRTG(store_player, store_team, store_opponent))
 					# store_player.findPace(store_team, store_opponent)
@@ -692,5 +696,176 @@ namespace :first_half do
 		end
 	end
 
+	task :closingline => :environment do
+		require 'nokogiri'
+		require 'open-uri'
+
+		games = Game.all[1980..-1]
+
+		# find all the games and make sure a previous date is not repeated
+		previous_date = nil
+		past_teams = PastTeam.where(:year => '2014')
+		games.each do |game|
+			day = game.day
+			month = game.month
+			year = game.year
+			date = year + month + day
+			# don't repeat the date
+			if date == previous_date
+				next
+			else
+				previous_date = date
+				url = "http://www.sportsbookreview.com/betting-odds/nba-basketball/totals/1st-half/?date=#{date}"
+				doc = Nokogiri::HTML(open(url))
+
+				home = Array.new
+				cl = Array.new
+
+				doc.css(".eventLine-value").each_with_index do |stat, index|
+					text = stat.text
+					if index%2 == 1
+						if text.include?('L.A.')
+							text = text[text.index(' ')+1..-1]
+							home << Team.find_by_name(text).abbr
+						else
+							if text == 'Charlotte' # Charlotte had two names, either Hornets or Bobcats. Might cause trouble
+								home << Team.find_by_name('Bobcats').abbr
+							else
+								home << Team.find_by_city(text).abbr
+							end
+						end
+					end
+				end
+
+				var = 0
+				bool = false
+				doc.css(".eventLine-book-value").each do |stat|
+					text = stat.text
+					if bool && !(text =~ /[A-z]/)
+						if text.size > 3
+							index = text.index('-')
+							if index == nil
+								index = text.index('+')
+							end
+							index = index-2
+							# Check to see whether or not there is a 1/2 on the text and adjust the cl accordingly
+							if text[index].ord == 189
+								cl << text[0..index-1].to_f + 0.5
+							else
+								cl << text[0..index].to_f
+							end
+						else
+							next
+						end
+					end
+					if text =~ /[A-z]/
+						bool = true
+					else
+						bool = false
+						next
+					end
+				end
+
+
+				todays_games = Game.where(:year => year, :month => month, :day => day)
+				(0..home.size-1).each do |n|
+					# Find team by abbreviation
+					team = Team.find_by_abbr(home[n])
+					# Find what year to get the past team from
+					past_team_year = year
+					if month.to_i > 7
+						past_team_year = (year.to_i + 1).to_s
+					end
+					# Find team by past team's id and past team year
+					past_team = past_teams.where(:team_id => team.id, :year => past_team_year).first
+
+					# out of today's games, what team had the corresponding home team
+					cl_game = todays_games.where(:home_team_id => past_team.id).first
+					if cl_game != nil
+						cl_game.update_attributes(:dsi => cl[n]) # place the first_half cl in the 
+						puts cl_game.url
+						puts cl[n]
+					else
+						puts year + month + day
+						puts past_team.team.name
+					end
+				end
+			end
+		end
+	end
+
+
+	task :stat => :environment do
+		require 'nokogiri'
+		require 'open-uri'
+
+		def over_or_under(ps, cl, fs)
+
+			under = false
+			over = false
+
+			if ps >= (cl+3)
+				over = true
+			elsif ps <= (cl-3)
+				under = true
+			else
+				return 0
+			end
+
+			if under
+				if fs < cl
+					return 1
+				elsif fs > cl
+					return -1
+				else
+					return 0
+				end
+			end
+
+			if over
+				if fs > cl
+					return 1
+				elsif fs < cl
+					return -1
+				else
+					return 0
+				end
+			end
+
+		end
+
+		total_games = 0
+		plus_minus = 0
+		no_bet = 0
+		win_bet = 0
+		lose_bet = 0
+		Game.all[1704..-1].each do |game|
+			if game.dsi == nil
+				next
+			else
+				puts game.url
+				total_games += 1
+				ps = (game.first_half_ps)/2
+				cl = game.dsi # first half cl
+				fs = game.lineups[2].pts + game.lineups[3].pts + game.lineups[4].pts + game.lineups[5].pts
+				over_under = over_or_under(ps, cl, fs)
+				plus_minus += over_under
+				if over_under == 0
+					no_bet += 1
+				end
+				if over_under == 1
+					win_bet += 1
+				end
+				if over_under == -1
+					lose_bet += 1
+				end
+			end
+		end
+		puts total_games.to_s + " total games"
+		puts plus_minus.to_s + " plus minus"
+		puts no_bet.to_s + " no bet"
+		puts win_bet.to_s + " win bet"
+		puts lose_bet.to_s + " lose bet"
+	end
 
 end

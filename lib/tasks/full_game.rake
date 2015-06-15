@@ -1,4 +1,4 @@
-namespace :formula do
+namespace :full_game do
 
 	task :algorithm => :environment do
 
@@ -269,7 +269,10 @@ namespace :formula do
 			end
 
 			def findPace(team, opp_team)
-				@pace = 48 * ((team.possessions) / ((team.mp / 5)))
+				@pace = 48 * ((team.possessions + opp_team.possessions) / ((team.mp / 5)))
+				if @pace.nan?
+					@pace = 0.0
+				end
 			end
 
 			def findPossessions()
@@ -534,8 +537,14 @@ namespace :formula do
 					# Calculate each players statistics
 					store_player.addORTG(player_ORTG(store_player, store_team, store_opponent))
 					store_player.addDRTG(player_DRTG(store_player, store_team, store_opponent))
-					# store_player.findPace(store_team, store_opponent)
+					store_team.findPossessions()
+					store_opponent.findPossessions()
+					store_player.findPace(store_team, store_opponent)
 					store_player.findPossessions()
+
+					puts store_player.store
+					puts store_player.possessions.to_s + ' possessions'
+					puts store_player.pace.to_s + ' pace'
 
 					# puts store_player.store
 					# puts store_player.ortg.to_s + ' ortg'
@@ -571,8 +580,8 @@ namespace :formula do
 						# puts player.drtg
 						# puts player.avg
 						# puts player.possessions
-						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
-						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
+						ortg = ((player.ortg/48)*(player.avg/500)*player.pace).round(2)
+						drtg = ((player.drtg/48)*(player.avg/500)*player.pace).round(2)
 						@team_ORTG << ortg
 						@team_DRTG << drtg
 					end
@@ -583,8 +592,8 @@ namespace :formula do
 						# puts player.drtg
 						# puts player.avg
 						# puts player.possessions
-						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
-						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
+						ortg = ((player.ortg/48)*(player.avg/500)*player.pace).round(2)
+						drtg = ((player.drtg/48)*(player.avg/500)*player.pace).round(2)
 						@opp_ORTG << ortg
 						@opp_DRTG << drtg
 					end
@@ -608,6 +617,104 @@ namespace :formula do
 			ps = y + z
 			puts ps.round(2)
 			game.update_attributes(:ps => ps.round(2))
+		end
+	end
+
+	task :closingline => :environment do
+		require 'nokogiri'
+		require 'open-uri'
+
+		games = Game.all[1314..-1]
+
+		# find all the games and make sure a previous date is not repeated
+		previous_date = nil
+		past_teams = PastTeam.where(:year => '2014')
+		games.each do |game|
+			day = game.day
+			month = game.month
+			year = game.year
+			date = year + month + day
+			# don't repeat the date
+			if date == previous_date
+				next
+			else
+				previous_date = date
+				url = "http://www.sportsbookreview.com/betting-odds/nba-basketball/totals/?date=#{date}"
+				doc = Nokogiri::HTML(open(url))
+
+				home = Array.new
+				cl = Array.new
+
+				doc.css(".eventLine-value").each_with_index do |stat, index|
+					text = stat.text
+					if index%2 == 1
+						if text.include?('L.A.')
+							text = text[text.index(' ')+1..-1]
+							home << Team.find_by_name(text).abbr
+						else
+							if text == 'Charlotte' # Charlotte had two names, either Hornets or Bobcats. Might cause trouble
+								home << Team.find_by_name('Bobcats').abbr
+							else
+								home << Team.find_by_city(text).abbr
+							end
+						end
+					end
+				end
+
+				var = 0
+				bool = false
+				doc.css(".eventLine-book-value").each do |stat|
+					text = stat.text
+					if bool && !(text =~ /[A-z]/)
+						if text.size > 3
+							index = text.index('-')
+							if index == nil
+								index = text.index('+')
+							end
+							index = index-2
+							# Check to see whether or not there is a 1/2 on the text and adjust the cl accordingly
+							if text[index].ord == 189
+								cl << text[0..index-1].to_f + 0.5
+							else
+								cl << text[0..index].to_f
+							end
+						else
+							next
+						end
+					end
+					if text =~ /[A-z]/
+						bool = true
+					else
+						bool = false
+						next
+					end
+				end
+
+
+				todays_games = Game.where(:year => year, :month => month, :day => day)
+				(0..home.size-1).each do |n|
+					# Find team by abbreviation
+					team = Team.find_by_abbr(home[n])
+					# Find what year to get the past team from
+					past_team_year = year
+					if month.to_i > 7
+						past_team_year = (year.to_i + 1).to_s
+					end
+					# Find team by past team's id and past team year
+					past_team = past_teams.where(:team_id => team.id, :year => past_team_year).first
+
+					# out of today's games, what team had the corresponding home team
+					cl_game = todays_games.where(:home_team_id => past_team.id).first
+					if cl_game != nil
+						cl_game.update_attributes(:pinnacle => cl[n]) # place the first_half cl in the 
+						puts cl_game.url
+						puts cl[n]
+					else
+						puts year + month + day
+						puts past_team.team.name
+					end
+				end
+			end
 		end
 	end
 
@@ -663,7 +770,7 @@ namespace :formula do
 				total_games += 1
 				ps = game.first_half_ps
 				cl = game.pinnacle
-				fs = game.lineups.first.pts + game.lineups.second.pts
+				fs = game.lineups[0].pts + game.lineups[1].pts
 				over_under = over_or_under(ps, cl, fs)
 				plus_minus += over_under
 				if over_under == 0

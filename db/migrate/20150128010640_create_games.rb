@@ -25,7 +25,7 @@ class CreateGames < ActiveRecord::Migration
       t.float "jazz"
       t.float "sportsbet"
       t.float "bookmaker"
-      t.float "dsi"
+      t.float "dsi" # this one is the first half cl for now
 
       t.timestamps
     end
