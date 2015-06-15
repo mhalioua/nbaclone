@@ -1,11 +1,12 @@
-class CreateLineups < ActiveRecord::Migration
+class CreateStarters < ActiveRecord::Migration
   def up
-    create_table :lineups do |t|
+    create_table :starters do |t|
 
-    	t.references :game
-      t.boolean "away", :default => false
-      t.boolean "home", :default => false
-    	t.integer "quarter"
+    	t.references :lineup
+    	t.references :past_player
+      t.string "name"
+      t.boolean "starter", :default => false
+      t.integer "quarter"
       t.integer "ast", :default => 0
       t.integer "tov", :default => 0
       t.integer "pts", :default => 0
@@ -27,8 +28,6 @@ class CreateLineups < ActiveRecord::Migration
   end
 
   def down
-
-  	drop_table :lineups
-
+  	drop_table :starters
   end
 end

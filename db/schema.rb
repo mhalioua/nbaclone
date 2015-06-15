@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150128011248) do
+ActiveRecord::Schema.define(version: 20150205065823) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -27,32 +27,64 @@ ActiveRecord::Schema.define(version: 20150128011248) do
   create_table "games", force: true do |t|
     t.integer  "away_team_id"
     t.integer  "home_team_id"
-    t.string   "date"
+    t.float    "ps",            limit: 24
+    t.float    "first_half_ps", limit: 24
+    t.string   "year"
+    t.string   "month"
+    t.string   "day"
+    t.float    "opener",        limit: 24
+    t.float    "westgate",      limit: 24
+    t.float    "mirage",        limit: 24
+    t.float    "station",       limit: 24
+    t.float    "pinnacle",      limit: 24
+    t.float    "sia",           limit: 24
+    t.float    "sbg",           limit: 24
+    t.float    "betus",         limit: 24
+    t.float    "betphoenix",    limit: 24
+    t.float    "easystreet",    limit: 24
+    t.float    "bodog",         limit: 24
+    t.float    "jazz",          limit: 24
+    t.float    "sportsbet",     limit: 24
+    t.float    "bookmaker",     limit: 24
+    t.float    "dsi",           limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "lineups", force: true do |t|
     t.integer  "game_id"
+    t.boolean  "away",                  default: false
+    t.boolean  "home",                  default: false
     t.integer  "quarter"
-    t.integer  "player1"
-    t.integer  "player2"
-    t.integer  "player3"
-    t.integer  "player4"
-    t.integer  "player5"
-    t.integer  "player6"
-    t.integer  "player7"
-    t.integer  "player8"
-    t.integer  "player9"
-    t.integer  "player10"
+    t.integer  "ast",                   default: 0
+    t.integer  "tov",                   default: 0
+    t.integer  "pts",                   default: 0
+    t.integer  "ftm",                   default: 0
+    t.integer  "fta",                   default: 0
+    t.integer  "thpm",                  default: 0
+    t.integer  "thpa",                  default: 0
+    t.integer  "fgm",                   default: 0
+    t.integer  "fga",                   default: 0
+    t.integer  "orb",                   default: 0
+    t.integer  "drb",                   default: 0
+    t.integer  "stl",                   default: 0
+    t.integer  "blk",                   default: 0
+    t.integer  "pf",                    default: 0
+    t.float    "mp",         limit: 24, default: 0.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "past_players", force: true do |t|
+    t.integer  "player_id"
+    t.integer  "past_team_id"
+    t.string   "year"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "past_teams", force: true do |t|
-    t.string   "name"
-    t.string   "abbr"
-    t.string   "city"
+    t.integer  "team_id"
     t.string   "year"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -101,7 +133,7 @@ ActiveRecord::Schema.define(version: 20150128011248) do
     t.string   "abbr"
     t.string   "position"
     t.boolean  "forward",                      default: false
-    t.boolean  "guard"
+    t.boolean  "guard",                        default: false
     t.integer  "GS"
     t.integer  "G"
     t.integer  "MP"
@@ -152,7 +184,33 @@ ActiveRecord::Schema.define(version: 20150128011248) do
     t.datetime "updated_at"
   end
 
+  add_index "players", ["alias"], name: "index_players_on_alias", using: :btree
   add_index "players", ["name"], name: "index_players_on_name", using: :btree
+
+  create_table "starters", force: true do |t|
+    t.integer  "lineup_id"
+    t.integer  "past_player_id"
+    t.string   "name"
+    t.boolean  "starter",                   default: false
+    t.integer  "quarter"
+    t.integer  "ast",                       default: 0
+    t.integer  "tov",                       default: 0
+    t.integer  "pts",                       default: 0
+    t.integer  "ftm",                       default: 0
+    t.integer  "fta",                       default: 0
+    t.integer  "thpm",                      default: 0
+    t.integer  "thpa",                      default: 0
+    t.integer  "fgm",                       default: 0
+    t.integer  "fga",                       default: 0
+    t.integer  "orb",                       default: 0
+    t.integer  "drb",                       default: 0
+    t.integer  "stl",                       default: 0
+    t.integer  "blk",                       default: 0
+    t.integer  "pf",                        default: 0
+    t.float    "mp",             limit: 24, default: 0.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "teams", force: true do |t|
     t.string   "name"

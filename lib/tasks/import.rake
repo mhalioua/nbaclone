@@ -60,6 +60,7 @@ namespace :import do
 			Then it sets the boolean starters to true for all the players who have have a positive number in MP_1.
 			This indicates that the player played in the last game.
 
+
 =end
 
 		array.each do |team|
@@ -255,13 +256,16 @@ namespace :import do
 	task :create_teams => :environment do
 		name = ["Bucks", "Bulls", "Cavaliers", "Celtics", "Clippers", "Grizzlies", "Hawks", "Heat", "Hornets",
 				"Jazz", "Kings", "Knicks", "Lakers", "Magic", "Mavericks", "Nets", "Nuggets", "Pacers", "Pelicans", "Pistons", "Raptors",
-				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trail Blazers", "Warriors", "Wizards"]
-		city = ["Milwaukee", "Chicago", "Cleveland", "Boston", "LA Clippers", "Memphis", "Atlanta", "Miami", "Charlotte", "Utah", "Sacramento",
-				"New York", "LA Lakers", "Orlando", "Dallas", "Brooklyn", "Denver", "Indiana", "New Orleans", "Detroit", "Toronto", "Houston",
-				"Philadelphia", "San Antonio", "Phoenix", "Oklahoma City", "Minnesota", "Portland", "Golden State", "Washington"]
-		abbr = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHO", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
-			"DEN", "IND", "NOP", "DET", "TOR", "HOU", "PHI", "SAS", "PHO", "OKC", "MIN", "POR", "GSW", "WAS"]
-		(0..29).each do |n|
+				"Rockets", "76ers", "Spurs", "Suns", "Thunder", "Timberwolves", "Trail Blazers", "Warriors", "Wizards", "Bullets", "Bobcats",
+				"Hornets", "Grizzlies", "Clippers", "Kings", "SuperSonics", "Hornets", "Nets"]
+		city = ["Milwaukee", "Chicago", "Cleveland", "Boston", "Los Angeles", "Memphis", "Atlanta", "Miami", "Charlotte", "Utah", "Sacramento",
+				"New York", "Los Angeles", "Orlando", "Dallas", "Brooklyn", "Denver", "Indiana", "New Orleans", "Detroit", "Toronto", "Houston",
+				"Philadelphia", "San Antonio", "Phoenix", "Oklahoma City", "Minnesota", "Portland", "Golden State", "Washington", "Washington",
+				"Charlotte", "New Orleans", "Vancouver", "San Diego", "Kansas City", "Seattle", "New Orleans/Oklahoma City", "New Jersey"]
+		abbr = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHH", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
+			"DEN", "IND", "NOP", "DET", "TOR", "HOU", "PHI", "SAS", "PHO", "OKC", "MIN", "POR", "GSW", "WAS", "WSB", "CHA", "NOH", "VAN",
+			"SDC", "KCK", "SEA", "NOK", "NJN"]
+		(0..38).each do |n|
 			Team.create(:name => name[n], :city => city[n], :abbr => abbr[n])
 		end
 	end
@@ -1110,19 +1114,6 @@ namespace :import do
 
 		tomorrow = Team.where(:tomorrow => true)
 		teamMatchup(tomorrow)
-	end
-
-
-
-
-
-	task :save => :environment do
-		team = Team.where(:today => true)
-		tomorrow = Team.where(:tomorrow => true)
-
-		tomo.each do |team|
-			puts team.name
-		end
 	end
 
 	task :test => :environment do

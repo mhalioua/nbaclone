@@ -2,12 +2,10 @@ class CreatePastTeams < ActiveRecord::Migration
   def up
     create_table :past_teams do |t|
     	
-      t.string "name"
-      t.string "abbr"
-      t.string "city"
+      t.references :team
       t.string "year"
-
       t.timestamps
+
     end
   end
 

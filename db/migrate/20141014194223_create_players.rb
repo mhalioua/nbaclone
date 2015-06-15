@@ -9,7 +9,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.string "abbr"
       t.string "position"
       t.boolean "forward", :default => false
-      t.boolean "guard"
+      t.boolean "guard", :default => false
       t.integer "GS"
       t.integer "G"
       t.integer "MP"
@@ -60,6 +60,7 @@ class CreatePlayers < ActiveRecord::Migration
       t.timestamps
     end
     add_index("players", "name")
+    add_index("players", "alias")
   end
 
   def down
