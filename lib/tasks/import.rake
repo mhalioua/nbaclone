@@ -262,7 +262,7 @@ namespace :import do
 				"New York", "Los Angeles", "Orlando", "Dallas", "Brooklyn", "Denver", "Indiana", "New Orleans", "Detroit", "Toronto", "Houston",
 				"Philadelphia", "San Antonio", "Phoenix", "Oklahoma City", "Minnesota", "Portland", "Golden State", "Washington", "Washington",
 				"Charlotte", "New Orleans", "Vancouver", "San Diego", "Kansas City", "Seattle", "New Orleans/Oklahoma City", "New Jersey"]
-		abbr = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHH", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
+		abbr = ["MIL", "CHI", "CLE", "BOS", "LAC", "MEM", "ATL", "MIA", "CHO", "UTA", "SAC", "NYK", "LAL", "ORL", "DAL", "BRK",
 			"DEN", "IND", "NOP", "DET", "TOR", "HOU", "PHI", "SAS", "PHO", "OKC", "MIN", "POR", "GSW", "WAS", "WSB", "CHA", "NOH", "VAN",
 			"SDC", "KCK", "SEA", "NOK", "NJN"]
 		(0..38).each do |n|
@@ -1116,17 +1116,40 @@ namespace :import do
 		teamMatchup(tomorrow)
 	end
 
-	task :test => :environment do
-		player = Player.find(1)
+	task :position => :environment do
+		require 'nokogiri'
+		require 'open-uri'
 
-		puts player.FG
-		puts player.AST
-		puts player.FGA
-		puts player.ORB
+		players = Player.all
 
-		puts (player.FG + player.AST)/(player.FGA - player.ORB + player.AST + player.TO)
+		players.each do |player|
+			url = "http://www.basketball-reference.com/players/#{player.alias[0]}/#{player.alias}.html"
+			doc = Nokogiri::HTML(open(url))
+			puts player.name
+			doc.css(".full_table td").reverse.each_with_index do |stat, index|
+				if index == 20
+					player.update_attributes(:position => stat.text)
+					puts stat.text
+					if stat.text == 'F' || stat.text == 'G'
+						puts url
+					end
+					break
+				end
+			end
+		end
 	end
 
+	task :starterposition => :environment do
+		require 'nokogiri'
+		require 'open-uri'
+
+		starters = Starter.where(:position => nil)
+
+		starters.each do |starter|
+			starter.update_attributes(:position => starter.past_player.player.position)
+			puts starter.name
+		end
+	end
 
 
 end

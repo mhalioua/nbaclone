@@ -1,8 +1,11 @@
-namespace :first_half do
+namespace :matchup do
+
+
 
 	task :algorithm => :environment do
+		require 'nokogiri'
+		require 'open-uri'
 
-		# This is the algorithm using the full game stats, MP, and possessions
 
 		def ORTG(mp, pts, ftm, fta, fgm, fga, thpm, orb, tov, ast, team_pts, team_ast, team_ftm, team_fta, team_fgm, team_fga, team_thpm, team_orb, team_tov, team_mp, opponent_trb, opponent_orb)
 
@@ -228,7 +231,6 @@ namespace :first_half do
 			return DRTG(mp, drb, stl, blk, pf, team_mp, team_fga, team_fgm, team_fta, team_orb, team_drb, team_tov, team_pf, team_blk, team_stl, opponent_mp, opponent_pts, opponent_orb, opponent_drb, opponent_fgm, opponent_fga, opponent_fta, opponent_ftm, opponent_tov)
 		end
 
-
 		class Store
 
 			def initialize(params = {})
@@ -427,10 +429,91 @@ namespace :first_half do
 			def possessions()
 				return @possessions
 			end
-
 		end
 
-		PAST_GAME_NUMBER = 10
+		def convertMinutes(text)
+			min_split = text.index(':')-1
+			sec_split = min_split+2
+			min = text[0..min_split].to_f
+			sec = text[sec_split..-1].to_f
+			sec = sec/60
+			return (min + sec).round(2)
+		end
+
+		def checkIndex(text, index)
+			case index%27
+			when 0
+				@pts = text.to_i
+			when 1
+				@pf = text.to_i
+			when 2
+				@tov = text.to_i
+			when 3
+				@blk = text.to_i
+			when 4
+				@stl = text.to_i
+			when 5
+				@ast = text.to_i
+			when 7
+				@drb = text.to_i
+			when 8
+				@orb = text.to_i
+			when 10
+				@fta = text.to_i
+			when 11
+				@ftm = text.to_i
+			when 13
+				@thpa= text.to_i
+			when 14
+				@thpm = text.to_i
+			when 16
+				@fga = text.to_i
+			when 17
+				@fgm = text.to_i
+			when 18
+				@mp = convertMinutes(text)
+			end 	 
+		end
+
+		def checkTeamIndex(num, index)
+
+			case index%20
+			when 1
+				@mp = num.to_i
+			when 2
+				@fgm = num.to_i
+			when 3
+				@fga = num.to_i
+			when 5
+				@thpm = num.to_i
+			when 6
+				@thpa = num.to_i
+			when 8
+				@ftm = num.to_i
+			when 9
+				@fta = num.to_i
+			when 11
+				@orb = num.to_i
+			when 12
+				@drb = num.to_i
+			when 14
+				@ast = num.to_i
+			when 15
+				@stl = num.to_i
+			when 16
+				@blk = num.to_i
+			when 17
+				@tov = num.to_i
+			when 18
+				@pf = num.to_i
+			when 19
+				@pts = num.to_i
+			end
+				
+		end
+
+		PAST_GAME_NUMBER = 5
+
 
 		@players = Array.new
 		@team_ORTG = Array.new
@@ -438,22 +521,28 @@ namespace :first_half do
 		@opp_ORTG = Array.new
 		@opp_DRTG = Array.new
 
-
-		# Pick a game, then grab a starter from that game. Then look for all the games he has played before and find the last
 		games = Game.all[1314..-1]
 		games.each do |game|
+
 			@team_ORTG.clear
 			@team_DRTG.clear
 			@opp_ORTG.clear
 			@opp_DRTG.clear
 			puts game.url
-			# get the lineups of the game in question
+
 			lineups = game.lineups.where(:quarter => 0)
+
 			lineups.each_with_index do |lineup, lindex|
-				@players.clear
-				# iterate through each starter
 				lineup.starters.each do |starter|
-					# get all the pastplayers that have the player
+					puts starter.name
+					# find opposing team's starters
+					opp_starters = game.lineups.where(:quarter => 0, :away => !lineup.away).first.starters
+					# initialize the data structures that we will use to store the data for each matchup
+					store_player = Store.new(:store => starter.name)
+					store_team = Store.new(:store => 'team')
+					store_opponent = Store.new(:store => 'opponent')
+
+					# for each starter find the last 5 games mp_5
 					player = starter.past_player.player
 					past_players = PastPlayer.where(:player_id => player.id)
 					# Create query string to find the past players in database
@@ -465,180 +554,165 @@ namespace :first_half do
 							query += " OR past_player_id = #{past_player.id}"
 						end
 					end
-					# Find games that were played before the game we are looking for by getting the current lineup and grabbing the ones created before that one
+					# Find games that were played before the game we are looking for
 					lineup = Lineup.where(:game_id => game.id).first
 
 					# Find starters with stats for the whole game that occurred before the game in question and that are of the player in question
-					starters = Starter.where("lineup_id < #{lineup.id} AND quarter = 0 AND (#{query})").order('id DESC').limit(PAST_GAME_NUMBER)
-					store_player = Store.new(:store => player.name)
-					store_team = Store.new(:store => 'team')
-					store_opponent = Store.new(:store => 'opponent')
-					starters.each_with_index do |zero_starter, index|
-						# find the game that the starter is playing in
-						starter_game = zero_starter.lineup.game
-						# find quarter lineup from full game lineup
-						first_quarter_lineup = starter_game.lineups.where(:quarter => 1, :away => zero_starter.lineup.away).first 
-						second_quarter_lineup = starter_game.lineups.where(:quarter => 2, :away => first_quarter_lineup.away).first
-						# find opposing team lineups for both first and second quarters
-						opp_first_quarter_lineup = starter_game.lineups.where(:quarter => 1, :away => !first_quarter_lineup.away).first
-						opp_second_quarter_lineup = starter_game.lineups.where(:quarter => 2, :away => !first_quarter_lineup.away).first
-						# find quarter starter
-						first_starter = first_quarter_lineup.starters.where(:name => zero_starter.name).first
-						second_starter = second_quarter_lineup.starters.where(:name => zero_starter.name).first
+					starters = Starter.where("lineup_id < #{lineup.id} AND quarter = 0 AND (#{query})").order('id DESC').limit(5)
 
-						# find the team stats
-						team_pts = first_quarter_lineup.pts + second_quarter_lineup.pts
-						team_ast = first_quarter_lineup.ast + second_quarter_lineup.ast
-						team_ftm = first_quarter_lineup.ftm + second_quarter_lineup.ftm
-						team_fta = first_quarter_lineup.fta + second_quarter_lineup.fta
-						team_fgm = first_quarter_lineup.fgm + second_quarter_lineup.fgm
-						team_fga = first_quarter_lineup.fga + second_quarter_lineup.fga
-						team_thpm = first_quarter_lineup.thpm + second_quarter_lineup.thpm
-						team_orb = first_quarter_lineup.orb + second_quarter_lineup.orb
-						team_drb = first_quarter_lineup.drb + second_quarter_lineup.drb
-						team_tov = first_quarter_lineup.tov + second_quarter_lineup.tov
-						team_blk = first_quarter_lineup.blk + second_quarter_lineup.blk
-						team_stl = first_quarter_lineup.stl + second_quarter_lineup.stl
-						team_pf = first_quarter_lineup.pf + second_quarter_lineup.pf
-						team_mp = first_quarter_lineup.mp + second_quarter_lineup.mp
-
-						# find opponent stats
-						opp_pts = opp_first_quarter_lineup.pts + opp_second_quarter_lineup.pts
-						opp_fgm = opp_first_quarter_lineup.fgm + opp_second_quarter_lineup.fgm
-						opp_fta = opp_first_quarter_lineup.fta + opp_second_quarter_lineup.fta
-						opp_ftm = opp_first_quarter_lineup.ftm + opp_second_quarter_lineup.ftm
-						opp_fgm = opp_first_quarter_lineup.fgm + opp_second_quarter_lineup.fgm
-						opp_tov = opp_first_quarter_lineup.tov + opp_second_quarter_lineup.tov
-						opp_fga = opp_first_quarter_lineup.fga + opp_second_quarter_lineup.fga
-						opp_drb = opp_first_quarter_lineup.drb + opp_second_quarter_lineup.drb
-						opp_orb = opp_first_quarter_lineup.orb + opp_second_quarter_lineup.orb
-						opp_mp = opp_first_quarter_lineup.mp + opp_second_quarter_lineup.mp
-
-
-
-						# Initialize the stats for the first and second quarters. Also if the player played in the quarters, then put their stats, otherwise put all zero
-						if first_starter != nil
-							pts = first_starter.pts
-							ast = first_starter.ast
-							ftm = first_starter.ftm
-							fta = first_starter.fta
-							fgm = first_starter.fgm
-							fga = first_starter.fga
-							thpm = first_starter.thpm
-							stl = first_starter.stl
-							orb = first_starter.orb
-							drb = first_starter.drb
-							tov = first_starter.tov
-							blk = first_starter.blk
-							pf = first_starter.pf
-							mp = first_starter.mp
-						else
-							pts = 0
-							ast = 0
-							ftm = 0
-							fta = 0
-							fgm = 0
-							fga = 0
-							thpm = 0
-							stl = 0
-							orb = 0
-							drb = 0
-							tov = 0
-							blk = 0
-							pf = 0
-							mp = 0
-						end
-
-						# add the second quarter stats
-						if second_starter != nil
-							pts += second_starter.pts
-							ast += second_starter.ast
-							ftm += second_starter.ftm
-							fta += second_starter.fta
-							fgm += second_starter.fgm
-							fga += second_starter.fga
-							thpm += second_starter.thpm
-							stl += second_starter.stl
-							orb += second_starter.orb
-							drb += second_starter.drb
-							tov += second_starter.tov
-							blk += second_starter.blk
-							pf += second_starter.pf
-							mp += second_starter.mp
-						end
-
-						# if it's the previous game, add last game's minutes
-						if index == 0
-							store_player.addLastGame(mp)
-						end
-						# if the index is less than 5, keep adding the player's minutes
-						if index < 5
-							store_player.addPast5Game(mp)
-						end
-						# Add all the teams and opponent teams and the players
-						store_team.addPTS(team_pts)
-						store_team.addAST(team_ast)
-						store_team.addFTM(team_ftm)
-						store_team.addFTA(team_fta)
-						store_team.addFGM(team_fgm)
-						store_team.addFGA(team_fga)
-						store_team.addTHPM(team_thpm)
-						store_team.addORB(team_orb)
-						store_team.addDRB(team_drb)
-						store_team.addTOV(team_tov)
-						store_team.addBLK(team_blk)
-						store_team.addSTL(team_stl)
-						store_team.addPF(team_pf)
-						store_team.addMP(team_mp)
-						store_opponent.addPTS(opp_pts)
-						store_opponent.addFGM(opp_fgm)
-						store_opponent.addFTA(opp_fta)
-						store_opponent.addFTM(opp_ftm)
-						store_opponent.addFGM(opp_fgm)
-						store_opponent.addTOV(opp_tov)
-						store_opponent.addFGA(opp_fga)
-						store_opponent.addDRB(opp_drb)
-						store_opponent.addORB(opp_orb)
-						store_opponent.addMP(opp_mp)
-						store_player.addAST(ast)
-						store_player.addTOV(tov)
-						store_player.addPTS(pts)
-						store_player.addFTM(ftm)
-						store_player.addFTA(fta)
-						store_player.addTHPM(thpm)
-						store_player.addFGM(fgm)
-						store_player.addFGA(fga)
-						store_player.addORB(orb)
-						store_player.addDRB(drb)
-						store_player.addSTL(stl)
-						store_player.addBLK(blk)
-						store_player.addPF(pf)
-						store_player.addMP(mp)
-
+					# add the previous 5 games mp
+					starters.each do |starter|
+						store_player.addPast5Game(starter.mp)
 					end
-					# Calculate each player's statistics
+
+					# find all the opp_starters with the position of the starter in question
+					opp_starters = opp_starters.where(:position => starter.position)
+					opp_starters.each do |opp_starter|
+						url = "http://www.basketball-reference.com/play-index/h2h_finder.cgi?request=1&p1=#{starter.past_player.player.alias}&p2=#{opp_starter.past_player.player.alias}"
+						doc = Nokogiri::HTML(open(url))
+						bool = false
+						game_var = 0
+						doc.css("#stats_games td").reverse.each_with_index do |stat, index|
+							if game_var >= PAST_GAME_NUMBER
+								break
+							end
+							text = stat.text
+
+
+							checkIndex(text, index)
+							# Check who the home team is
+							if index%27 == 21
+								@home = text
+							end
+
+							# switch the home team if the @ sign is there
+							if index%27 == 22
+								if text == '@'
+									home_bool = false
+								else
+									home_bool = true
+								end
+							end
+
+							if index%27 == 23 && home_bool 
+								@home = text
+							end
+
+							if index%27 == 24
+								year = text[0..3].to_i
+								month = text[5..6].to_i
+								day = text[8..-1].to_i
+								# check to see if the game happened before or after
+								if year < game.year.to_i
+									bool = true
+								elsif year == game.year.to_i
+									if month < game.month.to_i
+										bool = true
+									elsif month == game.month.to_i
+										if day < game.day.to_i
+											bool = true
+										else
+											bool = false
+										end
+									else
+										bool = false
+									end
+								else
+									bool = false
+								end
+							end
+
+							# check to see if the name is of the starter and not the opposing player, if it is the opposing player, then set the bool to false
+							if index%27 == 25
+								if text != starter.name
+									bool = false
+								end
+							end
+
+							# if the date is before the game, and we are talking about the right player, then add to the storage
+							if index%27 == 26 && bool
+								store_player.addAST(@ast)
+								store_player.addTOV(@tov)
+								store_player.addPTS(@pts)
+								store_player.addFTM(@ftm)
+								store_player.addFTA(@fta)
+								store_player.addTHPM(@thpm)
+								store_player.addFGM(@fgm)
+								store_player.addFGA(@fga)
+								store_player.addORB(@orb)
+								store_player.addDRB(@drb)
+								store_player.addSTL(@stl)
+								store_player.addBLK(@blk)
+								store_player.addPF(@pf)
+								store_player.addMP(@mp)
+								# find the boxscore for the game in question to get the team stats
+								url = "http://www.basketball-reference.com/boxscores/#{year}#{month}#{day}0#{@home}.html"
+
+								game_doc = Nokogiri::HTML(open(url))
+								var = 0
+								basic = 0
+								doc.css(".stat_total td").each_with_index do |stat, index|
+									text = stat.text
+									if text == 'Team Totals'
+										var = 0
+										basic += 1
+									end
+									# only get the info it's the basic boxscore
+									if basic%2 == 0
+										next
+									end
+									checkTeamIndex(text, var)
+									if var%20 == 0
+										# if it's the away team, then put in the store team
+										if basic == 1
+											store_team.addPTS(@pts)
+											store_team.addAST(@ast)
+											store_team.addFTM(@ftm)
+											store_team.addFTA(@fta)
+											store_team.addFGM(@fgm)
+											store_team.addFGA(@fga)
+											store_team.addTHPM(@thpm)
+											store_team.addORB(@orb)
+											store_team.addDRB(@drb)
+											store_team.addTOV(@tov)
+											store_team.addBLK(@blk)
+											store_team.addSTL(@stl)
+											store_team.addPF(@pf)
+											store_team.addMP(@mp)
+										else
+											# otherwise it's the home team so put it in the opponent
+											store_opponent.addPTS(@pts)
+											store_opponent.addFGM(@fgm)
+											store_opponent.addFTA(@fta)
+											store_opponent.addFTM(@ftm)
+											store_opponent.addFGM(@fgm)
+											store_opponent.addTOV(@tov)
+											store_opponent.addFGA(@fga)
+											store_opponent.addDRB(@drb)
+											store_opponent.addORB(@orb)
+											store_opponent.addMP(@mp)
+										end
+									end
+									var += 1
+								end
+								game_var += 1
+							end
+
+						end
+					end
+					# Calculate each players statistics
 					store_player.addORTG(player_ORTG(store_player, store_team, store_opponent))
 					store_player.addDRTG(player_DRTG(store_player, store_team, store_opponent))
-					# store_player.findPace(store_team, store_opponent)
+					store_team.findPossessions()
+					store_opponent.findPossessions()
+					store_player.findPace(store_team, store_opponent)
 					store_player.findPossessions()
 
-					# puts store_player.store
-					# puts store_player.ortg.to_s + ' ortg'
-					# puts store_player.drtg.to_s + ' drtg'
-					# puts store_player.mp.to_s + ' mp'
-					# puts store_player.pts.to_s + ' pts'
-					# puts store_player.ftm.to_s + ' ftm'
-					# puts store_player.fta.to_s + ' fta'
-					# puts store_player.fga.to_s + ' fga'
-					# puts store_player.fgm.to_s + ' fgm'
-					# puts store_player.thpm.to_s + ' thpm'
-					# puts store_player.orb.to_s + ' orb'
-					# puts store_player.tov.to_s + ' tov'
-					# puts store_player.ast.to_s + ' ast'
-
-					# Store the player into an array
 					@players << store_player
+
 				end
+
+
 				# average out the minutes played in the past 5 games
 				total_mp = 0
 				@players.each do |store_player|
@@ -648,26 +722,17 @@ namespace :first_half do
 					store_player.findAVG(store_player.Past5Game, total_mp)
 				end
 
-				# Add the statistics for each of the 
+				# Find the corresponding ortg's that I will add up to get the points 
 				if lindex == 0
 					@players.each do |player|
-						# puts player.store
-						# puts player.ortg
-						# puts player.drtg
-						# puts player.avg
-						# puts player.possessions
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
 						@team_ORTG << ortg
 						@team_DRTG << drtg
 					end
 				else
+				# Find the corresponding ortg's for the opposing team
 					@players.each do |player|
-						# puts player.store
-						# puts player.ortg
-						# puts player.drtg
-						# puts player.avg
-						# puts player.possessions
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
 						@opp_ORTG << ortg
@@ -675,7 +740,6 @@ namespace :first_half do
 					end
 				end
 			end
-
 			u = 0
 			v = 0
 			w = 0
@@ -692,180 +756,15 @@ namespace :first_half do
 			z = (v + w)/2
 			ps = y + z
 			puts ps.round(2)
-			game.update_attributes(:first_half_ps => ps.round(2))
+			game.update_attributes(:ps => ps.round(2))
+
 		end
 	end
 
-	task :closingline => :environment do
+	task :whoo => :environment do
 		require 'nokogiri'
 		require 'open-uri'
 
-		games = Game.all[1314..-1]
-
-		# find all the games and make sure a previous date is not repeated
-		previous_date = nil
-		past_teams = PastTeam.where(:year => '2014')
-		games.each do |game|
-			day = game.day
-			month = game.month
-			year = game.year
-			date = year + month + day
-			# don't repeat the date
-			if date == previous_date
-				next
-			else
-				previous_date = date
-				url = "http://www.sportsbookreview.com/betting-odds/nba-basketball/totals/1st-half/?date=#{date}"
-				doc = Nokogiri::HTML(open(url))
-
-				home = Array.new
-				cl = Array.new
-
-				doc.css(".eventLine-value").each_with_index do |stat, index|
-					text = stat.text
-					if index%2 == 1
-						if text.include?('L.A.')
-							text = text[text.index(' ')+1..-1]
-							home << Team.find_by_name(text).abbr
-						else
-							if text == 'Charlotte' # Charlotte had two names, either Hornets or Bobcats. Might cause trouble
-								home << Team.find_by_name('Bobcats').abbr
-							else
-								home << Team.find_by_city(text).abbr
-							end
-						end
-					end
-				end
-
-				var = 0
-				bool = false
-				doc.css(".eventLine-book-value").each do |stat|
-					text = stat.text
-					if bool && !(text =~ /[A-z]/)
-						if text.size > 3
-							index = text.index('-')
-							if index == nil
-								index = text.index('+')
-							end
-							index = index-2
-							# Check to see whether or not there is a 1/2 on the text and adjust the cl accordingly
-							if text[index].ord == 189
-								cl << text[0..index-1].to_f + 0.5
-							else
-								cl << text[0..index].to_f
-							end
-						else
-							next
-						end
-					end
-					if text =~ /[A-z]/
-						bool = true
-					else
-						bool = false
-						next
-					end
-				end
-
-
-				todays_games = Game.where(:year => year, :month => month, :day => day)
-				(0..home.size-1).each do |n|
-					# Find team by abbreviation
-					team = Team.find_by_abbr(home[n])
-					# Find what year to get the past team from
-					past_team_year = year
-					if month.to_i > 7
-						past_team_year = (year.to_i + 1).to_s
-					end
-					# Find team by past team's id and past team year
-					past_team = past_teams.where(:team_id => team.id, :year => past_team_year).first
-
-					# out of today's games, what team had the corresponding home team
-					cl_game = todays_games.where(:home_team_id => past_team.id).first
-					if cl_game != nil
-						cl_game.update_attributes(:dsi => cl[n]) # place the first_half cl in the 
-						puts cl_game.url
-						puts cl[n]
-					else
-						puts year + month + day
-						puts past_team.team.name
-					end
-				end
-			end
-		end
-	end
-
-
-	task :stat => :environment do
-		require 'nokogiri'
-		require 'open-uri'
-
-		def over_or_under(ps, cl, fs)
-
-			under = false
-			over = false
-
-			if ps >= (cl+3)
-				over = true
-			elsif ps <= (cl-3)
-				under = true
-			else
-				return 0
-			end
-
-			if under
-				if fs < cl
-					return 1
-				elsif fs > cl
-					return -1
-				else
-					return 0
-				end
-			end
-
-			if over
-				if fs > cl
-					return 1
-				elsif fs < cl
-					return -1
-				else
-					return 0
-				end
-			end
-
-		end
-
-		total_games = 0
-		plus_minus = 0
-		no_bet = 0
-		win_bet = 0
-		lose_bet = 0
-		Game.all[1704..-1].each do |game|
-			if game.dsi == nil
-				next
-			else
-				puts game.url
-				total_games += 1
-				ps = (game.first_half_ps)/2
-				cl = game.dsi # first half cl
-				fs = game.lineups[2].pts + game.lineups[3].pts + game.lineups[4].pts + game.lineups[5].pts
-				over_under = over_or_under(ps, cl, fs)
-				plus_minus += over_under
-				if over_under == 0
-					no_bet += 1
-				end
-				if over_under == 1
-					win_bet += 1
-				end
-				if over_under == -1
-					lose_bet += 1
-				end
-			end
-		end
-		puts total_games.to_s + " total games"
-		puts plus_minus.to_s + " plus minus"
-		puts no_bet.to_s + " no bet"
-		puts win_bet.to_s + " win bet"
-		puts lose_bet.to_s + " lose bet"
 	end
 
 end

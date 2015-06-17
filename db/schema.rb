@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150205065823) do
+ActiveRecord::Schema.define(version: 20150616204816) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -32,21 +32,8 @@ ActiveRecord::Schema.define(version: 20150205065823) do
     t.string   "year"
     t.string   "month"
     t.string   "day"
-    t.float    "opener",        limit: 24
-    t.float    "westgate",      limit: 24
-    t.float    "mirage",        limit: 24
-    t.float    "station",       limit: 24
-    t.float    "pinnacle",      limit: 24
-    t.float    "sia",           limit: 24
-    t.float    "sbg",           limit: 24
-    t.float    "betus",         limit: 24
-    t.float    "betphoenix",    limit: 24
-    t.float    "easystreet",    limit: 24
-    t.float    "bodog",         limit: 24
-    t.float    "jazz",          limit: 24
-    t.float    "sportsbet",     limit: 24
-    t.float    "bookmaker",     limit: 24
-    t.float    "dsi",           limit: 24
+    t.float    "full_game_cl",  limit: 24
+    t.float    "first_half_cl", limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -210,6 +197,7 @@ ActiveRecord::Schema.define(version: 20150205065823) do
     t.float    "mp",             limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "position"
   end
 
   create_table "teams", force: true do |t|

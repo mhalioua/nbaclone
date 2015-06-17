@@ -469,7 +469,7 @@ namespace :full_game do
 					lineup = Lineup.where(:game_id => game.id).first
 
 					# Find starters with stats for the whole game that occurred before the game in question and that are of the player in question
-					starters = Starter.where("lineup_id < #{lineup.id} AND quarter = 0 AND (#{query})").reverse
+					starters = Starter.where("lineup_id < #{lineup.id} AND quarter = 0 AND (#{query})").order('id DESC').limit(PAST_GAME_NUMBER)
 					store_player = Store.new(:store => player.name)
 					store_team = Store.new(:store => 'team')
 					store_opponent = Store.new(:store => 'opponent')
@@ -542,10 +542,6 @@ namespace :full_game do
 					store_player.findPace(store_team, store_opponent)
 					store_player.findPossessions()
 
-					puts store_player.store
-					puts store_player.possessions.to_s + ' possessions'
-					puts store_player.pace.to_s + ' pace'
-
 					# puts store_player.store
 					# puts store_player.ortg.to_s + ' ortg'
 					# puts store_player.drtg.to_s + ' drtg'
@@ -580,8 +576,8 @@ namespace :full_game do
 						# puts player.drtg
 						# puts player.avg
 						# puts player.possessions
-						ortg = ((player.ortg/48)*(player.avg/500)*player.pace).round(2)
-						drtg = ((player.drtg/48)*(player.avg/500)*player.pace).round(2)
+						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
+						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
 						@team_ORTG << ortg
 						@team_DRTG << drtg
 					end
@@ -592,8 +588,8 @@ namespace :full_game do
 						# puts player.drtg
 						# puts player.avg
 						# puts player.possessions
-						ortg = ((player.ortg/48)*(player.avg/500)*player.pace).round(2)
-						drtg = ((player.drtg/48)*(player.avg/500)*player.pace).round(2)
+						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
+						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
 						@opp_ORTG << ortg
 						@opp_DRTG << drtg
 					end

@@ -14,8 +14,8 @@ default: &default
   encoding: utf8
   database: nba_app_development
   pool: 5
-  username: mhalioua
-  password: '123456'
+  username: alancovarrubias
+  password: 'aA199200'
   socket: /tmp/mysql.sock
 
 development:
