@@ -532,9 +532,8 @@ namespace :matchup do
 
 			lineups = game.lineups.where(:quarter => 0)
 
-			lineups.each_with_index do |lineup, lindex|
+			lineups.each_with_index do |lineup, lineup_index|
 				lineup.starters.each do |starter|
-					puts starter.name
 					# find opposing team's starters
 					opp_starters = game.lineups.where(:quarter => 0, :away => !lineup.away).first.starters
 					# initialize the data structures that we will use to store the data for each matchup
@@ -543,8 +542,7 @@ namespace :matchup do
 					store_opponent = Store.new(:store => 'opponent')
 
 					# for each starter find the last 5 games mp_5
-					player = starter.past_player.player
-					past_players = PastPlayer.where(:player_id => player.id)
+					past_players = PastPlayer.where(:player_id => starter.past_player.player.id)
 					# Create query string to find the past players in database
 					query = ""
 					past_players.each_with_index do |past_player, index|
@@ -572,13 +570,14 @@ namespace :matchup do
 						doc = Nokogiri::HTML(open(url))
 						bool = false
 						game_var = 0
+						# iterate through the array in reverse
 						doc.css("#stats_games td").reverse.each_with_index do |stat, index|
 							if game_var >= PAST_GAME_NUMBER
 								break
 							end
 							text = stat.text
 
-
+							# depending on the index, store the variables
 							checkIndex(text, index)
 							# Check who the home team is
 							if index%27 == 21
@@ -588,28 +587,28 @@ namespace :matchup do
 							# switch the home team if the @ sign is there
 							if index%27 == 22
 								if text == '@'
-									home_bool = false
+									@home_bool = false
 								else
-									home_bool = true
+									@home_bool = true
 								end
 							end
 
-							if index%27 == 23 && home_bool 
+							if index%27 == 23 && @home_bool 
 								@home = text
 							end
 
 							if index%27 == 24
-								year = text[0..3].to_i
-								month = text[5..6].to_i
-								day = text[8..-1].to_i
+								@year = text[0..3]
+								@month = text[5..6]
+								@day = text[8..-1]
 								# check to see if the game happened before or after
-								if year < game.year.to_i
+								if @year.to_i < game.year.to_i
 									bool = true
-								elsif year == game.year.to_i
-									if month < game.month.to_i
+								elsif @year.to_i == game.year.to_i
+									if @month.to_i < game.month.to_i
 										bool = true
-									elsif month == game.month.to_i
-										if day < game.day.to_i
+									elsif @month.to_i == game.month.to_i
+										if @day.to_i < game.day.to_i
 											bool = true
 										else
 											bool = false
@@ -646,25 +645,42 @@ namespace :matchup do
 								store_player.addPF(@pf)
 								store_player.addMP(@mp)
 								# find the boxscore for the game in question to get the team stats
-								url = "http://www.basketball-reference.com/boxscores/#{year}#{month}#{day}0#{@home}.html"
-
+								url = "http://www.basketball-reference.com/boxscores/#{@year}#{@month}#{@day}0#{@home}.html"
 								game_doc = Nokogiri::HTML(open(url))
+								# so the basic checks to see whether the row of length 20 is a basic stats or an advanced stats
 								var = 0
 								basic = 0
-								doc.css(".stat_total td").each_with_index do |stat, index|
+								game_doc.css(".stat_total td").each_with_index do |stat, index|
 									text = stat.text
 									if text == 'Team Totals'
 										var = 0
 										basic += 1
 									end
-									# only get the info it's the basic boxscore
+									# only get the info if it's the basic boxscore, none of the code written after this line gets run if the array is not in the basic box score
 									if basic%2 == 0
 										next
 									end
 									checkTeamIndex(text, var)
-									if var%20 == 0
+									# if we reach the +/- value in the array of the code, then we know we can store the team stats
+									if var%21 == 20
+=begin
+	see where I should store the variables depending on what lineup we're in
+	if lineup_index == 0 then we are on the away team. Then since the document we created has it arranged where
+	the away team goes first, we just have to create a team_index variable that checks to see if we're on the correct team.
+=end
+										
+=begin
+	If lineup_index == 0, we get team_index == 1. So if basic == 1, then we are in the away team which is the store_team. So we add all the stats to the store team.
+	If we are where lineup_index == 1, store_team == home, then team_index == 3, so when basic == 1, we go to the else and add the stats to the store_opponent.
+	This works vice versa.
+=end
+										if lineup_index == 0
+											team_index = 1
+										else
+											team_index = 3
+										end
 										# if it's the away team, then put in the store team
-										if basic == 1
+										if basic == team_index
 											store_team.addPTS(@pts)
 											store_team.addAST(@ast)
 											store_team.addFTM(@ftm)
@@ -695,19 +711,20 @@ namespace :matchup do
 									end
 									var += 1
 								end
+								# only if the game is previous to that of the current game do you add stats to the storage classes
+								# or change the game_var + 1.
 								game_var += 1
 							end
 
 						end
 					end
-					# Calculate each players statistics
+					# calculate all the stats you need
 					store_player.addORTG(player_ORTG(store_player, store_team, store_opponent))
 					store_player.addDRTG(player_DRTG(store_player, store_team, store_opponent))
 					store_team.findPossessions()
 					store_opponent.findPossessions()
 					store_player.findPace(store_team, store_opponent)
 					store_player.findPossessions()
-
 					@players << store_player
 
 				end
@@ -722,8 +739,11 @@ namespace :matchup do
 					store_player.findAVG(store_player.Past5Game, total_mp)
 				end
 
-				# Find the corresponding ortg's that I will add up to get the points 
-				if lindex == 0
+=begin
+	The lineup index will tell us where to place the ORTGs. Which team is which doesn't matter because we have
+	both teams contributing to the total score.
+=end
+				if lineup_index == 0
 					@players.each do |player|
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
@@ -731,7 +751,6 @@ namespace :matchup do
 						@team_DRTG << drtg
 					end
 				else
-				# Find the corresponding ortg's for the opposing team
 					@players.each do |player|
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
@@ -759,12 +778,6 @@ namespace :matchup do
 			game.update_attributes(:ps => ps.round(2))
 
 		end
-	end
-
-	task :whoo => :environment do
-		require 'nokogiri'
-		require 'open-uri'
-
 	end
 
 end
