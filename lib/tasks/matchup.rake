@@ -2,6 +2,89 @@ namespace :matchup do
 
 
 
+	task :whoo => :environment do
+		require 'nokogiri'
+		require 'open-uri'
+
+		def over_or_under(ps, cl, fs)
+
+			under = false
+			over = false
+
+			if ps >= (cl+3)
+				over = true
+			elsif ps <= (cl-3)
+				under = true
+			else
+				return 0
+			end
+
+			if under
+				if fs < cl
+					return 1
+				elsif fs > cl
+					return -1
+				else
+					return 0
+				end
+			end
+
+			if over
+				if fs > cl
+					return 1
+				elsif fs < cl
+					return -1
+				else
+					return 0
+				end
+			end
+
+		end
+
+		total_games = 0
+		plus_minus = 0
+		no_bet = 0
+		win_bet = 0
+		lose_bet = 0
+	
+
+		Game.all[1314..-1].each do |game|
+			if game.lineups.where(:quarter => 5).first.starters.size != 0
+				puts game.url + ' overtime'
+				puts game.id
+				# if game.full_game_cl == nil
+				# 	next
+				# else
+				# 	puts game.url + ' overtime'
+				# 	total_games += 1
+				# 	ps = game.ps
+				# 	cl = game.full_game_cl
+				# 	fs = game.lineups[0].pts + game.lineups[1].pts
+				# 	over_under = over_or_under(ps, cl, fs)
+				# 	plus_minus += over_under
+				# 	if over_under == 0
+				# 		no_bet += 1
+				# 	end
+				# 	if over_under == 1
+				# 		win_bet += 1
+				# 	end
+				# 	if over_under == -1
+				# 		lose_bet += 1
+				# 	end
+				# end
+
+			end
+		end
+
+		puts total_games.to_s + " total games"
+		puts plus_minus.to_s + " plus minus"
+		puts no_bet.to_s + " no bet"
+		puts win_bet.to_s + " win bet"
+		puts lose_bet.to_s + " lose bet"
+
+	end
+
+
 	task :algorithm => :environment do
 		require 'nokogiri'
 		require 'open-uri'
@@ -563,6 +646,7 @@ namespace :matchup do
 						store_player.addPast5Game(starter.mp)
 					end
 
+
 					# find all the opp_starters with the position of the starter in question
 					opp_starters = opp_starters.where(:position => starter.position)
 					opp_starters.each do |opp_starter|
@@ -745,6 +829,10 @@ namespace :matchup do
 =end
 				if lineup_index == 0
 					@players.each do |player|
+						puts player.store
+						puts player.ortg
+						puts player.avg
+						puts player.possessions
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
 						@team_ORTG << ortg
@@ -752,6 +840,10 @@ namespace :matchup do
 					end
 				else
 					@players.each do |player|
+						puts player.store
+						puts player.ortg
+						puts player.avg
+						puts player.possessions
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
 						@opp_ORTG << ortg

@@ -26,3 +26,12 @@ Things you may want to cover:
 
 Please feel free to use a different markup language if you do not plan to run
 <tt>rake doc:app</tt>.
+
+
+README
+
+We have a the lineups arranged where the first two lineups are the full game stats. This is denoted by quarter == 0.
+The next two lineups contain the first quarter stats. Now the quarter == 1 makes more sense.
+This goes on until the fourth quarter plus the possibility of up to three overtimes. This could be made more dynamic but most games don't get to a fourth overtime.
+
+The database relies on having all games made in order so their id's are sequential by time. So if you build a previous year, make sure you change the id's in the game. Or just make your own id variable. Or you could just see how many games you created and just add the respective amount to each id.

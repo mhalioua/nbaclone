@@ -3,9 +3,8 @@ class CreateLineups < ActiveRecord::Migration
     create_table :lineups do |t|
 
     	t.references :game
-      t.boolean "away", :default => false
       t.boolean "home", :default => false
-    	t.integer "quarter"
+    	t.integer "quarter", :default => 0
       t.integer "ast", :default => 0
       t.integer "tov", :default => 0
       t.integer "pts", :default => 0

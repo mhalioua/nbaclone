@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150616204816) do
+ActiveRecord::Schema.define(version: 20150205065823) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -40,9 +40,8 @@ ActiveRecord::Schema.define(version: 20150616204816) do
 
   create_table "lineups", force: true do |t|
     t.integer  "game_id"
-    t.boolean  "away",                  default: false
     t.boolean  "home",                  default: false
-    t.integer  "quarter"
+    t.integer  "quarter",               default: 0
     t.integer  "ast",                   default: 0
     t.integer  "tov",                   default: 0
     t.integer  "pts",                   default: 0
@@ -117,7 +116,6 @@ ActiveRecord::Schema.define(version: 20150616204816) do
     t.string   "name"
     t.string   "alias"
     t.string   "height"
-    t.string   "abbr"
     t.string   "position"
     t.boolean  "forward",                      default: false
     t.boolean  "guard",                        default: false
@@ -177,9 +175,12 @@ ActiveRecord::Schema.define(version: 20150616204816) do
   create_table "starters", force: true do |t|
     t.integer  "lineup_id"
     t.integer  "past_player_id"
-    t.string   "name"
+    t.string   "name",                      default: ""
+    t.string   "alias",                     default: ""
+    t.string   "position",                  default: ""
     t.boolean  "starter",                   default: false
-    t.integer  "quarter"
+    t.boolean  "home",                      default: false
+    t.integer  "quarter",                   default: 0
     t.integer  "ast",                       default: 0
     t.integer  "tov",                       default: 0
     t.integer  "pts",                       default: 0
@@ -197,8 +198,10 @@ ActiveRecord::Schema.define(version: 20150616204816) do
     t.float    "mp",             limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.string   "position"
   end
+
+  add_index "starters", ["alias"], name: "index_starters_on_alias", using: :btree
+  add_index "starters", ["name"], name: "index_starters_on_name", using: :btree
 
   create_table "teams", force: true do |t|
     t.string   "name"

@@ -4,9 +4,12 @@ class CreateStarters < ActiveRecord::Migration
 
     	t.references :lineup
     	t.references :past_player
-      t.string "name"
+      t.string "name", :default => ""
+      t.string "alias", :default => ""
+      t.string "position", :default => ""
       t.boolean "starter", :default => false
-      t.integer "quarter"
+      t.boolean "home", :default => false
+      t.integer "quarter", :default => 0
       t.integer "ast", :default => 0
       t.integer "tov", :default => 0
       t.integer "pts", :default => 0
@@ -25,6 +28,8 @@ class CreateStarters < ActiveRecord::Migration
 
       t.timestamps
     end
+    add_index("starters", "name")
+    add_index("starters", "alias")
   end
 
   def down

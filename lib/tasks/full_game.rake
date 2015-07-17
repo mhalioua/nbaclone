@@ -568,13 +568,14 @@ namespace :full_game do
 					store_player.findAVG(store_player.Past5Game, total_mp)
 				end
 
+				whoo = 0
 				# Add the statistics for each of the 
 				if lindex == 0
 					@players.each do |player|
-						# puts player.store
-						# puts player.ortg
-						# puts player.drtg
-						# puts player.avg
+						puts player.store
+						puts player.ortg
+						puts player.drtg
+						whoo += player.avg
 						# puts player.possessions
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
@@ -583,10 +584,10 @@ namespace :full_game do
 					end
 				else
 					@players.each do |player|
-						# puts player.store
-						# puts player.ortg
-						# puts player.drtg
-						# puts player.avg
+						puts player.store
+						puts player.ortg
+						puts player.drtg
+						whoo += player.avg
 						# puts player.possessions
 						ortg = ((player.ortg/48)*(player.avg/500)*player.possessions).round(2)
 						drtg = ((player.drtg/48)*(player.avg/500)*player.possessions).round(2)
@@ -594,6 +595,7 @@ namespace :full_game do
 						@opp_DRTG << drtg
 					end
 				end
+				puts whoo
 			end
 
 			u = 0
@@ -620,11 +622,10 @@ namespace :full_game do
 		require 'nokogiri'
 		require 'open-uri'
 
-		games = Game.all[1314..-1]
+		games = Game.all
 
 		# find all the games and make sure a previous date is not repeated
 		previous_date = nil
-		past_teams = PastTeam.where(:year => '2014')
 		games.each do |game|
 			day = game.day
 			month = game.month
@@ -636,22 +637,23 @@ namespace :full_game do
 			else
 				previous_date = date
 				url = "http://www.sportsbookreview.com/betting-odds/nba-basketball/totals/?date=#{date}"
+				puts url
 				doc = Nokogiri::HTML(open(url))
 
 				home = Array.new
 				cl = Array.new
 
-				doc.css(".eventLine-value").each_with_index do |stat, index|
+				doc.css(".team-name").each_with_index do |stat, index|
 					text = stat.text
 					if index%2 == 1
 						if text.include?('L.A.')
 							text = text[text.index(' ')+1..-1]
-							home << Team.find_by_name(text).abbr
+							home << Team.find_by_name(text).id
 						else
-							if text == 'Charlotte' # Charlotte had two names, either Hornets or Bobcats. Might cause trouble
-								home << Team.find_by_name('Bobcats').abbr
+							if text == 'Charlotte' # Charlotte had two names, either Hornets or Bobcats. Might cause trouble FIXXXXX
+								home << Team.find(9).id
 							else
-								home << Team.find_by_city(text).abbr
+								home << Team.find_by_city(text).id
 							end
 						end
 					end
@@ -659,50 +661,41 @@ namespace :full_game do
 
 				var = 0
 				bool = false
-				doc.css(".eventLine-book-value").each do |stat|
+				doc.css(".adjust").each_with_index do |stat, index|
 					text = stat.text
-					if bool && !(text =~ /[A-z]/)
-						if text.size > 3
-							index = text.index('-')
-							if index == nil
-								index = text.index('+')
-							end
-							index = index-2
-							# Check to see whether or not there is a 1/2 on the text and adjust the cl accordingly
-							if text[index].ord == 189
-								cl << text[0..index-1].to_f + 0.5
-							else
-								cl << text[0..index].to_f
-							end
+					# Check to see whether or not there is a 1/2 on the text and adjust the cl accordingly
+					if index%2 == 1
+						if text[-1].ord == 189
+							cl << text[0..-2].to_f + 0.5
 						else
-							next
+							cl << text[0..-1].to_f
 						end
-					end
-					if text =~ /[A-z]/
-						bool = true
-					else
-						bool = false
-						next
 					end
 				end
 
 
 				todays_games = Game.where(:year => year, :month => month, :day => day)
-				(0..home.size-1).each do |n|
-					# Find team by abbreviation
-					team = Team.find_by_abbr(home[n])
+				(0...home.size).each do |n|
 					# Find what year to get the past team from
 					past_team_year = year
 					if month.to_i > 7
 						past_team_year = (year.to_i + 1).to_s
 					end
 					# Find team by past team's id and past team year
-					past_team = past_teams.where(:team_id => team.id, :year => past_team_year).first
+					past_team = PastTeam.where(:team_id => home[n], :year => past_team_year).first
+
+					if past_team == nil
+						puts 'This past team was not found'
+						puts team.id
+
+						puts past_team_year
+					end
+
 
 					# out of today's games, what team had the corresponding home team
 					cl_game = todays_games.where(:home_team_id => past_team.id).first
 					if cl_game != nil
-						cl_game.update_attributes(:pinnacle => cl[n]) # place the first_half cl in the 
+						cl_game.update_attributes(:full_game_cl => cl[n]) # place the first_half cl in the 
 						puts cl_game.url
 						puts cl[n]
 					else
