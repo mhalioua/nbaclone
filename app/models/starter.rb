@@ -1,171 +1,236 @@
 class Starter < ActiveRecord::Base
 
-	belongs_to :lineup
+	belongs_to :team, :class_name => "Lineup"
+	belongs_to :opponent, :class_name => "Lineup"
 	belongs_to :past_player
-
-	team = self.lineup
-	opponent = team.game.lineups.where(:quarter => team.quarter, :home => !team.home).first
 
 	# Offense
 
-	def q5
-		1.14 * ((team.ast - self.ast).to_f/team.fgm)
+	def q5(team=self.team, opponent=self.opponent) # checked
+		q5 = 1.14 * ((team.ast - self.ast) / team.fgm)
 	end
 
-	def q12
-		((team.ast/team.mp) * self.mp * 5.0 - self.ast)/((team.fgm/team.mp) * self.mp * 5.0 - self.fgm)
+	def q12(team=self.team, opponent=self.opponent) # 
+		q12 = ((team.ast / team.mp) * self.mp * 5.0 - self.ast)/((team.fgm / team.mp) * self.mp * 5.0 - self.fgm)
+		if q12.nan?
+			return 0.0
+		end
+		return q12
 	end
 
-	def qAST
-		self.min/(team.min/5.0) * self.q5 + (1.0 - self.min/(team.min/5.0)) * self.q12
+	def qAST(team=self.team, opponent=self.opponent)
+		qAST = self.mp / (team.mp/5.0) * self.q5(team, opponent) + (1.0 - self.mp/(team.mp/5.0)) * self.q12(team, opponent)
+		if qAST.nan?
+			return 0.0
+		end
+		return qAST
 	end
 
-	def ftPercentage
-		self.ftm.to_f/self.fta.to_f
+	# Parts
+
+	def FGPart(team=self.team, opponent=self.opponent)
+		fgpart = self.fgm * (1.0 - 0.5 * (self.pts - self.ftm)/(2.0 * self.fga) * self.qAST(team, opponent))
+		if fgpart.nan?
+			return 0.0
+		end
+		return fgpart
 	end
 
-	def teamFtPercentage
-		team.ftm.to_f/team.fta.to_f
+	def FTPart(team=self.team, opponent=self.opponent)
+		(1 - (1 - self.FTPercent(team, opponent)) ** 2) * 0.4 * self.fta
 	end
 
-	def fgPart
-		self.fgm * (1.0 - 0.5 * (self.pts - self.ftm)/(2.0 * self.fga) * self.qAST)
+	def ASTPart(team=self.team, opponent=self.opponent)
+		0.5 * ((team.pts - team.ftm) - (self.pts - self.ftm)) / (2.0 * (team.fga - self.fga)) * self.ast
 	end
 
-	def astPart
-		0.5 * ((team.pts - team.ftm) - (self.pts - self.ftm)) / (2.0 * (team.fga - self.fga)) * self.ast.to_f
+	def ORBPart(team=self.team, opponent=self.opponent)
+		self.orb * team.ORBWeight(team, opponent) * team.PlayPercent(team, opponent)
 	end
 
-	def ftPart
-		(1 - (1 - self.ftPercentage) ** 2) * 0.4 * self.fta
+	# Possessions
+
+	def FGxPoss(team=self.team, opponent=self.opponent)
+		(self.fga - self.fgm) * (1.0 - 1.07 * team.ORBPercent(team, opponent))
 	end
 
-	def orbPart
-		self.orb.to_f * self.teamOrbWeight * self.teamPlayPercentage
+	def FTxPoss(team=self.team, opponent=self.opponent)
+		((1.0 - self.FTPercent(team, opponent)) ** 2) * 0.4 * self.fta
 	end
 
-	def missedFgPart
-		(self.fga - self.fgm) * (1.0 - 1.07 * self.teamOrbPercentage)
+	def ScPoss(team=self.team, opponent=self.opponent)
+		(self.FGPart(team, opponent) + self.ASTPart(team, opponent) + self.FTPart(team, opponent)) * (1 - (team.orb / team.ScPoss(team, opponent)) * team.ORBWeight(team, opponent) * team.PlayPercent(team, opponent)) + self.ORBPart(team, opponent)
 	end
 
-	def missedFtPart
-		((1.0 - self.ftPercentage) ** 2) * 0.4 * self.fta
+	def TotPoss(team=self.team, opponent=self.opponent)
+		self.ScPoss(team, opponent) + self.FGxPoss(team, opponent) + self.FTxPoss(team, opponent) + self.tov
 	end
 
-	def teamScoringPossessions
-		team.fgm + (1 - (1 - (team.ftm.to_f / team.fta.to_f)) ** 2) * team.fta.to_f * 0.4
+	def Plays(team=self.team, opponent=self.opponent)
+		self.fga + self.fta * 0.4 + self.tov
 	end
 
-	def teamPlayPercentage
-		self.teamScoringPossessions / (team.fga + team.fta.to_f * 0.4 + team.tov)
+	# Percentage
+
+	# Percentage of a team's possessions on which the team scores at least 1 point
+	def FloorPercentage(team=self.team, opponent=self.opponent)
+		floorPercentage = self.ScPoss(team, opponent) / self.TotPoss(team, opponent)
+		if floorPercentage.nan?
+			return 0.0
+		end
+		return floorPercentage
 	end
 
-	def teamOrbPercentage
-		team.orb.to_f / (team.orb + opponent.drb).to_f
+	# Percentage of a team's non-foul shot possessions on which the team socres a field goal
+	def FieldPercent(team=self.team, opponent=self.opponent)
+		fieldPercent = self.fgm / (self.fga - (self.orb/(self.orb + self.drb)) * (self.fga - self.fgm) * 1.07)
+		if fieldPercent.nan?
+			return 0.0
+		end
+		return fieldPercent
 	end
 
-	def teamOrbWeight
-		((1.0 - self.teamOrbPercentage) * self.teamPlayPercentage) / ((1.0 - self.teamOrbPercentage) * self.teamPlayPercentage + self.teamOrbPercentage * (1 - self.teamPlayPercentage))
+	# Percentage of a team's "plays" on which the team scores at least 1 point
+	def PlayPercent(team=self.team, opponent=self.opponent)
+		playPercent = self.ScPoss(team, opponent) / self.Plays(team, opponent)
+		if playPercent.nan?
+			return 0.0
+		end
+		return playPercentage
 	end
 
-	def scoringPossessions
-		(self.fgPart + self.astPart + self.ftPart) * (1 - (team.orb.to_f/self.teamScoringPossessions) * self.teamOrbWeight * self.teamPlayPercentage) + self.orbPart
+	def FTPercent(team=self.team, opponent=self.opponent)
+		ftPercent = self.ftm/self.fta
+		if ftPercent.nan?
+			return 0.0
+		end
+		return ftPercent
 	end
 
-	def possessions
-		self.scoringPossessions + self.missedFgPart + self.missedFtPart + self.tov
+
+	def PossPercent(team=self.team, opponent=self.opponent)
+		self.TotPoss(team, opponent) / team.TotPoss(team, opponent)
 	end
 
-	def teamPossessions
-		self.teamScoringPossessions + self.teamMissedFgPart + self.teamMissedFtPart + team.tov
+	def ScPossPercent(team=self.team, opponent=self.opponent)
+		self.ScPoss(team, opponent) / team.ScPoss(team, opponent)
 	end
 
-	def fieldPercentage
-		self.fgm.to_f/(self.fga.to_f - (self.orb.to_f/(self.orb + self.drb).to_f) * (self.fga - self.fgm).to_f * 1.07)
+	# Points Produced
+
+	def PProdFGPart(team=self.team, opponent=self.opponent)
+		pprodfgpart = 2 * (self.fgm + 0.5 * self.thpm) * (1 - 0.5 * ((self.pts - self.ftm) / (2 * self.fga)) * self.qAST(team, opponent))
+		if pprodfgpart.nan?
+			pprodfgpart = 0
+		end
+		return pprodfgpart
 	end
 
-	def plays
-		self.fga + self.fta.to_f * 0.4 + self.tov
+	def PProdASTPart(team=self.team, opponent=self.opponent)
+		2 * ((team.fgm - fgm + 0.5 * (team.thpm - self.thpm)) / (team.fgm - self.fgm)) * 0.5 * (((team.pts - team.ftm) - (self.pts - self.ftm)) / (2 * (team.fga - self.fga))) * self.ast
 	end
 
-	def playPercentage
-		self.scoringPossessions.to_f/self.plays.to_f
+	def PProdORBPart(team=self.team, opponent=self.opponent) # checked
+		pprodorbpart = self.orb * team.ORBWeight(team, opponent) * team.PlayPercent(team, opponent) * (team.pts / (team.fgm + (1 - (1 - (team.ftm / team.fta)) ** 2) * 0.4 * team.fta))
+		if pprodorbpart.nan?
+			pprodorbpart = 0.0
+		end
+		return pprodorbpart
 	end
 
-	def pointsProduced
-
-		fgPart = 2 * (self.fgm + 0.5 * self.thpm) * (1.0 - 0.5 * ((self.pts - self.ftm) / (2 * self.fga)) * self.qAST)
-		astPart = 2 * (team.fgm - self.fgm + 0.5 * (team.thpm - self.thpm)) / (team.fgm - self.fgm) * 0.5 * (team.pts - team.ftm - self.pts + self.ftm) / (2 * (team.fga - self.fga)) * self.ast
-		ftPart = self.ftm
-		orbPart = self.orb * self.teamOrbWeight * self.teamPlayPercentage * team.pts / (team.fgm + (1 - (1 - self.teamFtPercentage) ** 2)) 0.4 * team.fta) 
-
-		return (fgPart + astPart + ftPart) * (1.0 - team.orb / self.teamScoringPossessions) * self.teamOrbWeight * self.teamPlayPercentage) + orbPart
-
+	def PProd(team=self.team, opponent=self.opponent) # checked
+		pprod = (self.PProdFGPart(team, opponent) + self.PProdASTPart(team, opponent) + self.ftm) * (1 - (team.orb / team.ScPoss(team, opponent)) * team.ORBWeight(team, opponent) * team.PlayPercent(team, opponent)) + self.PProdORBPart(team, opponent)
+		if pprod.nan?
+			return 0.0
+		end
+		return pprod
 	end
 
-	def floorPercentage
-		self.scoringPossessions / self.possessions
+	def ORTG(team=self.team, opponent=self.opponent) # checked
+		ortg = 100 * (self.PProd(team, opponent) / self.TotPoss(team, opponent))
+		if ortg.nan?
+			return 0.0
+		end
+		return ortg
+	end
+
+	def PredictedPoints(team=self.team, opponent=self.opponent)
+		self.PossPercent(team, opponent) * self.ORTG(team, opponent)
 	end
 
 
 
 	# Defense
 
-	def DFGPercentage
-		opponent.fgm / opponent.fga
+	def DFGPercent
+		var = self.opponent.fgm / self.opponent.fga
+		if var.nan?
+			return 0.0
+		end
+		return var
 	end
 
-	def DORpercentage
-		opponent.orb / (opponent.orb + team.drb)
+	def DORPercent
+		var = self.opponent.orb / (self.opponent.orb + self.team.drb)
+		if var.nan?
+			return 0.0
+		end
+		return var
 	end
 
 	def FMwt
-		(self.DFGPercentage * (1 - self.DORPercentage)) / (self.DFGPercentage * (1 - self.DORPercentage) + (1 - self.DFGPercentage) * self.DORPercentage)
+		dfg = self.DFGPercent
+		dor = self.DORPercent
+		var = (dfg * (1 - dor)) / (dfg * (1 - dor) + (1 - dfg) * dor)
+		if var.nan?
+			return 0.0
+		end
+		return var
 	end
 
-	def stops1
-		self.stl + self.blk * self.FMwt * (1 - 1.07 * self.DORPercentage) + self.drb * (1 - self.FMwt) 
+	def Stops1
+		fmwt = self.FMwt
+		var = self.stl + self.blk * fmwt * (1 - 1.07 * self.DORPercent) + self.drb * (1 - fmwt)
+		if var.nan?
+			return 0.0
+		end
+		return var
 	end
 
-	def stops2
-		(((opponent.fga - opponent.fgm - team.blk) / team.mp) * self.FMwt * (1 - 1.07 * self.DORPercentage) + ((opponent.tov - team.stl) / team.mp)) * self.mp + (self.pf.to_f / team.pf.to_f) * 0.4 * opponent.fta.to_f * (1 - (opponent.ftm.to_f / opponent.fta.to_f)) ** 2
+	def Stops2
+		var = (((self.opponent.fga - self.opponent.fgm - self.team.blk) / self.team.mp) * self.FMwt * (1 - 1.07 * self.DORPercent) + ((self.opponent.tov - self.team.stl) / self.team.mp)) * self.mp + (self.pf / self.team.pf) * 0.4 * self.opponent.fta * (1 - (self.opponent.ftm / self.opponent.fta)) ** 2
+		if var.nan?
+			return 0.0
+		end
+		return var
 	end
 
-	def stops
-		self.stops1 + self.stops2
+	def Stops
+		self.Stops1 + self.Stops2
 	end
 
+	def StopPercent
+		var = (self.Stops * self.opponent.mp) / (self.TeamTotPoss * self.mp)
+		if var.nan?
+			return 0.0
+		end
+		return var
+	end
 
+	def TeamDRTG
+		var = 100 * (self.opponent.pts / self.TeamTotPoss)
+	end
 
+	def DefPointsPerScPoss
+		var = self.opponent.pts / (self.opponent.fgm + (1 - (1 - (self.opponent.ftm / self.opponent.fta)) ** 2) * self.opponent.fta * 0.4)
+		if var.nan?
+			return 0.0
+		end
+		return var
+	end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	def DRTG
+		self.TeamDRTG + 0.2 * (100 * self.DefPointsPerScPoss * (1 - self.StopPercent) - self.TeamDRTG)
+	end
 
 end

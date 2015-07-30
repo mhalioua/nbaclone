@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150205065823) do
+ActiveRecord::Schema.define(version: 20150728192523) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -27,44 +27,66 @@ ActiveRecord::Schema.define(version: 20150205065823) do
   create_table "games", force: true do |t|
     t.integer  "away_team_id"
     t.integer  "home_team_id"
-    t.float    "ps",            limit: 24
-    t.float    "first_half_ps", limit: 24
     t.string   "year"
     t.string   "month"
     t.string   "day"
-    t.float    "full_game_cl",  limit: 24
-    t.float    "first_half_cl", limit: 24
+    t.float    "full_game_ps",     limit: 24
+    t.float    "first_half_ps",    limit: 24
+    t.float    "first_quarter_ps", limit: 24
+    t.float    "possessions_ps",   limit: 24
+    t.float    "ortg_ps",          limit: 24
+    t.float    "full_game_cl",     limit: 24
+    t.float    "first_half_cl",    limit: 24
+    t.float    "first_quarter_cl", limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "lineups", force: true do |t|
     t.integer  "game_id"
-    t.boolean  "home",                  default: false
-    t.integer  "quarter",               default: 0
-    t.integer  "ast",                   default: 0
-    t.integer  "tov",                   default: 0
-    t.integer  "pts",                   default: 0
-    t.integer  "ftm",                   default: 0
-    t.integer  "fta",                   default: 0
-    t.integer  "thpm",                  default: 0
-    t.integer  "thpa",                  default: 0
-    t.integer  "fgm",                   default: 0
-    t.integer  "fga",                   default: 0
-    t.integer  "orb",                   default: 0
-    t.integer  "drb",                   default: 0
-    t.integer  "stl",                   default: 0
-    t.integer  "blk",                   default: 0
-    t.integer  "pf",                    default: 0
-    t.float    "mp",         limit: 24, default: 0.0
+    t.boolean  "home",                   default: false
+    t.integer  "quarter",                default: 0
+    t.float    "mp",          limit: 24, default: 0.0
+    t.float    "fgm",         limit: 24, default: 0.0
+    t.float    "fga",         limit: 24, default: 0.0
+    t.float    "thpm",        limit: 24, default: 0.0
+    t.float    "thpa",        limit: 24, default: 0.0
+    t.float    "ftm",         limit: 24, default: 0.0
+    t.float    "fta",         limit: 24, default: 0.0
+    t.float    "orb",         limit: 24, default: 0.0
+    t.float    "drb",         limit: 24, default: 0.0
+    t.float    "ast",         limit: 24, default: 0.0
+    t.float    "stl",         limit: 24, default: 0.0
+    t.float    "blk",         limit: 24, default: 0.0
+    t.float    "tov",         limit: 24, default: 0.0
+    t.float    "pf",          limit: 24, default: 0.0
+    t.float    "pts",         limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "opponent_id"
   end
+
+  add_index "lineups", ["opponent_id"], name: "index_lineups_on_opponent_id", using: :btree
 
   create_table "past_players", force: true do |t|
     t.integer  "player_id"
     t.integer  "past_team_id"
     t.string   "year"
+    t.float    "mp",           limit: 24, default: 0.0
+    t.float    "fgm",          limit: 24, default: 0.0
+    t.float    "fga",          limit: 24, default: 0.0
+    t.float    "thpm",         limit: 24, default: 0.0
+    t.float    "thpa",         limit: 24, default: 0.0
+    t.float    "ftm",          limit: 24, default: 0.0
+    t.float    "fta",          limit: 24, default: 0.0
+    t.float    "orb",          limit: 24, default: 0.0
+    t.float    "drb",          limit: 24, default: 0.0
+    t.float    "ast",          limit: 24, default: 0.0
+    t.float    "stl",          limit: 24, default: 0.0
+    t.float    "blk",          limit: 24, default: 0.0
+    t.float    "tov",          limit: 24, default: 0.0
+    t.float    "pf",           limit: 24, default: 0.0
+    t.float    "pts",          limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -72,8 +94,26 @@ ActiveRecord::Schema.define(version: 20150205065823) do
   create_table "past_teams", force: true do |t|
     t.integer  "team_id"
     t.string   "year"
+    t.float    "mp",         limit: 24, default: 0.0
+    t.float    "fgm",        limit: 24, default: 0.0
+    t.float    "fga",        limit: 24, default: 0.0
+    t.float    "thpm",       limit: 24, default: 0.0
+    t.float    "thpa",       limit: 24, default: 0.0
+    t.float    "ftm",        limit: 24, default: 0.0
+    t.float    "fta",        limit: 24, default: 0.0
+    t.float    "orb",        limit: 24, default: 0.0
+    t.float    "drb",        limit: 24, default: 0.0
+    t.float    "ast",        limit: 24, default: 0.0
+    t.float    "stl",        limit: 24, default: 0.0
+    t.float    "blk",        limit: 24, default: 0.0
+    t.float    "tov",        limit: 24, default: 0.0
+    t.float    "pf",         limit: 24, default: 0.0
+    t.float    "pts",        limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "name"
+    t.string   "abbr"
+    t.string   "city"
   end
 
   create_table "player_matchup_games", force: true do |t|
@@ -173,7 +213,8 @@ ActiveRecord::Schema.define(version: 20150205065823) do
   add_index "players", ["name"], name: "index_players_on_name", using: :btree
 
   create_table "starters", force: true do |t|
-    t.integer  "lineup_id"
+    t.integer  "team_id"
+    t.integer  "opponent_id"
     t.integer  "past_player_id"
     t.string   "name",                      default: ""
     t.string   "alias",                     default: ""
@@ -181,21 +222,21 @@ ActiveRecord::Schema.define(version: 20150205065823) do
     t.boolean  "starter",                   default: false
     t.boolean  "home",                      default: false
     t.integer  "quarter",                   default: 0
-    t.integer  "ast",                       default: 0
-    t.integer  "tov",                       default: 0
-    t.integer  "pts",                       default: 0
-    t.integer  "ftm",                       default: 0
-    t.integer  "fta",                       default: 0
-    t.integer  "thpm",                      default: 0
-    t.integer  "thpa",                      default: 0
-    t.integer  "fgm",                       default: 0
-    t.integer  "fga",                       default: 0
-    t.integer  "orb",                       default: 0
-    t.integer  "drb",                       default: 0
-    t.integer  "stl",                       default: 0
-    t.integer  "blk",                       default: 0
-    t.integer  "pf",                        default: 0
     t.float    "mp",             limit: 24, default: 0.0
+    t.float    "fgm",            limit: 24, default: 0.0
+    t.float    "fga",            limit: 24, default: 0.0
+    t.float    "thpm",           limit: 24, default: 0.0
+    t.float    "thpa",           limit: 24, default: 0.0
+    t.float    "ftm",            limit: 24, default: 0.0
+    t.float    "fta",            limit: 24, default: 0.0
+    t.float    "orb",            limit: 24, default: 0.0
+    t.float    "drb",            limit: 24, default: 0.0
+    t.float    "ast",            limit: 24, default: 0.0
+    t.float    "stl",            limit: 24, default: 0.0
+    t.float    "blk",            limit: 24, default: 0.0
+    t.float    "tov",            limit: 24, default: 0.0
+    t.float    "pf",             limit: 24, default: 0.0
+    t.float    "pts",            limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end

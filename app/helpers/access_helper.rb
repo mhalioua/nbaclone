@@ -1,5 +1,2 @@
-module AccessHelper
-
-	
-	
+module AccessHelper	
 end

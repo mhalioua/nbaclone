@@ -1,14 +1,14 @@
 namespace :data do
 
 	# Create: past_teams, games, past_players, play_by_plays, extract
-	task :build => [:create_past_teams, :create_games, :create_past_players, :play_by_play, :extract] do
+	task :build => [:create_past_teams, :create_games, :create_past_players, :play_by_play, :extract, :sum_stats] do
 	end
 
 	task :create_past_teams => :environment do
 		require 'open-uri'
 		require 'nokogiri'
 
-		years = (2014..2015)
+		years = (2013..2015)
 		years.each do |n|
 			num = n.to_s
 			url = "http://www.basketball-reference.com/leagues/NBA_#{num}.html"
@@ -49,7 +49,7 @@ namespace :data do
 			return [year, month, day]
 		end
 
-		n = (2014..2015)
+		n = (2013..2015)
 
 		n.each do |n|
 
@@ -108,10 +108,15 @@ namespace :data do
 
 		end
 
-		def createStarters(game, quarter, home, starters)
-			lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => home)
+		def createStarters(starters, away_lineup, home_lineup, home, starting)
+			if !home
+				lineup = away_lineup
+				away_lineup = home_lineup
+				home_lineup = lineup
+			end
 			starters.each do |starter|
-				Starter.create(:lineup_id => lineup.id, :past_player_id => starter.id, :quarter => quarter, :name => starter.player.name, :alias => starter.player.alias, :home => home)
+
+				Starter.create(:team_id => home_lineup.id, :opponent_id => away_lineup.id, :past_player_id => starter.id, :quarter => away_lineup.quarter, :name => starter.player.name, :alias => starter.player.alias, :home => home, :starter => starting)
 			end
 		end
 
@@ -119,7 +124,7 @@ namespace :data do
 
 		games.each do |game|
 
-			puts game.url
+			puts game.url + ' ' + game.id.to_s
 
 			url = "http://www.basketball-reference.com/boxscores/#{game.url}.html"
 
@@ -162,11 +167,17 @@ namespace :data do
 
 			end
 
-			# Keep in order for easy access through array.
-			createStarters(game, 0, false, away_players)
-			createStarters(game, 0, true, home_players)
-			createStarters(game, 1, false, away_starters)
-			createStarters(game, 1, true, home_starters)
+			away_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => false)
+			home_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => true)
+
+			createStarters(away_players, away_lineup, home_lineup, false, false)
+			createStarters(home_players, away_lineup, home_lineup, true, false)
+
+			away_lineup = Lineup.create(:quarter => 1, :game_id => game.id, :home => false)
+			home_lineup = Lineup.create(:quarter => 1, :game_id => game.id, :home => true)
+
+			createStarters(away_starters, away_lineup, home_lineup, false, true)
+			createStarters(home_starters, away_lineup, home_lineup, true, true)
 
 		end
 	end
@@ -276,7 +287,6 @@ namespace :data do
 				second_name = href[1]
 				second_name = second_name[11...second_name.index(".")]
 			else
-				puts stat
 				first_name = nil
 				second_name = nil
 			end
@@ -308,27 +318,38 @@ namespace :data do
 		end
 
 		# This adds the lineups before the players, it separates the starters from the subs
-		def createStarters(starters, subbed_in, game, quarter)
+		def createStarters(starters, subs, game, quarter)
 
-			away_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => false)
-			home_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => true)
-
-			starters.each do |starter|
-				if starter.home
-					lineup_id = home_lineup.id
-				else
-					lineup_id = away_lineup.id
-				end
-				Starter.create(:name => starter.name, :alias => starter.alias, :quarter => quarter, :lineup_id => lineup_id, :starter => starter.home)
+			if quarter != 1
+				away_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => false)
+				home_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => true)
+			else
+				away_lineup = game.lineups.where(:quarter => 1, :home => false).first
+				home_lineup = game.lineups.where(:quarter => 1, :home => true).first
 			end
 
-			subbed_in.each do |sub|
+			if quarter != 1
+				starters.each do |starter|
+					if starter.home
+						team_id = home_lineup.id
+						opponent_id = away_lineup.id
+					else
+						team_id = away_lineup.id
+						opponent_id = home_lineup.id
+					end
+					Starter.create(:name => starter.name, :alias => starter.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :home => starter.home, :starter => true)
+				end
+			end
+
+			subs.each do |sub|
 				if sub.home
-					lineup_id = home_lineup.id
+					team_id = home_lineup.id
+					opponent_id = away_lineup.id
 				else
 					lineup_id = away_lineup.id
+					opponent_id = home_lineup.id
 				end
-				Starter.create(:name => sub.name, :alias => sub.alias, :quarter => quarter, :lineup_id => lineup_id, :starter => sub.home)
+				Starter.create(:name => sub.name, :alias => sub.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :home => sub.home, :starter => false)
 			end
 		end
 
@@ -353,18 +374,18 @@ namespace :data do
 				return false
 			end
 
-			if @sub
+			if action == 'substitution'
 				subs << player1
 			end
 
 			if starters.size < 10
-				if player1 != nil && !(subs.include?(player1))
+				if player1 != nil && !(subs.include?(player1)) && !(starters.include?(player1))
 					starters << player1
 				end
 			end
 
 			if starters.size < 10
-				if player2 != nil && !(subs.include?(player2))
+				if player2 != nil && !(subs.include?(player2)) && !(starters.include?(player2))
 					starters << player2
 				end
 			end
@@ -416,7 +437,7 @@ namespace :data do
 
 		games.each do |game|
 
-			puts game.url
+			puts game.url + ' ' + game.id.to_s
 
 			play_url = "http://www.basketball-reference.com/boxscores/pbp/#{game.url}.html"
 			play_doc = Nokogiri::HTML(open(play_url))
@@ -434,7 +455,6 @@ namespace :data do
 
 			Play.setFalse()
 
-			# 
 			subs = Set.new
 			starters = Array.new
 			actions = Array.new
@@ -447,7 +467,7 @@ namespace :data do
 				# Change the quarter when a new one starts
 				if text.include?("Start of")
 					bool = true
-					if quarter > 1
+					if quarter != 0
 						createStarters(starters, subs, game, quarter)
 					end
 					quarter = changeQuarter(text, starters, subs)
@@ -492,144 +512,6 @@ namespace :data do
 
 	task :extract => :environment do
 
-		class TeamStat
-
-			attr_accessor :pts, :ast, :ftm, :fta, :fgm, :fga, :thpm, :thpa, :orb, :drb, :tov, :stl, :blk, :pf, :mp
-
-			def initialize(params = {})
-
-				@pts = @ast = @ftm = @fta = @fgm = @fga = @thpm = @thpa = @orb = @drb = @tov = @stl = @blk = @pf = 0
-				@mp = 0.0
-			end
-
-			def trb()
-				return @drb + @orb
-			end
-
-		end
-
-		class Stat
-
-			attr_reader :starter
-			attr_accessor :ast, :tov, :pts, :ftm, :fta, :thpm, :thpa, :fgm, :fga, :orb, :drb, :stl, :blk, :pf, :mp, :time
-			
-			def initialize(params = {})
-
-				@starter = params.fetch(:starter)
-				@ast = @tov = @pts = @ftm = @fta = @thpm = @thpa = @fgm = @fga = @orb = @drb = @stl = @blk = @pf = 0
-				@mp = @qmp = 0.0
-				@qast = @qtov = @qpts = @qftm = @qfta = @qthpm = @qthpa = @qfgm = @qfga = @qorb = @qdrb = @qstl = @qblk = @qpf = @time = 0
-			end
-
-			def store()
-				@qast = @ast
-				@qtov = @tov
-				@qpts = @pts
-				@qftm = @ftm
-				@qfta = @fta
-				@qthpm = @thpm
-				@qthpa = @thpa
-				@qfgm = @fgm
-				@qfga = @fga
-				@qorb = @orb
-				@qdrb = @drb
-				@qstl = @stl
-				@qblk = @blk
-				@qpf = @pf
-				@qmp = @mp
-			end
-
-			def FTM()
-				@pts += 1
-				@fta += 1
-				@ftm += 1
-			end
-
-			def THPM()
-				@pts += 3
-				@thpa += 1
-				@thpm += 1
-				@fgm += 1
-				@fga += 1
-			end
-
-			def THPA()
-				@thpa += 1
-				@fga += 1
-			end
-
-			def TWPM()
-				@pts += 2
-				@fgm += 1
-				@fga += 1
-			end
-
-			def mp()
-				return @mp.round(2)
-			end
-
-			def qpts()
-				@pts - @qpts
-			end
-
-			def qast()
-				@ast - @qast
-			end
-
-			def qtov()
-				@tov - @qtov
-			end
-
-			def qftm()
-				@ftm - @qftm
-			end
-
-			def qfta()
-				@fta - @qfta
-			end
-
-			def qthpm()
-				@thpm - @qthpm
-			end
-
-			def qthpa()
-				@thpa - @qthpa
-			end
-
-			def qfgm()
-				@fgm - @qfgm
-			end
-
-			def qfga()
-				@fga - @qfga
-			end
-
-			def qorb()
-				@orb - @qorb
-			end
-
-			def qdrb()
-				@drb - @qdrb
-			end
-
-			def qstl()
-				@stl - @qstl
-			end
-
-			def qblk()
-				@blk - @qblk
-			end
-
-			def qpf()
-				@pf - @qpf
-			end
-
-			def qmp()
-				(@mp - @qmp).round(2)
-			end
-
-		end
-
 		def doAction(stat_hash, players_on_floor, action)
 			case action.action
 			when 'def reb'
@@ -665,7 +547,7 @@ namespace :data do
 				if action.player2 != nil
 					stat_hash[action.player2].stl += 1
 				end
-			when 'foul'
+			when 'personal foul'
 				stat_hash[action.player1].pf += 1
 			when 'substitution'
 				if action.player2 != nil && action.player1 != nil
@@ -691,8 +573,8 @@ namespace :data do
 		def saveQuarterStats(stat_hash, game, quarter)
 			# Add all the player's stats to make team stats
 
-			away_team = TeamStat.new
-			home_team = TeamStat.new
+			away_team = Stat.new(:starter => 'away team')
+			home_team = Stat.new(:starter => 'home team')
 
 			stat_hash.each { |key, value|
 
@@ -754,7 +636,7 @@ namespace :data do
 		games = Game.all
 		games.each_with_index do |game, index|
 
-			puts game.url
+			puts game.url + ' ' + game.id.to_s
 
 			away_team = game.away_team
 			home_team = game.home_team
@@ -777,6 +659,7 @@ namespace :data do
 					lineup.starters.where(:starter => true).each do |starter|
 						stat = stat_hash[starter.alias]
 						stat.time = 12
+
 						players_on_floor << stat
 					end
 				end
@@ -807,34 +690,8 @@ namespace :data do
 			end
 
 
-			team = TeamStat.new
+			team = Stat.new(:starter => "team")
 			game.lineups.where("quarter != 0 AND home = true").each do |lineup|
-
-				team.pts += lineup.pts
-				team.ast += lineup.ast
-				team.tov += lineup.tov
-				team.ftm += lineup.ftm
-				team.fta += lineup.fta
-				team.thpm += lineup.thpm
-				team.thpa += lineup.thpa
-				team.fgm += lineup.fgm
-				team.fga += lineup.fga
-				team.orb += lineup.orb
-				team.drb += lineup.drb
-				team.stl += lineup.stl
-				team.blk += lineup.blk
-				team.pf += lineup.pf
-				team.mp += lineup.mp
-
-			end
-
-			game.lineups.where(:quarter => 0, :home => false).first.update_attributes(:pts => team.pts, :ast => team.ast, :tov => team.tov,
-				:ftm => team.ftm, :fta => team.fta, :thpm => team.thpm, :thpa => team.thpa, :fgm => team.fgm, :fga => team.fga, :orb => team.orb,
-				:drb => team.drb, :stl => team.stl, :blk => team.blk, :pf => team.pf, :mp => team.mp)
-
-			team = TeamStat.new
-
-			game.lineups.where("quarter != 0 AND home = false").each do |lineup|
 
 				team.pts += lineup.pts
 				team.ast += lineup.ast
@@ -858,8 +715,98 @@ namespace :data do
 				:ftm => team.ftm, :fta => team.fta, :thpm => team.thpm, :thpa => team.thpa, :fgm => team.fgm, :fga => team.fga, :orb => team.orb,
 				:drb => team.drb, :stl => team.stl, :blk => team.blk, :pf => team.pf, :mp => team.mp)
 
+			team = Stat.new(:starter => "team")
+
+			game.lineups.where("quarter != 0 AND home = false").each do |lineup|
+
+				team.pts += lineup.pts
+				team.ast += lineup.ast
+				team.tov += lineup.tov
+				team.ftm += lineup.ftm
+				team.fta += lineup.fta
+				team.thpm += lineup.thpm
+				team.thpa += lineup.thpa
+				team.fgm += lineup.fgm
+				team.fga += lineup.fga
+				team.orb += lineup.orb
+				team.drb += lineup.drb
+				team.stl += lineup.stl
+				team.blk += lineup.blk
+				team.pf += lineup.pf
+				team.mp += lineup.mp
+
+			end
+
+			game.lineups.where(:quarter => 0, :home => false).first.update_attributes(:pts => team.pts, :ast => team.ast, :tov => team.tov,
+				:ftm => team.ftm, :fta => team.fta, :thpm => team.thpm, :thpa => team.thpa, :fgm => team.fgm, :fga => team.fga, :orb => team.orb,
+				:drb => team.drb, :stl => team.stl, :blk => team.blk, :pf => team.pf, :mp => team.mp)
+
 		end
 
+	end
+
+	task :sum_stats => :environment do
+
+		PastPlayer.all.each do |past_player|
+      		mp = fgm = fga = thpm = thpa = ftm = fta = orb = drb = ast = blk = tov = pf = pts = 0
+			Starter.where(:past_player_id => past_player.id, :quarter => 0).each do |starter|
+
+				mp += starter.mp
+				fgm += starter.fgm
+				fga += starter.fga
+				thpm += starter.thpm
+				thpa += starter.thpa
+				ftm += starter.ftm
+				fta += starter.fta
+				orb += starter.orb
+				drb += starter.drb
+				ast += starter.ast
+				blk += starter.blk
+				tov += starter.tov
+				pf += starter.pf
+				pts += starter.pts
+
+			end
+			past_player.update_attributes(:mp => mp, :fgm => fgm, :fga => fga, :thpm => thpm, :thpa => thpa, :ftm => ftm, :fta => fta,
+				:orb => orb, :drb => drb, :ast => ast, :blk => blk, :tov => tov, :pf => pf, :pts => pts)
+		end
+
+		PastTeam.all.each do |past_team|
+			mp = fgm = fga = thpm = thpa = ftm = fta = orb = drb = ast = blk = tov = pf = pts = 0
+			PastPlayer.where(:past_team_id => past_team.id).each do |past_player|
+				mp += past_player.mp
+				fgm += past_player.fgm
+				fga += past_player.fga
+				thpm += past_player.thpm
+				thpa += past_player.thpa
+				ftm += past_player.ftm
+				fta += past_player.fta
+				orb += past_player.orb
+				drb += past_player.drb
+				ast += past_player.ast
+				blk += past_player.blk
+				tov += past_player.tov
+				pf += past_player.pf
+				pts += past_player.pts
+			end
+			past_team.update_attributes(:mp => mp, :fgm => fgm, :fga => fga, :thpm => thpm, :thpa => thpa, :ftm => ftm, :fta => fta,
+				:orb => orb, :drb => drb, :ast => ast, :blk => blk, :tov => tov, :pf => pf, :pts => pts)
+		end
+	end
+
+	task :test => :environment do
+		Game.all[0..23].each do |game|
+			game.actions.destroy_all
+			game.lineups.each do |lineup|
+				if lineup.quarter == 1
+					lineup.starters.where(:starter => false).destroy_all
+				elsif lineup.quarter == 0
+				else
+					lineup.starters.destroy_all
+					lineup.destroy
+				end
+			end
+		end
 	end
 
 end

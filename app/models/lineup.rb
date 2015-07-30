@@ -1,27 +1,57 @@
 class Lineup < ActiveRecord::Base
 
 	belongs_to :game
-	has_many :starters
-
-
-	def freeThrowPercentage
-		(ftm.to_f/fta.to_f).round(2)
+	belongs_to :opponent, :class_name => "Lineup"
+	
+	def starters
+		Starter.where("team_id = #{self.id}")
 	end
 
-	def scoringPossessions
-		(self.fgm.to_f + (1 - (1 - (1 - self.ftp) ** 2)) * self.fta.to_f * 0.4).round(2)
+	def opp_starters
+		Starter.where("opponent_id = #{self.id}")
 	end
 
-	def fieldPercentage
-		(self.fgm.to_f/(self.fga.to_f - (self.orb.to_f/(self.orb + self.drb).to_f) * (self.fga - self.fgm).to_f * 1.07)).round(2)
+
+	def FTPercent(team=self, opponent=self.opponent) # checked
+		ftp = (team.ftm/team.fta).round(2)
+		if ftp.nan?
+			ftp = 0
+		end
+		return ftp
 	end
 
-	def plays
-		(self.fga + sefl.fta.to_f * 0.4 + self.tov).round(2)
+	def ScPoss(team=self, opponent=self.opponent) # checked
+		(team.fgm + (1 - (1 - team.FTPercent(team, opponent)) ** 2 ) * team.fta * 0.4).round(2)
 	end
 
-	def playPercentage
-		(self.scoringPossessions.to_f/self.plays.to_f).round(2)
+	def TotPoss(team=self, opponent=self.opponent)
+		0.5 * ((team.fga + 0.4 * team.fta - 1.07 * team.ORBPercent(team, opponent) * (team.fga - team.fgm) + team.tov) + (opponent.fga + 0.4 * opponent.fta - 1.07 * opponent.ORBPercent(opponent, team) * (opponent.fga - opponent.fgm) + opponent.tov))
+	end
+
+	def Pace(team=self, opponent=self.opponent)
+		48 * ((team.TotPoss + opponent.TotPoss) / (2 * (team.mp / 5)))
+	end
+
+	def Plays(team=self, opponent=self.opponent)
+		(team.fga + team.fta * 0.4 + team.tov).round(2)
+	end
+
+	def ORBWeight(team=self, opponent=self.opponent)
+		orb_p = team.ORBPercent(team, opponent)
+		play_p = team.PlayPercent(team, opponent)
+		((1.0 - orb_p) * play_p) / ((1.0 - orb_p) * play_p + orb_p * (1 - play_p))
+	end
+
+	def FieldPercent(team=self, opponent=self.opponent)
+		(team.fgm / (team.fga - (team.orb / (team.orb + team.drb)) * (team.fga - team.fgm) * 1.07)).round(2)
+	end
+
+	def PlayPercent(team=self, opponent=self.opponent) # checked
+		(team.ScPoss(team, opponent)/team.Plays(team, opponent)).round(2)
+	end
+
+	def ORBPercent(team=self, opponent=self.opponent) # checked
+		team.orb / (team.orb + opponent.drb)
 	end
 	
 end

@@ -11,6 +11,8 @@ group :development do
 	gem 'mysql2'
 end
 
+gem 'statsample'
+
 gem 'bootstrap-sass', '3.3.0.1'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.3'
