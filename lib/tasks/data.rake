@@ -120,7 +120,7 @@ namespace :data do
 			end
 		end
 
-		games = Game.all[504..-1]
+		games = Game.all
 
 		games.each do |game|
 
