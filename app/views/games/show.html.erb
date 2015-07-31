@@ -46,21 +46,21 @@
 
 <table align="center">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Teams"} )%>
-	<%= render(:partial => 'team', :locals =>  {:lineup => @away_lineup, :team => @away_team})%>
-	<%= render(:partial => 'team', :locals =>  {:lineup => @home_lineup, :team => @home_team})%>
+	<%= render(:partial => 'team', :locals =>  {:lineup => @away_previous_lineup, :team => @away_team})%>
+	<%= render(:partial => 'team', :locals =>  {:lineup => @home_previous_lineup, :team => @home_team})%>
 </table>
 
 <h3 align="center"><%= @away_team.name %> Player Stats</h3>
 <table align="center">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
-	<% @away_starters.each do |starter|%>
+	<% @away_previous_starters.each do |starter|%>
 		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
 	<% end %>
 </table>
 <h3 align="center"><%= @home_team.name %> Player Stats</h3>
 <table align="center">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
-	<% @home_starters.each do |starter|%>
+	<% @home_previous_starters.each do |starter|%>
 		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
 	<% end %>
 </table>
