@@ -8,7 +8,7 @@ namespace :data do
 		require 'open-uri'
 		require 'nokogiri'
 
-		years = (2013..2015)
+		years = (2011..2015)
 		years.each do |n|
 			num = n.to_s
 			url = "http://www.basketball-reference.com/leagues/NBA_#{num}.html"
@@ -49,7 +49,7 @@ namespace :data do
 			return [year, month, day]
 		end
 
-		n = (2013..2015)
+		n = (2011..2015)
 
 		n.each do |n|
 
@@ -120,7 +120,7 @@ namespace :data do
 			end
 		end
 
-		games = Game.all
+		games = Game.all[504..-1]
 
 		games.each do |game|
 
