@@ -4,6 +4,7 @@ class StatisticsController < ApplicationController
 
 	layout 'nba'
 
+
 	def matchup
 
 		def setVarFalse()

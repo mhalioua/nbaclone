@@ -1,0 +1,47 @@
+<% @page_title = "#{@away_team.name} vs #{@home_team.name}" %>
+
+<h3 align="center"><%= @away_team.name + " vs " + @home_team.name %></h3>
+<h4 align="center"><%= @date %></h4>
+
+<div align="center">
+	<%= link_to("Home Page", :controller => 'access', :action => 'index') %></br>
+	<%= link_to("Years", :controller => 'index', :action => 'year') %></br>
+	<%= link_to("Months", :controller => 'index', :action => 'month', :year => @year) %></br>
+	<%= link_to("Days", :controller => 'index', :action => 'day', :year => @year, :month => @month) %></br>
+	<%= link_to("Games", :controller => 'index', :action => 'game', :year => @year, :month => @month, :day => @day) %>
+</div>
+
+</br>
+
+<div align="center">
+	<%= form_tag({controller: "games", action: "show"}, method: "get") do %>
+	  <%= number_field(:previous, nil, in: 0..20) %>
+	  <%= submit_tag("Submit") %>
+	<% end %>
+</div>
+
+<%= @whoo %>
+
+
+<h3 align="center">Team Stats</h3>
+
+<table align="center">
+	<%= render(:partial => 'teamheader', :locals => {:name => "Teams"} )%>
+	<%= render(:partial => 'team', :locals =>  {:lineup => @away_lineup, :team => @away_team})%>
+	<%= render(:partial => 'team', :locals =>  {:lineup => @home_lineup, :team => @home_team})%>
+</table>
+
+<h3 align="center"><%= @away_team.name %> Player Stats</h3>
+<table align="center">
+	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
+	<% @away_starters.each do |starter|%>
+		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
+	<% end %>
+</table>
+<h3 align="center"><%= @home_team.name %> Player Stats</h3>
+<table align="center">
+	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
+	<% @home_starters.each do |starter|%>
+		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
+	<% end %>
+</table>

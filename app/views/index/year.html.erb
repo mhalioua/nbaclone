@@ -1,0 +1,17 @@
+<% @page_title = "Years" %>
+
+<div align="center">
+<%= link_to("Home Page", :controller => 'access', :action => 'index') %>
+</div>
+
+<div id="main">
+	<div id="list">
+		<h4 align="center"><%= "Years" %></h4>
+		<div align="center">
+			<%= form_tag({controller: "index", action: "month"}, method: "get") do %>
+			  <%= select_tag(:year, options_for_select(@years)) %>
+			  <%= submit_tag("Submit") %>
+			<% end %>
+		</div>
+	</div>
+</div>

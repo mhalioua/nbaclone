@@ -1,0 +1,21 @@
+<% @page_title = params[:day] %>
+
+<div align="center">
+<%= link_to("Home Page", :controller => 'access', :action => 'index') %></br>
+<%= link_to("Years", :controller => 'index', :action => 'year') %></br>
+<%= link_to("Months", :controller => 'index', :action => 'month', :year => params[:year]) %>
+</div>
+
+<div id="main">
+	<div id="list">
+		<h4 align="center"><%= "Days" %></h4>
+		<div align="center" class="dropdown">
+			<%= form_tag({controller: "index", action: "game"}, method: "get") do %>
+			  <%= hidden_field_tag(:year, params[:year]) %>
+			  <%= hidden_field_tag(:month, params[:month]) %>
+			  <%= select_tag(:day, options_for_select(@days)) %>
+			  <%= submit_tag("Submit") %>
+			<% end %>
+		</div>
+	</div>
+</div>

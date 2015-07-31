@@ -1,0 +1,19 @@
+<% @page_title = "Games" %>
+
+<div align="center">
+	<%= link_to("Home Page", :controller => 'access', :action => 'index') %></br>
+	<%= link_to("Years", :controller => 'index', :action => 'year') %></br>
+	<%= link_to("Months", :controller => 'index', :action => 'month', :year => params[:year]) %></br>
+	<%= link_to("Days", :controller => 'index', :action => 'day', :year => params[:year], :month => params[:month]) %>
+</div>
+
+<div id="main">
+	<div id="list">
+		<h4 align="center"><%= "Home vs Away" %></h4>
+		<div align="center">
+			<% @games.each do |game| %>
+			<li><%= link_to(game.home_team.name + ' vs ' + game.away_team.name, game_path(game.id)) %></li>
+			<% end %>
+		</div>
+	</div>
+</div>
