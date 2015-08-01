@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728192523) do
+ActiveRecord::Schema.define(version: 20150731234611) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -30,16 +30,18 @@ ActiveRecord::Schema.define(version: 20150728192523) do
     t.string   "year"
     t.string   "month"
     t.string   "day"
-    t.float    "full_game_ps",     limit: 24
-    t.float    "first_half_ps",    limit: 24
-    t.float    "first_quarter_ps", limit: 24
-    t.float    "possessions_ps",   limit: 24
-    t.float    "ortg_ps",          limit: 24
-    t.float    "full_game_cl",     limit: 24
-    t.float    "first_half_cl",    limit: 24
-    t.float    "first_quarter_cl", limit: 24
+    t.float    "full_game_ps",      limit: 24
+    t.float    "first_half_ps",     limit: 24
+    t.float    "first_quarter_ps",  limit: 24
+    t.float    "possessions_ps",    limit: 24
+    t.float    "ortg_ps",           limit: 24
+    t.float    "full_game_cl",      limit: 24
+    t.float    "first_half_cl",     limit: 24
+    t.float    "first_quarter_cl",  limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "ideal_possessions", limit: 24
+    t.float    "ideal_score",       limit: 24
   end
 
   create_table "lineups", force: true do |t|

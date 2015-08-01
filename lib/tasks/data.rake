@@ -4,6 +4,16 @@ namespace :data do
 	task :build => [:create_past_teams, :create_games, :create_past_players, :play_by_play, :extract, :sum_stats] do
 	end
 
+	task :fix => :environment do
+		require 'open-uri'
+		require 'nokogiri'
+
+		PastTeam.all.each do |past_team|
+			team = past_team.team
+			past_team.update_attributes(:name => team.name, :abbr => team.abbr, :city => team.city)
+		end
+	end
+
 	task :create_past_teams => :environment do
 		require 'open-uri'
 		require 'nokogiri'
@@ -21,7 +31,7 @@ namespace :data do
 					end
 					abbr = stat.child['href'][7..9]
 					team = Team.find_by_abbr(abbr)
-					past_team = PastTeam.create(:team_id => team.id, :year => num)
+					past_team = PastTeam.create(:team_id => team.id, :year => num, :name => team.name, :abbr => team.abbr, :city => team.city)
 					puts past_team.team.name
 				end
 			end
