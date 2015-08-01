@@ -158,29 +158,27 @@ class Starter < ActiveRecord::Base
 		self.PossPercent(team, opponent) * self.ORTG(team, opponent)
 	end
 
-
-
 	# Defense
 
-	def DFGPercent
-		var = self.opponent.fgm / self.opponent.fga
+	def DFGPercent(team=self.team, opponent=self.opponent)
+		var = opponent.fgm / opponent.fga
 		if var.nan?
 			return 0.0
 		end
 		return var
 	end
 
-	def DORPercent
-		var = self.opponent.orb / (self.opponent.orb + self.team.drb)
+	def DORPercent(team=self.team, opponent=self.opponent)
+		var = opponent.orb / (opponent.orb + team.drb)
 		if var.nan?
 			return 0.0
 		end
 		return var
 	end
 
-	def FMwt
-		dfg = self.DFGPercent
-		dor = self.DORPercent
+	def FMwt(team=self.team, opponent=self.opponent)
+		dfg = self.DFGPercent(team, opponent)
+		dor = self.DORPercent(team, opponent)
 		var = (dfg * (1 - dor)) / (dfg * (1 - dor) + (1 - dfg) * dor)
 		if var.nan?
 			return 0.0
@@ -188,49 +186,45 @@ class Starter < ActiveRecord::Base
 		return var
 	end
 
-	def Stops1
-		fmwt = self.FMwt
-		var = self.stl + self.blk * fmwt * (1 - 1.07 * self.DORPercent) + self.drb * (1 - fmwt)
+	def Stops1(team=self.team, opponent=self.opponent)
+		fmwt = self.FMwt(team, opponent)
+		var = self.stl + self.blk * fmwt * (1 - 1.07 * self.DORPercent(team, opponent)) + self.drb * (1 - fmwt)
 		if var.nan?
 			return 0.0
 		end
 		return var
 	end
 
-	def Stops2
-		var = (((self.opponent.fga - self.opponent.fgm - self.team.blk) / self.team.mp) * self.FMwt * (1 - 1.07 * self.DORPercent) + ((self.opponent.tov - self.team.stl) / self.team.mp)) * self.mp + (self.pf / self.team.pf) * 0.4 * self.opponent.fta * (1 - (self.opponent.ftm / self.opponent.fta)) ** 2
+	def Stops2(team=self.team, opponent=self.opponent)
+		var = (((opponent.fga - opponent.fgm - team.blk) / team.mp) * self.FMwt(team, opponent) * (1 - 1.07 * self.DORPercent(team, opponent)) + ((opponent.tov - team.stl) / team.mp)) * self.mp + (self.pf / team.pf) * 0.4 * opponent.fta * (1 - (opponent.ftm / opponent.fta)) ** 2
 		if var.nan?
 			return 0.0
 		end
 		return var
 	end
 
-	def Stops
-		self.Stops1 + self.Stops2
+	def Stops(team=self.team, opponent=self.opponent)
+		self.Stops1(team, opponent) + self.Stops2(team, opponent)
 	end
 
-	def StopPercent
-		var = (self.Stops * self.opponent.mp) / (self.TeamTotPoss * self.mp)
+	def StopPercent(team=self.team, opponent=self.opponent)
+		var = (self.Stops(team, opponent) * opponent.mp) / (team.TotPoss(team, opponent) * self.mp)
 		if var.nan?
 			return 0.0
 		end
 		return var
 	end
 
-	def TeamDRTG
-		var = 100 * (self.opponent.pts / self.TeamTotPoss)
-	end
-
-	def DefPointsPerScPoss
-		var = self.opponent.pts / (self.opponent.fgm + (1 - (1 - (self.opponent.ftm / self.opponent.fta)) ** 2) * self.opponent.fta * 0.4)
+	def DefPointsPerScPoss(team=self.team, opponent=self.opponent)
+		var = opponent.pts / (opponent.fgm + (1 - (1 - (opponent.ftm / opponent.fta)) ** 2) * opponent.fta * 0.4)
 		if var.nan?
 			return 0.0
 		end
 		return var
 	end
 
-	def DRTG
-		self.TeamDRTG + 0.2 * (100 * self.DefPointsPerScPoss * (1 - self.StopPercent) - self.TeamDRTG)
+	def DRTG(team=self.team, opponent=self.opponent)
+		team.DRTG(team, opponent) + 0.2 * (100 * self.DefPointsPerScPoss(team, opponent) * (1 - self.StopPercent(team, opponent)) - team.DRTG(team, opponent))
 	end
 
 end

@@ -53,5 +53,9 @@ class Lineup < ActiveRecord::Base
 	def ORBPercent(team=self, opponent=self.opponent) # checked
 		team.orb / (team.orb + opponent.drb)
 	end
+
+	def DRTG(team = self, opponent=self.opponent)
+		100 * (opponent.pts / team.TotPoss(team, opponent))
+	end
 	
 end

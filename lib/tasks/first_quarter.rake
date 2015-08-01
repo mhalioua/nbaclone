@@ -19,29 +19,26 @@ namespace :first_quarter do
 		stat.mp += starter.mp
 	end
 
-	task :test => :environment do
-		game = Game.first
-		lineup = game.lineups.where(:quarter => 0).second
-		posspercent = 0
-		lineup.starters.each do |starter|
-			posspercent += starter.PossPercent
-		end
-		puts posspercent
-	end
-
 	task :algorithm => :environment do
 
-		PAST_GAME_NUMBER = 5
+		PAST_POSSESSION_NUMBER = 5
+		PAST_RATING_NUMBER = 10
 
-		Game.all[100..-1].each do |game|
+		Game.all.each do |game|
 
+			# Get the full team lineup
 			away_lineup = game.lineups[0]
 			home_lineup = game.lineups[1]
 
+			# Grab PAST_GAME_NUMBER games from the database where the team played and order them in reverse order
+			previous_away_games = Game.where("id < #{game.id} AND (away_team_id = #{game.away_team.id} OR home_team_id = #{game.away_team.id})").order("id DESC").limit(PAST_POSSESSION_NUMBER)
+			previous_home_games = Game.where("id < #{game.id} AND (away_team_id = #{game.home_team.id} OR home_team_id = #{game.home_team.id})").order("id DESC").limit(PAST_POSSESSION_NUMBER)
 
-			# Grab PAST GAME NUMBER games from the database where the team played
-			previous_away_games = Game.where("id < #{game.id} AND (away_team_id = #{game.away_team.id} OR home_team_id = #{game.away_team.id})").limit(PAST_GAME_NUMBER)
-			previous_home_games = Game.where("id < #{game.id} AND (away_team_id = #{game.home_team.id} OR home_team_id = #{game.home_team.id})").limit(PAST_GAME_NUMBER)
+			# if there aren't enough previous games, then go to the next one
+			if previous_away_games.size != PAST_POSSESSION_NUMBER || previous_home_games != PAST_POSSESSION_NUMBER
+				game.update_attributes(:first_quarter_ps => nil)
+				next
+			end
 
 			# Add all the possessions of the home and away teams during the first quarter and then average the two
 			away_possessions = 0
@@ -54,7 +51,7 @@ namespace :first_quarter do
 				home_possessions += home_game.lineups.third.TotPoss
 			end
 
-			possessions = (away_possessions + home_possessions) / (2 * PAST_GAME_NUMBER)
+			possessions = (away_possessions + home_possessions) / (2 * PAST_POSSESSION_NUMBER)
 
 			puts possessions
 
@@ -64,7 +61,7 @@ namespace :first_quarter do
 			away_lineup.starters.each do |away_starter|
 				past_player = away_starter.past_player
 				team = away_starter.team
-				starters = Starter.where("team_id < #{team.id} AND quarter = 1 AND past_player_id = #{past_player.id}").order('id DESC').limit(PAST_GAME_NUMBER)
+				starters = Starter.where("team_id < #{team.id} AND quarter = 1 AND past_player_id = #{past_player.id}").order('id DESC').limit(PAST_RATING_NUMBER)
 				stat = Starter.new
 				team = Lineup.new
 				opponent = Lineup.new
@@ -142,19 +139,19 @@ namespace :first_quarter do
 			away_poss = Array.new
 			home_ortg = Array.new
 			home_poss = Array.new
-			pace = 0
+			pace = game.lineups.third.Pace
 			game.lineups.where(:quarter => 1).each_with_index do |lineup, index|
-				pace = lineup.Pace
 				lineup.starters.each do |starter|
-					if starter.PossPercent.nan?
+					poss_percent = starter.PossPercent
+					if poss_percent.nan?
 						puts starter.id
 					end
 					if index == 0
 						away_ortg << starter.ORTG
-						away_poss << starter.PossPercent
+						away_poss << poss_percent
 					else
 						home_ortg << starter.ORTG
-						home_poss << starter.PossPercent
+						home_poss << poss_percent
 					end
 				end
 			end

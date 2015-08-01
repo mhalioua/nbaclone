@@ -8,8 +8,9 @@ namespace :data do
 		require 'open-uri'
 		require 'nokogiri'
 
-		years = (2011..2015)
-		years.each do |n|
+		n = 2015
+		# years = (2011..2015)
+		# years.each do |n|
 			num = n.to_s
 			url = "http://www.basketball-reference.com/leagues/NBA_#{num}.html"
 			doc = Nokogiri::HTML(open(url))
@@ -24,7 +25,7 @@ namespace :data do
 					puts past_team.team.name
 				end
 			end
-		end
+		# end
 	end
 
 	task :create_games => :environment do
@@ -49,9 +50,9 @@ namespace :data do
 			return [year, month, day]
 		end
 
-		n = (2011..2015)
-
-		n.each do |n|
+		# n = (2011..2015)
+		n = 2015
+		# n.each do |n|
 
 			num = n.to_s
 			url = "http://www.basketball-reference.com/leagues/NBA_#{num}_games.html"
@@ -76,7 +77,7 @@ namespace :data do
 					puts game.url
 				end
 			end
-		end
+		# end
 	end
 
 	task :create_past_players => :environment do
@@ -433,7 +434,7 @@ namespace :data do
 			return quarter
 		end
 
-		games = Game.all
+		games = Game.all[3287..-1]
 
 		games.each do |game|
 
