@@ -444,7 +444,7 @@ namespace :data do
 			return quarter
 		end
 
-		games = Game.all[3287..-1]
+		games = Game.all
 
 		games.each do |game|
 
