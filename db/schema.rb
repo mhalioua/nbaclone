@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728192523) do
+ActiveRecord::Schema.define(version: 20150801233710) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -24,23 +24,39 @@ ActiveRecord::Schema.define(version: 20150728192523) do
     t.datetime "updated_at"
   end
 
+  create_table "game_dates", force: true do |t|
+    t.string   "year"
+    t.string   "month"
+    t.string   "day"
+    t.float    "avg_points", limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "games", force: true do |t|
     t.integer  "away_team_id"
     t.integer  "home_team_id"
     t.string   "year"
     t.string   "month"
     t.string   "day"
-    t.float    "full_game_ps",     limit: 24
-    t.float    "first_half_ps",    limit: 24
-    t.float    "first_quarter_ps", limit: 24
-    t.float    "possessions_ps",   limit: 24
-    t.float    "ortg_ps",          limit: 24
-    t.float    "full_game_cl",     limit: 24
-    t.float    "first_half_cl",    limit: 24
-    t.float    "first_quarter_cl", limit: 24
+    t.float    "full_game_ps",       limit: 24
+    t.float    "first_half_ps",      limit: 24
+    t.float    "first_quarter_ps",   limit: 24
+    t.float    "possessions_ps",     limit: 24
+    t.float    "ortg_ps",            limit: 24
+    t.float    "full_game_cl",       limit: 24
+    t.float    "first_half_cl",      limit: 24
+    t.float    "first_quarter_cl",   limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "ideal_algorithm",    limit: 24
+    t.float    "ideal_possessions",  limit: 24
+    t.float    "ideal_pace",         limit: 24
+    t.float    "first_quarter_ps_2", limit: 24
+    t.integer  "game_date_id"
   end
+
+  add_index "games", ["game_date_id"], name: "index_games_on_game_date_id", using: :btree
 
   create_table "lineups", force: true do |t|
     t.integer  "game_id"
@@ -239,10 +255,23 @@ ActiveRecord::Schema.define(version: 20150728192523) do
     t.float    "pts",            limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "ideal_ortg",     limit: 24
   end
 
   add_index "starters", ["alias"], name: "index_starters_on_alias", using: :btree
   add_index "starters", ["name"], name: "index_starters_on_name", using: :btree
+
+  create_table "team_data", force: true do |t|
+    t.integer  "game_date_id"
+    t.integer  "past_team_id"
+    t.float    "avg_points",   limit: 24
+    t.integer  "ranking"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "team_data", ["game_date_id"], name: "index_team_data_on_game_date_id", using: :btree
+  add_index "team_data", ["past_team_id"], name: "index_team_data_on_past_team_id", using: :btree
 
   create_table "teams", force: true do |t|
     t.string   "name"

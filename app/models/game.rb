@@ -2,6 +2,7 @@ class Game < ActiveRecord::Base
 
 	belongs_to :away_team, :class_name => 'PastTeam'
 	belongs_to :home_team, :class_name => 'PastTeam'
+	belongs_to :game_date
 	has_many :actions
 	has_many :lineups
 
