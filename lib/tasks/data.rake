@@ -173,13 +173,15 @@ namespace :data do
 			end
 
 			away_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => false)
-			home_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => true)
+			home_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
+			away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
 			createStarters(away_players, away_lineup, home_lineup, false, false)
 			createStarters(home_players, away_lineup, home_lineup, true, false)
 
 			away_lineup = Lineup.create(:quarter => 1, :game_id => game.id, :home => false)
-			home_lineup = Lineup.create(:quarter => 1, :game_id => game.id, :home => true)
+			home_lineup = Lineup.create(:quarter => 1, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
+			away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
 			createStarters(away_starters, away_lineup, home_lineup, false, true)
 			createStarters(home_starters, away_lineup, home_lineup, true, true)
@@ -327,7 +329,8 @@ namespace :data do
 
 			if quarter != 1
 				away_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => false)
-				home_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => true)
+				home_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
+				away_lineup.update_attributes(:opponent_id => home_lineup.id)
 			else
 				away_lineup = game.lineups.where(:quarter => 1, :home => false).first
 				home_lineup = game.lineups.where(:quarter => 1, :home => true).first

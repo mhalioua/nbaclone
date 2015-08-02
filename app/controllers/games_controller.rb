@@ -29,8 +29,8 @@ class GamesController < ApplicationController
 
 		@away_lineup = @game.lineups.first
 		@home_lineup = @game.lineups.second
-		@away_starters = away_lineup.starters
-		@home_starters = home_lineup.starters
+		@away_starters = @away_lineup.starters
+		@home_starters = @home_lineup.starters
 
 		@year = @game.year
 		@month = @game.month
