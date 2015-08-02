@@ -438,7 +438,7 @@ namespace :data do
 			return quarter
 		end
 
-		games = Game.all[501..-1]
+		games = Game.all
 
 		games.each do |game|
 
@@ -638,7 +638,7 @@ namespace :data do
 		end
 
 
-		games = Game.all
+		games = Game.all[3587..-1]
 		games.each_with_index do |game, index|
 
 			puts game.url + ' ' + game.id.to_s

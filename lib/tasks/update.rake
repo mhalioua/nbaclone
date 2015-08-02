@@ -45,4 +45,16 @@ namespace :update do
 		end
 	end
 
+	task :opponent => :environment do
+		Lineup.all.each do |lineup|
+			lineups = lineup.game.lineups.where(:quarter => lineup.quarter)
+			lineups.each do |this_lineup|
+				if this_lineup == lineup
+					next
+				end
+				lineup.update_attributes(:opponent_id => this_lineup.id)
+			end
+		end
+	end
+
 end
