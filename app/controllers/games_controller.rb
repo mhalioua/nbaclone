@@ -59,6 +59,8 @@ class GamesController < ApplicationController
 
 			@away_previous_lineup = Lineup.new
 			@home_previous_lineup = Lineup.new
+			@away_previous_starters = Array.new
+			@home_previous_starters = Array.new
 
 			away_games.each do |game|
 				lineup = game.lineups.first
@@ -70,7 +72,7 @@ class GamesController < ApplicationController
 				add(@home_previous_lineup, lineup)
 			end
 
-			away_starters.each do |starter|
+			@away_starters.each do |starter|
 				previous_starters = Starter.where("id < #{starter.id} AND quarter = 0 AND past_player_id = #{starter.past_player_id}").order("id DESC").limit(previous)
 				new_starter = Starter.new
 				previous_starters.each do |old|
@@ -81,7 +83,7 @@ class GamesController < ApplicationController
 				@away_previous_starters << new_starter
 			end
 
-			home_starters.each do |starter|
+			@home_starters.each do |starter|
 				previous_starters = Starter.where("id < #{starter.id} AND quarter = 0 AND past_player_id = #{starter.past_player_id}").order('id DESC').limit(previous)
 				new_starter = Starter.new
 				previous_starters.each do |old|
