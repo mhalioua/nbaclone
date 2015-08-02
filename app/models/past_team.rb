@@ -1,6 +1,7 @@
 class PastTeam < ActiveRecord::Base
 
 	belongs_to :team
+	belongs_to :season
 	has_many :past_players
 	has_many :games
 
