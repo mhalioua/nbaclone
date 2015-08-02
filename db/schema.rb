@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150801233710) do
+ActiveRecord::Schema.define(version: 20150802001607) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -31,7 +31,10 @@ ActiveRecord::Schema.define(version: 20150801233710) do
     t.float    "avg_points", limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "season_id"
   end
+
+  add_index "game_dates", ["season_id"], name: "index_game_dates_on_season_id", using: :btree
 
   create_table "games", force: true do |t|
     t.integer  "away_team_id"
@@ -130,7 +133,10 @@ ActiveRecord::Schema.define(version: 20150801233710) do
     t.string   "name"
     t.string   "abbr"
     t.string   "city"
+    t.integer  "season_id"
   end
+
+  add_index "past_teams", ["season_id"], name: "index_past_teams_on_season_id", using: :btree
 
   create_table "player_matchup_games", force: true do |t|
     t.integer  "player_matchup_id"
@@ -227,6 +233,12 @@ ActiveRecord::Schema.define(version: 20150801233710) do
 
   add_index "players", ["alias"], name: "index_players_on_alias", using: :btree
   add_index "players", ["name"], name: "index_players_on_name", using: :btree
+
+  create_table "seasons", force: true do |t|
+    t.string   "year"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "starters", force: true do |t|
     t.integer  "team_id"
