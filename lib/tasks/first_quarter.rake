@@ -32,7 +32,9 @@ namespace :first_quarter do
 				PAST_RATING_NUMBER =  5
 			end
 
-			Game.all.each do |game|
+			Game.all[2735..-1].each do |game|
+				
+
 
 				# Get the full team lineup
 				away_lineup = game.lineups[0]
@@ -43,7 +45,7 @@ namespace :first_quarter do
 				previous_home_games = Game.where("id < #{game.id} AND (away_team_id = #{game.home_team.id} OR home_team_id = #{game.home_team.id})").order("id DESC").limit(PAST_POSSESSION_NUMBER)
 
 				# if there aren't enough previous games, then go to the next one
-				if previous_away_games.size != PAST_POSSESSION_NUMBER || previous_home_games != PAST_POSSESSION_NUMBER
+				if previous_away_games.size != PAST_POSSESSION_NUMBER || previous_home_games.size != PAST_POSSESSION_NUMBER
 					case i
 					when 1
 						game.update_attributes(:first_quarter_ps => nil)
@@ -52,6 +54,7 @@ namespace :first_quarter do
 					end
 					next
 				end
+				
 
 				# Add all the possessions of the home and away teams during the first quarter and then average the two
 				away_possessions = 0
@@ -65,8 +68,6 @@ namespace :first_quarter do
 				end
 
 				possessions = (away_possessions + home_possessions) / (2 * PAST_POSSESSION_NUMBER)
-
-				puts possessions
 
 				# Go through all the starters games and find their average ORTG's and percent of Team Possessions
 				away_ortg = Array.new
@@ -109,7 +110,7 @@ namespace :first_quarter do
 				home_lineup.starters.each do |home_starter|
 					past_player = home_starter.past_player
 					team = home_starter.team
-					starters = Starter.where("team_id < #{team.id} AND quarter = 1 AND past_player_id = #{past_player.id}").order('id DESC').limit(PAST_GAME_NUMBER)
+					starters = Starter.where("team_id < #{team.id} AND quarter = 1 AND past_player_id = #{past_player.id}").order('id DESC').limit(PAST_RATING_NUMBER)
 					stat = Starter.new
 					team = Lineup.new
 					opponent = Lineup.new
@@ -135,16 +136,20 @@ namespace :first_quarter do
 				end
 
 				home_var = home_var/hundred
-				predicted_score = (away_var + home_var) * (possessions)
+				puts away_var
+				puts home_var
+				puts possessions
+				predicted_score = (away_var + home_var) * possessions / 100
 				case i
 				when 1
 					game.update_attributes(:first_quarter_ps => predicted_score)
 					puts game.url
-					puts predicted_score.to_s + ' 1'
+					puts predicted_score.to_s + ' ' + game.id.to_s + ' 1'
 				when 2
+					break
 					game.update_attributes(:first_quarter_ps_2 => predicted_score)
 					puts game.url
-					puts predicted_score.to_s + ' 2'
+					puts predicted_score.to_s + ' ' + game.id.to_s + ' 2'
 				end
 			end
 
@@ -165,7 +170,8 @@ namespace :first_quarter do
 
 			game.lineups.where(:quarter => 1).each_with_index do |lineup, index|
 				lineup.starters.each do |starter|
-					starters = Starter.where("team_id < #{team.id} AND quarter = 1 AND past_player_id = #{past_player.id}").order('id DESC').limit(10)
+					puts starter.past_player_id
+					starters = Starter.where("team_id < #{starter.team_id} AND quarter = 1 AND past_player_id = #{starter.past_player_id}").order('id DESC').limit(10)
 					if starters.size == 10
 						predicted_ortg = 0
 						starters.each do |starter|
@@ -298,6 +304,20 @@ namespace :first_quarter do
 				past_team_year = year
 				if month.to_i > 7
 					past_team_year = (year.to_i + 1).to_s
+				end
+
+				if past_team_year.to_i < 2014
+					if home[n] == 19
+						home[n] = 33
+					end
+				end
+
+				if past_team_year.to_i < 2013
+
+					if home[n] == 16
+						home[n] = 39
+					end
+
 				end
 				# Find team by past team's id and past team year
 				past_team = PastTeam.where(:team_id => home[n], :year => past_team_year).first

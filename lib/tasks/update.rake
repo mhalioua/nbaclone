@@ -57,4 +57,60 @@ namespace :update do
 		end
 	end
 
+	task :avg_team => :environment do
+		GameDate.all.each do |gamedate|
+			today_game = gamedate.games.first
+			PastTeam.where(:year => gamedate.season.year).each do |past_team|
+				team_data = TeamData.create(:past_team_id => past_team.id, :game_date_id => gamedate.id)
+				previous_games = Game.where("id < #{today_game.id} AND (away_team_id = #{past_team.id} OR home_team_id = #{past_team.id})").order('id DESC').limit(10)
+				size = previous_games.size
+				avg = 0
+				previous_games.each do |previous_game|
+					if previous_game.away_team == past_team
+						avg += previous_game.lineups.first.pts
+					else
+						avg += previous_game.lineups.second.pts
+					end
+				end
+				if size == 0
+					next
+				else
+					puts avg/size
+					team_data.update_attributes(:avg_points => avg/size)
+				end
+			end
+		end
+	end
+
+	task :delete => :environment do
+		TeamData.where(:avg_points => nil).destroy_all
+	end
+
+	task :standard_deviation => :environment do
+		GameDate.all.each do |game_date|
+
+			if game_date.team_datas.size != 30
+				next
+			end
+
+			mean = 0
+			game_date.team_datas.each do |team_data|
+				mean += team_data.avg_points
+			end
+			mean /= 30
+
+			variance = 0
+			game_date.team_datas.each do |team_data|
+				variance += (team_data.avg_points - mean) ** 2
+			end
+			variance /= 30
+
+			standard_deviation = Math.sqrt(variance)
+
+			game_date.update_attributes(:standard_deviation => standard_deviation, :mean => mean)
+			puts game_date.standard_deviation
+
+		end
+	end
+
 end

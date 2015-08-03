@@ -8,6 +8,34 @@ namespace :data do
 		require 'open-uri'
 		require 'nokogiri'
 
+		Game.all.each do |game|
+			if game.first_quarter_ps == nil
+				next
+			end
+			puts game.url
+			game.update_attributes(:first_quarter_ps => game.first_quarter_ps*2)
+		end
+
+		# Starter.all.where(:past_player_id => nil).each do |starter|
+		# 	if starter.team == nil
+		# 		starter.update_attributes(:team_id => starter.opponent.opponent.id)
+		# 	end
+		# 	year = starter.team.game.game_date.season.year
+		# 	home = starter.team.home
+
+		# 	if home
+		# 		past_team = starter.team.game.home_team
+		# 	else
+		# 		past_team = starter.team.game.away_team
+		# 	end
+
+		# 	player = Player.find_by_alias(starter.alias)
+		# 	past_player = PastPlayer.where(:year => year, :player_id => player.id, :past_team_id => past_team.id).first
+
+		# 	starter.update_attributes(:past_player_id => past_player.id)
+		# 	puts starter.id
+		# end
+
 	end
 
 	task :create_past_teams => :environment do
@@ -345,7 +373,7 @@ namespace :data do
 						team_id = away_lineup.id
 						opponent_id = home_lineup.id
 					end
-					Starter.create(:name => starter.name, :alias => starter.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :home => starter.home, :starter => true)
+					Starter.create(:name => starter.name, :past_player_id => starter.id, :alias => starter.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :home => starter.home, :starter => true)
 				end
 			end
 
@@ -354,10 +382,10 @@ namespace :data do
 					team_id = home_lineup.id
 					opponent_id = away_lineup.id
 				else
-					lineup_id = away_lineup.id
+					team_id = away_lineup.id
 					opponent_id = home_lineup.id
 				end
-				Starter.create(:name => sub.name, :alias => sub.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :home => sub.home, :starter => false)
+				Starter.create(:name => sub.name, :past_player_id => starter.id, :alias => sub.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :home => sub.home, :starter => false)
 			end
 		end
 

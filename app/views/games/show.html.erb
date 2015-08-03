@@ -22,45 +22,49 @@
 
 
 <h3 align="center">Team Stats</h3>
+<h4 align="center">Today's Game &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Previous <%=  params[:previous].first %> Games</h4>
 
-<table align="center">
+<table align="center" style="margin: 20px; float: left;">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Teams"} )%>
 	<%= render(:partial => 'team', :locals =>  {:lineup => @away_lineup, :team => @away_team})%>
 	<%= render(:partial => 'team', :locals =>  {:lineup => @home_lineup, :team => @home_team})%>
 </table>
 
+<table align="center" style="margin: 20px; float: right;">
+	<%= render(:partial => 'teamheader', :locals => {:name => "Teams"} )%>
+	<%= render(:partial => 'team', :locals =>  {:lineup => @away_previous_lineup, :team => @away_team})%>
+	<%= render(:partial => 'team', :locals =>  {:lineup => @home_previous_lineup, :team => @home_team})%>
+</table>
+
+</br></br></br></br>
+
 <h3 align="center"><%= @away_team.name %> Player Stats</h3>
-<table align="center">
+<table align="center" style="margin: 5px; float: left;">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
 	<% @away_starters.each do |starter|%>
 		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
 	<% end %>
 </table>
+
+<table align="center" style="margin: 5px; float: right;">
+	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
+	<% @away_previous_starters.each do |starter|%>
+		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
+	<% end %>
+</table>
+</br></br></br></br>
 <h3 align="center"><%= @home_team.name %> Player Stats</h3>
-<table align="center">
+<table align="center" style="margin: 5px; float: left;">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
 	<% @home_starters.each do |starter|%>
 		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
 	<% end %>
 </table>
 
-<table align="center">
-	<%= render(:partial => 'teamheader', :locals => {:name => "Teams"} )%>
-	<%= render(:partial => 'team', :locals =>  {:lineup => @away_previous_lineup, :team => @away_team})%>
-	<%= render(:partial => 'team', :locals =>  {:lineup => @home_previous_lineup, :team => @home_team})%>
-</table>
-
-<h3 align="center"><%= @away_team.name %> Player Stats</h3>
-<table align="center">
-	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
-	<% @away_previous_starters.each do |starter|%>
-		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
-	<% end %>
-</table>
-<h3 align="center"><%= @home_team.name %> Player Stats</h3>
-<table align="center">
+<table align="center" style="margin: 5px; float: right;">
 	<%= render(:partial => 'teamheader', :locals => {:name => "Players"} )%>
 	<% @home_previous_starters.each do |starter|%>
 		<%= render(:partial => 'team', :locals => {:lineup => starter, :team => starter})%>
 	<% end %>
 </table>
+</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
