@@ -28,8 +28,8 @@ namespace :first_quarter do
 				PAST_POSSESSION_NUMBER = 5
 				PAST_RATING_NUMBER = 10
 			when 2
-				PAST_POSSESSION_NUMBER = 5
-				PAST_RATING_NUMBER =  5
+				PAST_POSSESSION_NUMBER = 10
+				PAST_RATING_NUMBER =  10
 			end
 
 			Game.all[2735..-1].each do |game|
@@ -393,25 +393,29 @@ namespace :first_quarter do
 		win_bet = 0
 		lose_bet = 0
 
-		Game.all[2459..-1].each do |game|
-			if game.first_quarter_cl == nil || game.first_quarter_ps == nil
-				next
-			else
-				puts game.url
-				total_games += 1
-				ps = game.first_quarter_ps
-				cl = game.first_quarter_cl
-				fs = game.lineups[2].pts + game.lineups[3].pts
-				over_under = over_or_under(ps, cl, fs)
-				plus_minus += over_under
-				if over_under == 0
-					no_bet += 1
-				end
-				if over_under == 1
-					win_bet += 1
-				end
-				if over_under == -1
-					lose_bet += 1
+		Season.where("year = '2012'").each do |season|
+			season.game_dates.each do |game_date|
+				game_date.games.each do |game|
+					if game.first_quarter_cl == nil || game.first_quarter_ps == nil
+						next
+					else
+						puts game.url
+						total_games += 1
+						ps = game.first_quarter_ps
+						cl = game.first_quarter_cl
+						fs = game.lineups[2].pts + game.lineups[3].pts
+						over_under = over_or_under(ps, cl, fs)
+						plus_minus += over_under
+						if over_under == 0
+							no_bet += 1
+						end
+						if over_under == 1
+							win_bet += 1
+						end
+						if over_under == -1
+							lose_bet += 1
+						end
+					end
 				end
 			end
 		end
