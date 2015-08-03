@@ -113,4 +113,28 @@ namespace :update do
 		end
 	end
 
+	task :weekday => :environment do
+		require 'date'
+		GameDate.all.each do |game_date|
+			time = Date.new(game_date.year.to_i, game_date.month.to_i, game_date.day.to_i)
+			weekday = time.strftime("%A")
+			game_date.update_attributes(:weekday => weekday)
+			first_game = game_date.games.first
+			game_date.team_datas.each do |team_data|
+				previous_game = Game.where("id < #{first_game.id} AND (away_team_id = #{team_data.past_team_id} OR home_team_id = #{team_data.past_team_id})").order("id DESC").first
+				previous_time = Date.new(previous_game.year.to_i, previous_game.month.to_i, previous_game.day.to_i)
+				if previous_time.prev_day == time
+					rest = 0
+				elsif previous_time.prev_day.prev_day == time
+					rest = 1
+				elsif previous_time.prev_day.prev_day.prev_day == time
+					rest = 2
+				else
+					rest = 3
+				end
+				team_data.update_attributes(:rest => rest)
+			end
+		end
+	end
+
 end
