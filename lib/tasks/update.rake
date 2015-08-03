@@ -124,7 +124,7 @@ namespace :update do
 				end
 				team_data.update_attributes(:rest => rest)
 			end
-		endh
+		end
 	end
 
 end
