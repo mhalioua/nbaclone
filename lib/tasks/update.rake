@@ -29,7 +29,7 @@ namespace :update do
 				past_team.update_attributes(:season_id => season.id)
 			end
 			previous_year = (i-1).to_s
-			GameDate.where("(year = #{year} AND month < '07') OR (year = #{previous_year} AND month > '07')").each do |gamedate|
+			GameDate.where("(year = #{year.to_s} AND month < '07') OR (year = #{previous_year.to_s} AND month > '07')").each do |gamedate|
 				gamedate.update_attributes(:season_id => season.id)
 			end
 		end
