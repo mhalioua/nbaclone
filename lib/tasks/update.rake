@@ -229,7 +229,9 @@ namespace :update do
 			
 			team.update_attributes(:sun_PTS => sunday, :mon_PTS => monday, :tue_PTS => tuesday, :wed_PTS => wednesday, :thu_PTS => thursday, :fri_PTS => friday, :sat_PTS => saturday,
 				:zero_PTS => zero, :one_PTS => one, :two_PTS => two, :three_PTS => three, :sun_opp_PTS => sunday_opp, :mon_opp_PTS => monday_opp, :tue_opp_PTS => tuesday_opp, :wed_opp_PTS => wednesday_opp,
-				:thu_opp_PTS => thursday_opp, :fri_opp_PTS => friday_opp, :sat_opp_PTS => saturday_opp, :zero_opp_PTS => zero_opp, :one_opp_PTS => one_opp, :two_opp_PTS => two_opp, :three_opp_PTS => three_opp)
+				:thu_opp_PTS => thursday_opp, :fri_opp_PTS => friday_opp, :sat_opp_PTS => saturday_opp, :zero_opp_PTS => zero_opp, :one_opp_PTS => one_opp, :two_opp_PTS => two_opp, :three_opp_PTS => three_opp,
+				:sun_G => sunday_size, :mon_G => monday_size, :tue_G => tuesday_size, :wed_G => wednesday_size, :thu_G => thursday_size, :fri_G => friday_size, :sat_G => saturday_size, :zero_G => zero_size, :one_G => one_size,
+				:two_G => two_size, :three_G => three_G)
 		end
 	end
 
