@@ -131,4 +131,77 @@ namespace :update do
 		end
 	end
 
+	task :average => :environment do
+		Team.all.each do |team|
+			past_team = PastTeam.where(:team_id => team.id).first
+			if past_team == nil
+				next
+			end
+			sunday = monday = tuesday = wednesday = thursday = friday = saturday = 0
+			sunday_size = monday_size = tuesday_size = wednesday_size = thursday_size = friday_size = saturday_size = 0
+			zero = one = two = three = 0
+			zero_size = one_size = two_size = three_size = 0
+			size = Game.where("home_team_id = #{past_team.id} OR away_team_id = #{past_team.id}").size
+			Game.where("home_team_id = #{past_team.id} OR away_team_id = #{past_team.id}").each do |game|
+				if game.away_team == past_team
+					pts = game.lineups.first.pts
+				else
+					pts = game.lineups.second.pts
+				end
+				team_data = game.game_date.team_datas.where(:past_team_id => past_team.id).first
+				rest = team_data.rest
+				case rest
+				when 0
+					zero += pts
+					zero_size += 1
+				when 1
+					one += pts
+					one_size += 1
+				when 2
+					two += pts
+					two_size += 1
+				when 3
+					three += pts
+					three_size += 1
+				end
+				case game.game_date.weekday
+				when "Sunday"
+					sunday += pts
+					sunday_size += 1
+				when "Monday"
+					monday += pts
+					monday_size += 1
+				when "Tuesday"
+					tuesday += pts
+					tuesday_size += 1
+				when "Wednesday"
+					wednesday += pts
+					wednesday_size += 1
+				when "Thursday"
+					thursday += pts
+					thursday_size += 1
+				when "Friday"
+					friday += pts
+					friday_size += 1
+				when "Saturday"
+					saturday += pts
+					saturday_size += 1
+				end
+			end
+			sunday /= sunday_size
+			monday /= monday_size
+			tuesday /= tuesday_size
+			wednesday /= wednesday_size
+			thursday /= thursday_size
+			friday /= friday_size
+			saturday /= saturday_size
+			zero /= zero_size
+			one /= one_size
+			two /= two_size
+			three /= three_size
+			Team.update_attributes(:sun_PTS => sunday, :mon_PTS => monday, :tue_PTS => tuesday, :wed_PTS => wednesday,
+				:thu_PTS => thursday, :fri_PTS => friday, :sat_PTS => saturday, :zero_PTS => zero, :one_PTS => one, :two_PTS => two, :three_PTS => three)
+		end
+	end
+
 end
