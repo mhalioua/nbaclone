@@ -203,7 +203,13 @@ namespace :update do
 			monday /= monday_size
 			tuesday /= tuesday_size
 			wednesday /= wednesday_size
-			thursday /= thursday_size
+			if thursday_size != 0
+				thursday /= thursday_size
+				thursday_opp /= thursday_size
+			else
+				thursday = 0
+				thursday_opp = 0
+			end
 			friday /= friday_size
 			saturday /= saturday_size
 			zero /= zero_size
@@ -214,18 +220,12 @@ namespace :update do
 			monday_opp /= monday_size
 			tuesday_opp /= tuesday_size
 			wednesday_opp /= wednesday_size
-			thursday_opp /= thursday_size
 			friday_opp /= friday_size
 			saturday_opp /= saturday_size
 			zero_opp /= zero_size
 			one_opp /= one_size
 			two_opp /= two_size
 			three_opp /= three_size
-
-			if thursday_size == 0
-				thursday = 0
-				thursday_opp = 0
-			end
 			
 			team.update_attributes(:sun_PTS => sunday, :mon_PTS => monday, :tue_PTS => tuesday, :wed_PTS => wednesday, :thu_PTS => thursday, :fri_PTS => friday, :sat_PTS => saturday,
 				:zero_PTS => zero, :one_PTS => one, :two_PTS => two, :three_PTS => three, :sun_opp_PTS => sunday_opp, :mon_opp_PTS => monday_opp, :tue_opp_PTS => tuesday_opp, :wed_opp_PTS => wednesday_opp,
