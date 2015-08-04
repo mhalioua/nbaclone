@@ -400,7 +400,7 @@ namespace :first_quarter do
 		win_bet = 0
 		lose_bet = 0
 
-		Season.where("year <= '2013'").each do |season|
+		Season.where("year = '2014'").each do |season|
 			season.game_dates.each do |game_date|
 				game_date.games.each do |game|
 					if game.first_quarter_cl == nil || game.first_quarter_ps_2 == nil
