@@ -188,6 +188,31 @@ class StatisticsController < ApplicationController
 
   	def team
   		@teams = Team.all.order('id ASC').limit(30)
+  		@zero = @one = @two = @three = @sunday = @monday = @tuesday = @wednesday = @thursday = @friday = @saturday = 0
+  		@teams.each do |team|
+  			@zero += team.zero_PTS
+  			@one += team.one_PTS
+  			@two += team.two_PTS
+  			@three += team.three_PTS
+  			@sunday += team.sun_PTS
+  			@monday += team.mon_PTS
+  			@tuesday += team.tue_PTS
+  			@wednesday += team.wed_PTS
+  			@thursday += team.thu_PTS
+  			@friday += team.fri_PTS
+  			@saturday += team.sat_PTS
+  		end
+  		@zero /= 30
+  		@one /= 30
+  		@two /= 30
+  		@three /= 30
+  		@sunday /= 30
+  		@monday /= 30
+  		@tuesday /= 30
+  		@wednesday /= 30
+  		@thursday /= 30
+  		@friday /= 30
+  		@saturday /= 30
  	end
 
  	def yesterday

@@ -21,4 +21,18 @@
 	<% @teams.each do |team|%>
 		<%= render(:partial => 'teamtable', :locals => {:team => team}) %>
 	<% end %>
+	<tr>
+		<th>Total</th>
+		<th><%= @sunday %></th>
+		<th><%= @monday %></th>
+		<th><%= @tuesday %></th>
+		<th><%= @wednesday %></th>
+		<th><%= @thursday %></th>
+		<th><%= @friday %></th>
+		<th><%= @saturday %></th>
+		<th><%= @zero %></th>
+		<th><%= @one %></th>
+		<th><%= @two %></th>
+		<th><%= @three %></th>
+	</tr>
 </table>
