@@ -1,6 +1,23 @@
 <% @page_title = @team.name + " Stats"%>
 <div align="center">
-<%= link_to("Teams", :controller => 'index', :action => 'team') %> </br>
+<%= link_to("Teams", :controller => 'access', :action => 'index') %> </br>
 </div>
-<h2 align="center"><%= @team.name %></h2>
-<%= render(:partial => 'teamtable', :locals => {:team => @team}) %>
+<table style="margin-left: 200px; margin-right: 200px; margin-bottom: 50px; margin-top: 50px; width: 70%">
+	<tr>
+		<th>Name</th>
+		<th>Sunday</th>
+		<th>Monday</th>
+		<th>Tuesday</th>
+		<th>Wednesday</th>
+		<th>Thursday</th>
+		<th>Friday</th>
+		<th>Saturday</th>
+		<th>Zero</th>
+		<th>One</th>
+		<th>Two</th>
+		<th>Three</th>
+	</tr>
+	<% @teams.each do |team|%>
+		<%= render(:partial => 'teamtable', :locals => {:team => team}) %>
+	<% end %>
+</table>

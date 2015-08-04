@@ -187,7 +187,7 @@ class StatisticsController < ApplicationController
 	end
 
   	def team
-  		@team = Team.find_by_id(params[:id])
+  		@teams = Team.all.limit(30)
  	end
 
  	def yesterday
