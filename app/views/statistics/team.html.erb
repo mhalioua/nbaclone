@@ -3,36 +3,166 @@
 <%= link_to("Home", :controller => 'access', :action => 'index') %> </br>
 </div>
 <h3 align="center">Teams</h3>
-<table style="margin-left: 200px; margin-right: 200px; margin-bottom: 50px; margin-top: 50px; width: 70%">
+<table style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px; margin-top: 10px; width: 70%">
 	<tr>
-		<th>Name</th>
+		<th></th>
+		<% @teams.each do |team| %>
+		<th><%= team.name %></th>
+		<% end %>
+		<th></th>
+	</tr>
+	<tr>
 		<th>Sunday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.sun_PTS %></td>
+		<% end %>
+		<th>Sunday</th>
+	</tr>
+	<tr>
+		<th>Sunday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.sun_opp_PTS %></td>
+		<% end %>
+		<th>Sunday Opp</th>
+	</tr>
+	<tr>
 		<th>Monday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.mon_PTS %></td>
+		<% end %>
+		<th>Monday</th>
+	</tr>
+	<tr>
+		<th>Monday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.mon_opp_PTS %></td>
+		<% end %>
+		<th>Monday Opp</th>
+	</tr>
+	<tr>
 		<th>Tuesday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.tue_PTS %></td>
+		<% end %>
+		<th>Tuesday</th>
+	</tr>
+	<tr>
+		<th>Tuesday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.tue_opp_PTS %></td>
+		<% end %>
+		<th>Tuesday Opp</th>
+	</tr>
+	<tr>
 		<th>Wednesday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.wed_PTS %></td>
+		<% end %>
+		<th>Wednesday</th>
+	</tr>
+	<tr>
+		<th>Wednesday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.wed_opp_PTS %></td>
+		<% end %>
+		<th>Wednesday Opp</th>
+	</tr>
+	<tr>
 		<th>Thursday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.thu_PTS %></td>
+		<% end %>
+		<th>Thursday</th>
+	</tr>
+	<tr>
+		<th>Thursday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.thu_opp_PTS %></td>
+		<% end %>
+		<th>Thursday Opp</th>
+	</tr>
+	<tr>
 		<th>Friday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.fri_PTS %></td>
+		<% end %>
+		<th>Friday</th>
+	</tr>
+	<tr>
+		<th>Friday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.fri_opp_PTS %></td>
+		<% end %>
+		<th>Friday Opp</th>
+	</tr>
+	<tr>
 		<th>Saturday</th>
+		<% @teams.each do |team| %>
+		<td><%= team.sat_PTS %></td>
+		<% end %>
+		<th>Saturday</th>
+	</tr>
+	<tr>
+		<th>Saturday Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.sat_opp_PTS %></td>
+		<% end %>
+		<th>Saturday Opp</th>
+	</tr>
+	<tr>
 		<th>Zero</th>
+		<% @teams.each do |team| %>
+		<td><%= team.zero_PTS %></td>
+		<% end %>
+		<th>Zero</th>
+	</tr>
+	<tr>
+		<th>Zero Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.zero_opp_PTS %></td>
+		<% end %>
+		<th>Zero Opp</th>
+	</tr>
+	<tr>
 		<th>One</th>
+		<% @teams.each do |team| %>
+		<td><%= team.one_PTS %></td>
+		<% end %>
+		<th>One</th>
+	</tr>
+	<tr>
+		<th>One Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.one_opp_PTS %></td>
+		<% end %>
+		<th>One Opp</th>
+	</tr>
+	<tr>
 		<th>Two</th>
+		<% @teams.each do |team| %>
+		<td><%= team.two_PTS %></td>
+		<% end %>
+		<th>Two</th>
+	</tr>
+	<tr>
+		<th>Two Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.two_opp_PTS %></td>
+		<% end %>
+		<th>Two Opp</th>
+	</tr>
+	<tr>
+		<th>Three</th>
+		<% @teams.each do |team| %>
+		<td><%= team.three_PTS %></td>
+		<% end %>
 		<th>Three</th>
 	</tr>
-	<% @teams.each do |team|%>
-		<%= render(:partial => 'teamtable', :locals => {:team => team}) %>
-	<% end %>
 	<tr>
-		<th>Total</th>
-		<th><%= @sunday.round(2) %></th>
-		<th><%= @monday.round(2) %></th>
-		<th><%= @tuesday.round(2) %></th>
-		<th><%= @wednesday.round(2) %></th>
-		<th><%= @thursday.round(2) %></th>
-		<th><%= @friday.round(2) %></th>
-		<th><%= @saturday.round(2) %></th>
-		<th><%= @zero.round(2) %></th>
-		<th><%= @one.round(2) %></th>
-		<th><%= @two.round(2) %></th>
-		<th><%= @three.round(2) %></th>
+		<th>Three Opp</th>
+		<% @teams.each do |team| %>
+		<td><%= team.three_opp_PTS %></td>
+		<% end %>
+		<th>Three Opp</th>
 	</tr>
 </table>
