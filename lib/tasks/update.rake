@@ -188,17 +188,73 @@ namespace :update do
 					saturday_size += 1
 				end
 			end
-			sunday /= sunday_size
-			monday /= monday_size
-			tuesday /= tuesday_size
-			wednesday /= wednesday_size
-			thursday /= thursday_size
-			friday /= friday_size
-			saturday /= saturday_size
-			zero /= zero_size
-			one /= one_size
-			two /= two_size
-			three /= three_size
+			if sunday_size == 0
+				sunday = 0
+				puts 'sunday'
+			else
+				sunday /= sunday_size
+			end
+			if monday_size == 0
+				monday = 0
+				puts 'monday'
+			else
+				monday /= monday_size
+			end
+			if tuesday_size == 0
+				tuesday = 0
+				puts 'tuesday'
+			else
+				tuesday /= tuesday_size
+			end
+			if wednesday_size == 0
+				wednesday = 0
+				puts 'wednesday'
+			else
+				wednesday /= wednesday_size
+			end
+			if thursday_size == 0
+				thursday = 0
+				puts 'thursday'
+			else
+				thursday /= thursday_size
+			end
+			if friday_size == 0
+				friday = 0
+				puts 'friday'
+			else
+				friday /= friday_size
+			end
+			if saturday_size == 0
+				saturday = 0
+				puts 'saturday'
+			else
+				saturday /= saturday_size
+			end
+			if zero_size == 0
+				zero = 0
+				puts 'zero'
+			else
+				zero /= zero_size
+			end
+			if one_size == 0
+				one = 0
+				puts 'one'
+			else
+				one /= one_size
+			end
+			if two_size == 0
+				two = 0
+				puts 'two'
+			else
+				two /= two_size
+			end
+			if three_size == 0
+				three = 0
+				puts 'three'
+			else
+				three /= three_size
+			end
+			
 			Team.update_attributes(:sun_PTS => sunday, :mon_PTS => monday, :tue_PTS => tuesday, :wed_PTS => wednesday,
 				:thu_PTS => thursday, :fri_PTS => friday, :sat_PTS => saturday, :zero_PTS => zero, :one_PTS => one, :two_PTS => two, :three_PTS => three)
 		end
