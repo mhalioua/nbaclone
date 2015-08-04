@@ -28,7 +28,7 @@ namespace :update do
 			PastTeam.where(:year => year).each do |past_team|
 				past_team.update_attributes(:season_id => season.id)
 			end
-			previous_year = (i-1).to_s
+			previous_year = (i-1).to_ss
 			GameDate.where("(year = #{year}::VARCHAR AND month < '07') OR (year = #{previous_year}::VARCHAR AND month > '07')").each do |gamedate|
 				gamedate.update_attributes(:season_id => season.id)
 			end
@@ -112,6 +112,10 @@ namespace :update do
 			first_game = game_date.games.first
 			game_date.team_datas.each do |team_data|
 				previous_game = Game.where("id < #{first_game.id} AND (away_team_id = #{team_data.past_team_id} OR home_team_id = #{team_data.past_team_id})").order("id DESC").first
+				if previous_game == nil
+					team_data.updte_attributes(:rest => 3)
+					next
+				end
 				previous_time = Date.new(previous_game.year.to_i, previous_game.month.to_i, previous_game.day.to_i)
 				if previous_time.prev_day == time
 					rest = 0
