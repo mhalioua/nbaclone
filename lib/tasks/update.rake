@@ -215,7 +215,7 @@ namespace :update do
 			if thursday_size == 0
 				thursday = 0
 				puts 'thursday'
-				puts team.name
+				puts team.nameheroku ra
 			else
 				thursday /= thursday_size
 			end

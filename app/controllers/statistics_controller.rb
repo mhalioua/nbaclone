@@ -187,7 +187,7 @@ class StatisticsController < ApplicationController
 	end
 
   	def team
-  		@teams = Team.all.limit(30)
+  		@teams = Team.all.order('id ASC').limit(30)
  	end
 
  	def yesterday
