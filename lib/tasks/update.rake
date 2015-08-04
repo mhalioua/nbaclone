@@ -117,11 +117,11 @@ namespace :update do
 					next
 				end
 				previous_time = Date.new(previous_game.year.to_i, previous_game.month.to_i, previous_game.day.to_i)
-				if previous_time.prev_day == time
+				if previous_time == time.prev_day
 					rest = 0
-				elsif previous_time.prev_day.prev_day == time
+				elsif previous_time == time.prev_day.prev_day
 					rest = 1
-				elsif previous_time.prev_day.prev_day.prev_day == time
+				elsif previous_time == time.prev_day.prev_day.prev_day
 					rest = 2
 				else
 					rest = 3
@@ -255,7 +255,7 @@ namespace :update do
 				three /= three_size
 			end
 			
-			Team.update_attributes(:sun_PTS => sunday, :mon_PTS => monday, :tue_PTS => tuesday, :wed_PTS => wednesday,
+			team.update_attributes(:sun_PTS => sunday, :mon_PTS => monday, :tue_PTS => tuesday, :wed_PTS => wednesday,
 				:thu_PTS => thursday, :fri_PTS => friday, :sat_PTS => saturday, :zero_PTS => zero, :one_PTS => one, :two_PTS => two, :three_PTS => three)
 		end
 	end
