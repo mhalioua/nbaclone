@@ -195,7 +195,7 @@ namespace :update do
 					friday_size += 1
 				when "Saturday"
 					saturday += pts
-					saturday += opp_pts
+					saturday_opp += opp_pts
 					saturday_size += 1
 				end
 			end
