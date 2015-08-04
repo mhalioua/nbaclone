@@ -113,7 +113,7 @@ namespace :update do
 			game_date.team_datas.each do |team_data|
 				previous_game = Game.where("id < #{first_game.id} AND (away_team_id = #{team_data.past_team_id} OR home_team_id = #{team_data.past_team_id})").order("id DESC").first
 				if previous_game == nil
-					team_data.updte_attributes(:rest => 3)
+					team_data.update_attributes(:rest => 3)
 					next
 				end
 				previous_time = Date.new(previous_game.year.to_i, previous_game.month.to_i, previous_game.day.to_i)
