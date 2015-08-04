@@ -1,42 +1,30 @@
 <table style="margin-left: 200px; margin-right: 200px; margin-bottom: 50px; margin-top: 50px; width: 70%">
 	<tr>
-		<th>Name and Height</th>
-		<th><NOBR>Total MP</NOBR></th>
-		<th>ORtg</th>
-		<th>DRtg</th>
-		<th style="width: 15px;">On Court Pace</th>
-		<th style="width: 15px;">On Court Opp Pace</th>
-		<th style="width: 15px;">On Court ORtg</th>
-		<th style="width: 15px;">On Court Opp ORtg</th>
-		<th style="width: 15px;">Total MP 2014</th>
-		<th style="width: 15px;">ORtg 2014</th>
-		<th style="width: 15px;">DRtg 2014</th>
-		<th style="width: 50px;"><%= players.first.date_1 + " " + players.first.team_1 %></th>
-		<th style="width: 50px;"><%= players.first.date_2 + " " + players.first.team_2 %></th>
-		<th style="width: 50px;"><%= players.first.date_3 + " " + players.first.team_3 %></th>
-		<th style="width: 50px;"><%= players.first.date_4 + " " + players.first.team_4 %></th>
-		<th style="width: 50px;"><%= players.first.date_5 + " " + players.first.team_5 %></th>
-		<th>Position</th>
+		<th>Name</th>
+		<th>Sunday</th>
+		<th>Monday</th>
+		<th>Tuesday</th>
+		<th>Wednesday</th>
+		<th>Thursday</th>
+		<th>Friday</th>
+		<th>Saturday</th>
+		<th>Zero</th>
+		<th>One</th>
+		<th>Two</th>
+		<th>Three</th>
 	</tr>
-	<% players.each do |player| %>
-		<tr>
-			<td><NOBR><%= player.name + " " + player.height %></NOBR></td>
-			<td><%= player.MP %></td>
-			<td bgcolor="#00FFFF"><%= player.ORtg %></td>
-			<td bgcolor="#00FFFF"><%= player.DRtg %></td>
-			<td><%= player.on_court_pace %></td>
-			<td><%= player.opp_on_court_pace %></td>
-			<td bgcolor="#00FFFF"><%= player.on_court_ORtg %></td>
-			<td bgcolor="#00FFFF"><%= player.opp_on_court_ORtg %></td>
-			<td><%= player.MP_2014 %></td>
-			<td bgcolor="#00FFFF"><%= player.ORtg_2014 %></td>
-			<td bgcolor="#00FFFF"><%= player.DRtg_2014 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_1 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_2 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_3 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_4 %></td>
-			<td bgcolor="#00FFFF"><%= player.MP_5 %></td>
-			<td><%= player.position %></td>
-		</tr>
-	<% end %>
+	<tr>
+		<td><%= team.name %></td>
+		<td><%= team.sun_PTS %></td>
+		<td><%= team.mon_PTS %></td>
+		<td><%= team.tue_PTS %></td>
+		<td><%= team.wed_PTS %></td>
+		<td><%= team.thu_PTS %></td>
+		<td><%= team.fri_PTS %></td>
+		<td><%= team.sat_PTS %></td>
+		<td><%= team.zero_PTS %></td>
+		<td><%= team.one_PTS %></td>
+		<td><%= team.two_PTS %></td>
+		<td><%= team.three_PTS %></td>
+	</tr>
 </table>
