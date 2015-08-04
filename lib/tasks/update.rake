@@ -215,6 +215,7 @@ namespace :update do
 			if thursday_size == 0
 				thursday = 0
 				puts 'thursday'
+				puts team.name
 			else
 				thursday /= thursday_size
 			end
