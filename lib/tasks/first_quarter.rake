@@ -25,14 +25,15 @@ namespace :first_quarter do
 
 			case i
 			when 1
-				PAST_POSSESSION_NUMBER = 5
-				PAST_RATING_NUMBER = 10
-			when 2
 				PAST_POSSESSION_NUMBER = 10
-				PAST_RATING_NUMBER =  10
+				PAST_RATING_NUMBER = 10
+			# 	next
+			# when 2
+			# 	PAST_POSSESSION_NUMBER = 10
+			# 	PAST_RATING_NUMBER =  10
 			end
 
-			Game.all[2735..-1].each do |game|
+			Game.all.each do |game|
 				
 
 
@@ -48,7 +49,7 @@ namespace :first_quarter do
 				if previous_away_games.size != PAST_POSSESSION_NUMBER || previous_home_games.size != PAST_POSSESSION_NUMBER
 					case i
 					when 1
-						game.update_attributes(:first_quarter_ps => nil)
+						game.update_attributes(:first_quarter_ps_2 => nil)
 					when 2
 						game.update_attributes(:first_quarter_ps_2 => nil)
 					end
@@ -142,7 +143,7 @@ namespace :first_quarter do
 				predicted_score = (away_var + home_var) * possessions / 100
 				case i
 				when 1
-					game.update_attributes(:first_quarter_ps => predicted_score)
+					game.update_attributes(:first_quarter_ps_2 => predicted_score)
 					puts game.url
 					puts predicted_score.to_s + ' ' + game.id.to_s + ' 1'
 				when 2
@@ -203,7 +204,13 @@ namespace :first_quarter do
 			end
 
 
+
 			predicted_score = points * pace/100
+
+			if predicted_score.nan?
+				puts game.url
+			end
+
 			game.update_attributes(:ideal_algorithm => predicted_score)
 			puts game.url
 			puts predicted_score
@@ -393,15 +400,15 @@ namespace :first_quarter do
 		win_bet = 0
 		lose_bet = 0
 
-		Season.where("year = '2012'").each do |season|
+		Season.where("year <= '2013'").each do |season|
 			season.game_dates.each do |game_date|
 				game_date.games.each do |game|
-					if game.first_quarter_cl == nil || game.first_quarter_ps == nil
+					if game.first_quarter_cl == nil || game.first_quarter_ps_2 == nil
 						next
 					else
 						puts game.url
 						total_games += 1
-						ps = game.first_quarter_ps
+						ps = game.first_quarter_ps_2
 						cl = game.first_quarter_cl
 						fs = game.lineups[2].pts + game.lineups[3].pts
 						over_under = over_or_under(ps, cl, fs)

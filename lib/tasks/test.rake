@@ -139,4 +139,16 @@ namespace :test_stats do
 		end
 	end
 
+	task :whoo => :environment do
+		# Poss Percent is equal to -Infinity Starter id 196334
+		Game.find(40).lineups[2..3].each do |lineup|
+			lineup.starters.each do |starter|
+				puts starter.id
+				puts starter.ORTG
+				puts starter.PossPercent
+			end
+		end
+
+	end
+
 end
