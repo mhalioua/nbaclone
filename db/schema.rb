@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150802001607) do
+ActiveRecord::Schema.define(version: 20150803211925) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -28,10 +28,13 @@ ActiveRecord::Schema.define(version: 20150802001607) do
     t.string   "year"
     t.string   "month"
     t.string   "day"
-    t.float    "avg_points", limit: 24
+    t.float    "avg_points",         limit: 24
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "season_id"
+    t.float    "standard_deviation", limit: 24
+    t.float    "mean",               limit: 24
+    t.string   "weekday"
   end
 
   add_index "game_dates", ["season_id"], name: "index_game_dates_on_season_id", using: :btree
@@ -280,6 +283,7 @@ ActiveRecord::Schema.define(version: 20150802001607) do
     t.integer  "ranking"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "rest"
   end
 
   add_index "team_data", ["game_date_id"], name: "index_team_data_on_game_date_id", using: :btree
