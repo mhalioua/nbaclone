@@ -1,18 +1,8 @@
-class Lineup < ActiveRecord::Base
+class Result < ActiveRecord::Base
 
-	belongs_to :game
-	belongs_to :opponent, :class_name => "Lineup"
-
-	include Store
-	
-	def starters
-		Starter.where("team_id = #{self.id}")
-	end
-
-	def opp_starters
-		Starter.where("opponent_id = #{self.id}")
-	end
-
+	belongs_to :past_team
+	belongs_to :season
+	belongs_to :opponent, :class_name => "Result"
 
 	def FTPercent(team=self, opponent=self.opponent) # checked
 		ftp = (team.ftm/team.fta).round(2)
@@ -27,11 +17,13 @@ class Lineup < ActiveRecord::Base
 	end
 
 	def TotPoss(team=self, opponent=self.opponent)
-		0.5 * ((team.fga + 0.4 * team.fta - 1.07 * team.ORBPercent(team, opponent) * (team.fga - team.fgm) + team.tov) + (opponent.fga + 0.4 * opponent.fta - 1.07 * opponent.ORBPercent(opponent, team) * (opponent.fga - opponent.fgm) + opponent.tov))
+		totposs = 0.5 * ((team.fga + 0.4 * team.fta - 1.07 * team.ORBPercent(team, opponent) * (team.fga - team.fgm) + team.tov) + (opponent.fga + 0.4 * opponent.fta - 1.07 * opponent.ORBPercent(opponent, team) * (opponent.fga - opponent.fgm) + opponent.tov))
+		totposs = totposs/team.games
 	end
 
 	def Pace(team=self, opponent=self.opponent)
-		48 * ((team.TotPoss(team, opponent) + opponent.TotPoss(opponent, team)) / (2 * (team.mp / 5)))
+		pace = 48 * ((team.TotPoss(team, opponent) + opponent.TotPoss(opponent, team)) / (2 * (team.mp / 5)))
+		pace * self.games
 	end
 
 	def Plays(team=self, opponent=self.opponent)

@@ -1,0 +1,25 @@
+<div align="center">
+	<%= link_to("Home", :controller => 'index', :action => 'season') %></br>
+	<% @seasons.each do |season| %>
+		<%= link_to(season.year, :controller => 'statistics', :action => 'mine', :id => season.id) %>
+	<% end %>
+</div>
+<h3 align="center"><%= @season.year %></h3>
+<table align="center">
+	<tr>
+		<th>Description</th>
+		<th>Games</th>
+		<th>Points</th>
+		<th>Possessions</th>
+		<th>Pace</th>
+	</tr>
+	<% @results.each do |result| %>
+	<tr>
+		<td><%= result.description%></td>
+		<td><%= result.games %></td>
+		<td><%= (result.pts/result.games).round(2) %></td>
+		<td><%= result.TotPoss.round(2) %></td>
+		<td><%= result.Pace.round(2) %></td>
+	</tr>
+	<% end %>
+</table>

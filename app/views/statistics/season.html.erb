@@ -1,0 +1,9 @@
+<div class="menu" align="center">
+	<h2>Home Page</h2>
+	<div class="identity">Logged in as: <%= session[:username] %></div>
+	<nav>
+		<% @seasons.each do |season| %>
+			<li><%= link_to(season.year, :controller => 'statistics', :action => 'mine', :id => season.id) %></li>
+		<% end %>
+	</nav>
+</div>

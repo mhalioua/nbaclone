@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150803211925) do
+ActiveRecord::Schema.define(version: 20150811182529) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -60,6 +60,15 @@ ActiveRecord::Schema.define(version: 20150803211925) do
     t.float    "ideal_pace",         limit: 24
     t.float    "first_quarter_ps_2", limit: 24
     t.integer  "game_date_id"
+    t.integer  "away_ranking"
+    t.integer  "home_ranking"
+    t.integer  "away_rest"
+    t.integer  "home_rest"
+    t.integer  "away_record"
+    t.integer  "home_record"
+    t.boolean  "weekend"
+    t.integer  "away_travel"
+    t.integer  "home_travel"
   end
 
   add_index "games", ["game_date_id"], name: "index_games_on_game_date_id", using: :btree
@@ -111,32 +120,69 @@ ActiveRecord::Schema.define(version: 20150803211925) do
     t.float    "pts",          limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "alias"
   end
 
   create_table "past_teams", force: true do |t|
     t.integer  "team_id"
     t.string   "year"
-    t.float    "mp",         limit: 24, default: 0.0
-    t.float    "fgm",        limit: 24, default: 0.0
-    t.float    "fga",        limit: 24, default: 0.0
-    t.float    "thpm",       limit: 24, default: 0.0
-    t.float    "thpa",       limit: 24, default: 0.0
-    t.float    "ftm",        limit: 24, default: 0.0
-    t.float    "fta",        limit: 24, default: 0.0
-    t.float    "orb",        limit: 24, default: 0.0
-    t.float    "drb",        limit: 24, default: 0.0
-    t.float    "ast",        limit: 24, default: 0.0
-    t.float    "stl",        limit: 24, default: 0.0
-    t.float    "blk",        limit: 24, default: 0.0
-    t.float    "tov",        limit: 24, default: 0.0
-    t.float    "pf",         limit: 24, default: 0.0
-    t.float    "pts",        limit: 24, default: 0.0
+    t.float    "mp",            limit: 24, default: 0.0
+    t.float    "fgm",           limit: 24, default: 0.0
+    t.float    "fga",           limit: 24, default: 0.0
+    t.float    "thpm",          limit: 24, default: 0.0
+    t.float    "thpa",          limit: 24, default: 0.0
+    t.float    "ftm",           limit: 24, default: 0.0
+    t.float    "fta",           limit: 24, default: 0.0
+    t.float    "orb",           limit: 24, default: 0.0
+    t.float    "drb",           limit: 24, default: 0.0
+    t.float    "ast",           limit: 24, default: 0.0
+    t.float    "stl",           limit: 24, default: 0.0
+    t.float    "blk",           limit: 24, default: 0.0
+    t.float    "tov",           limit: 24, default: 0.0
+    t.float    "pf",            limit: 24, default: 0.0
+    t.float    "pts",           limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "name"
     t.string   "abbr"
     t.string   "city"
     t.integer  "season_id"
+    t.float    "total_pts",     limit: 24
+    t.float    "total_opp_pts", limit: 24
+    t.integer  "total_size"
+    t.float    "sun_pts",       limit: 24
+    t.float    "sun_opp_pts",   limit: 24
+    t.integer  "sun_size"
+    t.float    "mon_pts",       limit: 24
+    t.float    "mon_opp_pts",   limit: 24
+    t.integer  "mon_size"
+    t.float    "tue_pts",       limit: 24
+    t.float    "tue_opp_pts",   limit: 24
+    t.integer  "tue_size"
+    t.float    "wed_pts",       limit: 24
+    t.float    "wed_opp_pts",   limit: 24
+    t.integer  "wed_size"
+    t.float    "thu_pts",       limit: 24
+    t.float    "thu_opp_pts",   limit: 24
+    t.integer  "thu_size"
+    t.float    "fri_pts",       limit: 24
+    t.float    "fri_opp_pts",   limit: 24
+    t.integer  "fri_size"
+    t.float    "sat_pts",       limit: 24
+    t.float    "sat_opp_pts",   limit: 24
+    t.integer  "sat_size"
+    t.float    "zero_pts",      limit: 24
+    t.float    "zero_opp_pts",  limit: 24
+    t.integer  "zero_size"
+    t.float    "one_pts",       limit: 24
+    t.float    "one_opp_pts",   limit: 24
+    t.integer  "one_size"
+    t.float    "two_pts",       limit: 24
+    t.float    "two_opp_pts",   limit: 24
+    t.integer  "two_size"
+    t.float    "three_pts",     limit: 24
+    t.float    "three_opp_pts", limit: 24
+    t.integer  "three_size"
   end
 
   add_index "past_teams", ["season_id"], name: "index_past_teams_on_season_id", using: :btree
@@ -237,6 +283,39 @@ ActiveRecord::Schema.define(version: 20150803211925) do
   add_index "players", ["alias"], name: "index_players_on_alias", using: :btree
   add_index "players", ["name"], name: "index_players_on_name", using: :btree
 
+  create_table "results", force: true do |t|
+    t.integer  "past_team_id"
+    t.integer  "season_id"
+    t.integer  "opponent_id"
+    t.text     "description"
+    t.integer  "games"
+    t.integer  "quarter"
+    t.boolean  "home"
+    t.boolean  "weekend"
+    t.boolean  "travel"
+    t.integer  "rest"
+    t.integer  "offensive_efficiency"
+    t.integer  "win_percentage"
+    t.integer  "pace"
+    t.float    "mp",                   limit: 24, default: 0.0
+    t.float    "fgm",                  limit: 24, default: 0.0
+    t.float    "fga",                  limit: 24, default: 0.0
+    t.float    "thpm",                 limit: 24, default: 0.0
+    t.float    "thpa",                 limit: 24, default: 0.0
+    t.float    "ftm",                  limit: 24, default: 0.0
+    t.float    "fta",                  limit: 24, default: 0.0
+    t.float    "orb",                  limit: 24, default: 0.0
+    t.float    "drb",                  limit: 24, default: 0.0
+    t.float    "ast",                  limit: 24, default: 0.0
+    t.float    "stl",                  limit: 24, default: 0.0
+    t.float    "blk",                  limit: 24, default: 0.0
+    t.float    "tov",                  limit: 24, default: 0.0
+    t.float    "pf",                   limit: 24, default: 0.0
+    t.float    "pts",                  limit: 24, default: 0.0
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "seasons", force: true do |t|
     t.string   "year"
     t.datetime "created_at"
@@ -271,6 +350,8 @@ ActiveRecord::Schema.define(version: 20150803211925) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "ideal_ortg",     limit: 24
+    t.float    "ideal_poss",     limit: 24
+    t.float    "poss_percent",   limit: 24
   end
 
   add_index "starters", ["alias"], name: "index_starters_on_alias", using: :btree
@@ -279,11 +360,14 @@ ActiveRecord::Schema.define(version: 20150803211925) do
   create_table "team_data", force: true do |t|
     t.integer  "game_date_id"
     t.integer  "past_team_id"
-    t.float    "avg_points",   limit: 24
+    t.float    "avg_points",     limit: 24
     t.integer  "ranking"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "rest"
+    t.integer  "win"
+    t.integer  "loss"
+    t.float    "win_percentage", limit: 24
   end
 
   add_index "team_data", ["game_date_id"], name: "index_team_data_on_game_date_id", using: :btree
@@ -475,6 +559,8 @@ ActiveRecord::Schema.define(version: 20150803211925) do
     t.float    "tomorrow_opp_PTS",  limit: 24, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "latitude",          limit: 24
+    t.float    "longitude",         limit: 24
   end
 
   add_index "teams", ["abbr"], name: "index_teams_on_abbr", using: :btree

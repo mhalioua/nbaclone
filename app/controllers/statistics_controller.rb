@@ -4,6 +4,16 @@ class StatisticsController < ApplicationController
 
 	layout 'nba'
 
+	def season
+		@seasons = Season.all
+	end
+
+	def mine
+		@seasons = Season.all
+		@season = Season.find(params[:id])
+		@results = @season.results
+	end
+
 
 	def matchup
 
