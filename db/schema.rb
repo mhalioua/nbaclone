@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150811182529) do
+ActiveRecord::Schema.define(version: 20150812024323) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -22,7 +22,10 @@ ActiveRecord::Schema.define(version: 20150811182529) do
     t.string   "player2"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "season_id"
   end
+
+  add_index "actions", ["season_id"], name: "index_actions_on_season_id", using: :btree
 
   create_table "game_dates", force: true do |t|
     t.string   "year"
@@ -69,9 +72,11 @@ ActiveRecord::Schema.define(version: 20150811182529) do
     t.boolean  "weekend"
     t.integer  "away_travel"
     t.integer  "home_travel"
+    t.integer  "season_id"
   end
 
   add_index "games", ["game_date_id"], name: "index_games_on_game_date_id", using: :btree
+  add_index "games", ["season_id"], name: "index_games_on_season_id", using: :btree
 
   create_table "lineups", force: true do |t|
     t.integer  "game_id"
@@ -95,9 +100,11 @@ ActiveRecord::Schema.define(version: 20150811182529) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "opponent_id"
+    t.integer  "season_id"
   end
 
   add_index "lineups", ["opponent_id"], name: "index_lineups_on_opponent_id", using: :btree
+  add_index "lineups", ["season_id"], name: "index_lineups_on_season_id", using: :btree
 
   create_table "past_players", force: true do |t|
     t.integer  "player_id"
@@ -121,7 +128,10 @@ ActiveRecord::Schema.define(version: 20150811182529) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "alias"
+    t.integer  "season_id"
   end
+
+  add_index "past_players", ["season_id"], name: "index_past_players_on_season_id", using: :btree
 
   create_table "past_teams", force: true do |t|
     t.integer  "team_id"
@@ -352,10 +362,12 @@ ActiveRecord::Schema.define(version: 20150811182529) do
     t.float    "ideal_ortg",     limit: 24
     t.float    "ideal_poss",     limit: 24
     t.float    "poss_percent",   limit: 24
+    t.integer  "season_id"
   end
 
   add_index "starters", ["alias"], name: "index_starters_on_alias", using: :btree
   add_index "starters", ["name"], name: "index_starters_on_name", using: :btree
+  add_index "starters", ["season_id"], name: "index_starters_on_season_id", using: :btree
 
   create_table "team_data", force: true do |t|
     t.integer  "game_date_id"

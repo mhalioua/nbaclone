@@ -2,11 +2,17 @@ module Conclude
 
 	def self.restOrWeekend(ps, weekday, away_rest, home_rest)
 		if weekday == "Saturday" || weekday == "Sunday"
-			ps -= 2
+			ps -= 3
 		end
-		if (away_rest == 0 && home_rest != 0) || (home_rest == 0 && away_rest != 0)
-			ps -= 0.5
+		if away_rest == 0
+			ps -= 1
 		end
+		if home_rest == 0
+			ps -= 1
+		end
+		# if (away_rest == 0 && home_rest != 0) || (home_rest == 0 && away_rest != 0)
+		# 	ps -= 0.5
+		# end
 		return ps
 	end
 

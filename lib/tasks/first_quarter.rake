@@ -138,14 +138,14 @@ namespace :first_quarter do
 		Season.where(:year => '2015').each do |season|
 			season.game_dates.each do |game_date|
 				game_date.games.each do |game|
-					if game.first_quarter_cl == nil || game.first_quarter_ps == nil
+					if game.first_quarter_cl == nil || game.first_quarter_ps_2 == nil
 						next
 					else
 						puts game.url
 						total_games += 1
-						ps = game.first_quarter_ps * 2
-						# weekday, away_team_rest, home_team_rest = Conclude.getStat(game)
-						# ps = Result.restOrWeekend(ps, weekday, away_team_rest, home_team_rest)
+						ps = game.first_quarter_ps_2
+						weekday, away_team_rest, home_team_rest = Conclude.getStat(game)
+						ps = Conclude.restOrWeekend(ps, weekday, away_team_rest, home_team_rest)
 						cl = game.first_quarter_cl
 						fs = game.lineups[2].pts + game.lineups[3].pts
 						over_under = Conclude.over_or_under(ps, cl, fs)
@@ -206,6 +206,7 @@ namespace :first_quarter do
 			home = Array.new
 
 			doc.css(".team-name a").each_with_index do |stat, index|
+				text = stat.text
 				if index%2 == 1
 					if index%2 == 1
 						id = Close.findTeamId(text, season)

@@ -1,7 +1,7 @@
 namespace :database do
 
 	# Create: past_teams, games, past_players, play_by_plays, extract
-	task :build => [:create_seasons, :create_past_teams, :create_games, :create_past_players, :play_by_play, :extract, :sum_stats] do
+	task :build => [:create_games, :create_past_players, :play_by_play, :extract] do
 	end
 
 	task :create_teams => :environment do
@@ -114,8 +114,8 @@ namespace :database do
 		include Whoo
 
 		season = Season.where(:year => '2010').first
-		game_dates = season.game_dates
-		game_dates.each do |game_date|
+		game_date = season.game_dates.first
+		# game_dates.each do |game_date|
 			game_date.games.each do |game|
 
 				puts game.url + ' ' + game.id.to_s
@@ -153,15 +153,15 @@ namespace :database do
 				end
 
 				# Create full game lineups
-				away_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => false)
-				home_lineup = Lineup.create(:quarter => 0, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
+				away_lineup = Lineup.create(:game_id => game.id, :quarter => 0, :home => false)
+				home_lineup = Lineup.create(:game_id => game.id, :quarter => 0, :home => true, :opponent_id => away_lineup.id)
 				away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
 				# Create starters
 				Whoo.createPlayers(away_players, away_lineup, home_lineup)
 				Whoo.createPlayers(home_players, home_lineup, away_lineup)
 			end
-		end
+		# end
 
 	end
 
@@ -172,76 +172,78 @@ namespace :database do
 		include Whoo
 
 		season = Season.find(6)
-		games = Game.all
+		game_date = season.game_dates.first
+		# game_dates.each do |game_date|
+			game_date.games.each do |game|
 
-		games.each do |game|
+				puts game.url + ' ' + game.id.to_s
 
-			puts game.url + ' ' + game.id.to_s
+				play_url = "http://www.basketball-reference.com/boxscores/pbp/#{game.url}.html"
+				play_doc = Nokogiri::HTML(open(play_url))
 
-			play_url = "http://www.basketball-reference.com/boxscores/pbp/#{game.url}.html"
-			play_doc = Nokogiri::HTML(open(play_url))
+				away_team = game.away_team
+				home_team = game.home_team
 
-			away_team = game.away_team
-			home_team = game.home_team
+				away_players = game.lineups.first.starters
+				home_players = game.lineups.second.starters
 
-			away_players = game.lineups.first.starters
-			home_players = game.lineups.second.starters
+				Play.setFalse()
 
-			Play.setFalse()
+				subs = Set.new
+				starters = Array.new
+				actions = Array.new
 
-			subs = Set.new
-			starters = Array.new
-			actions = Array.new
+				bool = false
+				time = var = quarter = 0
+				play_doc.css(".stats_table td").each_with_index do |stat, index|
+					text = stat.text
 
-			bool = false
-			time = var = quarter = 0
-			play_doc.css(".stats_table td").each_with_index do |stat, index|
-				text = stat.text
-
-				# Change the quarter when a new one starts
-				if text.include?("Start of")
-					bool = true
-					if quarter != 0
-						Whoo.createStarters(starters, subs, game, quarter)
+					# Change the quarter when a new one starts
+					if text.include?("Start of")
+						bool = true
+						if quarter != 0
+							Whoo.createStarters(starters, subs, game, quarter, away_players)
+						end
+						quarter = Whoo.newQuarter(text, starters, subs)
 					end
-					quarter = Whoo.newQuarter(text, starters, subs)
-				end
 
-				# Skip to next iteration if bool false
-				if !bool
-					next
-				end
+					# Skip to next iteration if bool false
+					if !bool
+						next
+					end
 
-				# Reset var when jump ball or quarter comes up on the text
-				message = ["quarter", "Jump", "overtime"]
-				if message.any? { |mes| text.include? mes }
-					var = 0
-					next
-				end
+					# Reset var when jump ball or quarter comes up on the text
+					message = ["quarter", "Jump", "overtime"]
+					if message.any? { |mes| text.include? mes }
+						var = 0
+						next
+					end
 
-				var += 1
+					var += 1
 
-				if text.include?(':')
-					var = 1
-				end
+					if text.include?(':')
+						var = 1
+					end
 
-				case var%6
-				when 1
-					# Minutes
-					Play.setFalse()
-					time = Whoo.convertMinutes(text)
-				when 2
-					# Away
-					Whoo.createAction(game, stat, away_players, home_players, starters, subs, quarter, time)
-				when 0
-					if !(text.include? "Jump")
-						# Home
+					case var%6
+					when 1
+						# Minutes
+						Play.setFalse()
+						time = Whoo.convertMinutes(text)
+					when 2
+						# Away
 						Whoo.createAction(game, stat, away_players, home_players, starters, subs, quarter, time)
+					when 0
+						if !(text.include? "Jump")
+							# Home
+							Whoo.createAction(game, stat, away_players, home_players, starters, subs, quarter, time)
+						end
 					end
 				end
+				Whoo.createStarters(starters, subs, game, quarter, away_players)
+				
 			end
-			Whoo.createStarters(starters, subs, game, quarter)
-		end
+		# end
 	end
 
 
@@ -251,9 +253,9 @@ namespace :database do
 		include Store
 
 		season = Season.find(6)
-		game_dates = season.game_dates
-		game_dates.each do |game_date|
-			game_date.games.each_with_index do |game, index|
+		game_date = season.game_dates.first
+		# game_dates.each do |game_date|
+			game_date.games.each do |game|
 				puts game.url + ' ' + game.id.to_s
 
 				away_team = game.away_team
@@ -261,6 +263,7 @@ namespace :database do
 
 				stat_hash = Hash.new
 
+				# Create way to reach stats according to alias
 				game.lineups.where(:quarter => 0).each do |lineup|
 					lineup.starters.each do |starter|
 						stat_hash[starter.alias] = Stat.new(:starter => starter)
@@ -315,21 +318,7 @@ namespace :database do
 				team = Stat.new(:starter => "team")
 				game.lineups.where("quarter > 0 AND quarter < 5 AND home = true").each do |lineup|
 
-					team.pts += lineup.pts
-					team.ast += lineup.ast
-					team.tov += lineup.tov
-					team.ftm += lineup.ftm
-					team.fta += lineup.fta
-					team.thpm += lineup.thpm
-					team.thpa += lineup.thpa
-					team.fgm += lineup.fgm
-					team.fga += lineup.fga
-					team.orb += lineup.orb
-					team.drb += lineup.drb
-					team.stl += lineup.stl
-					team.blk += lineup.blk
-					team.pf += lineup.pf
-					team.mp += lineup.mp
+					Store.add(team, lineup)
 
 				end
 
@@ -339,23 +328,10 @@ namespace :database do
 
 				team = Stat.new(:starter => "team")
 
-				game.lineups.where("quarter < 0 AND quarter < 5 AND home = false").each do |lineup|
 
-					team.pts += lineup.pts
-					team.ast += lineup.ast
-					team.tov += lineup.tov
-					team.ftm += lineup.ftm
-					team.fta += lineup.fta
-					team.thpm += lineup.thpm
-					team.thpa += lineup.thpa
-					team.fgm += lineup.fgm
-					team.fga += lineup.fga
-					team.orb += lineup.orb
-					team.drb += lineup.drb
-					team.stl += lineup.stl
-					team.blk += lineup.blk
-					team.pf += lineup.pf
-					team.mp += lineup.mp
+				game.lineups.where("quarter > 0 AND quarter < 5 AND home = false").each do |lineup|
+
+					Store.add(team, lineup)
 
 				end
 
@@ -364,7 +340,7 @@ namespace :database do
 					:drb => team.drb, :stl => team.stl, :blk => team.blk, :pf => team.pf, :mp => team.mp)
 
 			end
-		end
+		# end
 
 	end
 

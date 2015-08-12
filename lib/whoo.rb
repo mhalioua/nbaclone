@@ -138,19 +138,19 @@ module Whoo
 	end
 
 	# This adds the lineups before the players, it separates the starters from the subs
-	def self.createStarters(starters, subs, game, quarter)
+	def self.createStarters(starters, subs, game, quarter, away_players)
 
 		away_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => false)
 		home_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
 		away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
 		starters.each do |starter|
-			if starter.home
-				team_id = home_lineup.id
-				opponent_id = away_lineup.id
-			else
+			if away_players.include?(starter)
 				team_id = away_lineup.id
 				opponent_id = home_lineup.id
+			else
+				team_id = home_lineup.id
+				opponent_id = away_lineup.id
 			end
 			Starter.create(:name => starter.name, :past_player_id => starter.id, :alias => starter.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :starter => true)
 		end
@@ -305,7 +305,7 @@ module Whoo
 
 		stat_hash.each { |key, value|
 
-			if value.starter.home
+			if value.starter.team.home
 
 				home_team.pts += value.qpts
 				home_team.ast += value.qast
