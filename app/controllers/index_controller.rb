@@ -4,21 +4,10 @@ class IndexController < ApplicationController
 
 	layout 'nba'
 
-	def team
-		@teams = Team.all.order("name ASC")
+	def result
+		@seasons = Season.all
 	end
 
-	def yesterday
-		@teams = Team.where(:yesterday => true)
-	end
-
-	def today
-		@teams = Team.where(:today => true)
-	end
-
-	def tomorrow
-		@teams = Team.where(:tomorrow => true)
-	end
 
 	def year
 		@years = Array.new

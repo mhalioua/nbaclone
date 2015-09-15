@@ -3,6 +3,8 @@ class Starter < ActiveRecord::Base
 	belongs_to :team, :class_name => "Lineup"
 	belongs_to :opponent, :class_name => "Lineup"
 	belongs_to :past_player
+	belongs_to :game
+	belongs_to :season
 
 
 	include Store
@@ -230,8 +232,28 @@ class Starter < ActiveRecord::Base
 		team.DRTG(team, opponent) + 0.2 * (100 * self.DefPointsPerScPoss(team, opponent) * (1 - self.StopPercent(team, opponent)) - team.DRTG(team, opponent))
 	end
 
-	def PredictORTG(range=3)
-		previous_starters = Starter.where("id < #{self.id} AND poss_percent > #{self.poss_percent - range} AND poss_percent < #{self.poss_percent + range} AND alias = #{self.alias} AND quarter = #{self.quarter}").order('id DESC')
+	def PredictPossPercent(past_number=10)
+		previous_starters = Starter.where(:alias => self.alias, :quarter => self.quarter).where("id < #{self.id}").order('id DESC').limit(past_number)
+		size = previous_starters.size
+		if size == 0
+			return 0.0
+		end
+		poss_percent = 0
+		previous_starters.each do |starter|
+			var = starter.PossPercent
+			if var.nan?
+				var = 0
+			end
+			poss_percent += var
+		end
+		return poss_percent/size
+	end
+
+	def PredictORTG(range=0.05, poss_percent)
+		previous_starters = Starter.where(:alias => self.alias, :quarter => self.quarter).where("id < #{self.id} AND poss_percent > #{self.poss_percent - range} AND poss_percent < #{self.poss_percent + range}").order('id DESC')
+		if previous_starters.size == 0
+			return 90.0
+		end
 		stat = Starter.new
 		team = Lineup.new
 		opponent = Lineup.new
@@ -245,26 +267,19 @@ class Starter < ActiveRecord::Base
 		end
 		ortg = stat.ORTG(team ,opponent)
 		if ortg.nan?
-			ortg = 0.0
+			ortg = 90.0
 		end
 		return ortg
 	end
 
-	def PredictPossPercent(past_number=20)
-		previous_starters = Starter.where("id < #{self.id} AND alias = #{self.alias} AND quarter = #{self.quarter}").order('id DESC').limit(past_number)
+
+	def PreviousORTG(past_number=10)
+
+		previous_starters = Starter.where(:quarter => self.quarter, :alias => self.alias).where("id < #{self.id}").order('id DESC').limit(past_number)
 		size = previous_starters.size
-		poss_percent = 0
-		previous_starters.each do |starter|
-			poss_percent += starter.PossPercent
+		if size != past_number
+			return nil
 		end
-		return poss_percent/size
-	end
-
-
-	def PredictedORTGPoss(past_number=10)
-
-		previous_starters = Starter.where("id < #{self.id}").where(:quarter => self.quarter, :alias => self.alias).order('id DESC').limit(past_number)
-		size = previous_starters.size
 		stat = Starter.new
 		team = Lineup.new
 		opponent = Lineup.new
@@ -274,28 +289,11 @@ class Starter < ActiveRecord::Base
 			Store.add(opponent, starter.opponent)
 		end
 		ortg = stat.ORTG(team, opponent)
-		percentage = stat.PossPercent(team, opponent)
 		if ortg.nan?
 			ortg = 0.0
 		end
-		if percentage.nan?
-			percentage = 0.0
-		end
-		return [ortg, percentage]
+		return ortg
 	end
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

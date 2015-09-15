@@ -7,10 +7,8 @@
 	<h2>Home Page</h2>
 	<div class="identity">Logged in as: <%= session[:username] %></div>
 	<nav>
-		<li><%= link_to("Seasons", :controller => 'statistics', :action => 'season') %></li>
-		<li><%= link_to("Team", :controller => 'statistics', :action => 'team') %></li>
-		<li><%= link_to(today, :controller => 'index', :action => 'today') %></li>
-		<li><%= link_to(tomorrow, :controller => 'index', :action => 'tomorrow') %></li>
+		<li><%= link_to("Bets", :controller => 'statistics', :action => 'season') %></li>
+		<li><%= link_to("Results", :controller => 'index', :action => 'result')%></li>
 		<li><%= link_to("History", :controller => 'index', :action => 'year') %></li>
 		<li><%= link_to("Logout", :action => 'logout')%></li>
 	</nav>

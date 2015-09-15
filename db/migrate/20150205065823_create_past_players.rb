@@ -1,10 +1,11 @@
 class CreatePastPlayers < ActiveRecord::Migration
-  def up
+  def change
     create_table :past_players do |t|
 
+      t.references :season
       t.references :player
       t.references :past_team
-      t.string "year"
+      t.string "alias"
       t.float "mp", :default => 0
       t.float "fgm", :default => 0
       t.float "fga", :default => 0
@@ -22,9 +23,5 @@ class CreatePastPlayers < ActiveRecord::Migration
       t.float "pts", :default => 0
       t.timestamps
     end
-  end
-
-  def down
-  	drop_table :past_players
   end
 end

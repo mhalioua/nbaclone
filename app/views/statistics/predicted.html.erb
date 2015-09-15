@@ -1,0 +1,10 @@
+<table align="center">
+	<tr>
+		<th>Game</th><th>Away PS</th><th>Home PS</th><th>CL</th>
+	</tr>
+	<% @games.each do |game| %>
+	<tr>
+		<td><%= game.url %></td><td><%= game.away_first_quarter_ps %></td><td><%= game.home_first_quarter_ps %></td><td><%= game.first_quarter_spread %></td>
+	</tr>
+	<% end %>
+</table>

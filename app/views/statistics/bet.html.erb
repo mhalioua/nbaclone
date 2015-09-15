@@ -1,0 +1,32 @@
+<div align="center">
+	<%= link_to("Home", :controller => 'access', :action => 'index') %></br>
+</div>
+<div align="center">
+	<h5>Seasons</h5>
+	<nav>
+		<% @seasons.each do |season| %>
+			<li><%= link_to(season.year, :controller => 'statistics', :action => 'bet', :id => season.id, :time => params[:time]) %></li>
+		<% end %>
+	</nav>
+</div>
+</br>
+
+<table align="center">
+	<tr>
+		<th colspan="7"><%= @season.year %></th>
+	</tr>
+	<tr>
+		<th>Time</th><th>Full Game</th><th>Games</th><th>First Half</th><th>Games</th><th>First Quarter</th><th>Games</th>
+	</tr>
+	<% (0..8).each do |i|%>
+		<tr>
+			<td><%= @full_bets[i].time %></td>
+			<td><%= @full_bets[i].win_percent.round(3) %></td>
+			<td><%= @full_bets[i].total_bet %></td>
+			<td><%= @half_bets[i].win_percent.round(3) %></td>
+			<td><%= @half_bets[i].total_bet %></td>
+			<td><%= @quarter_bets[i].win_percent.round(3) %></td>
+			<td><%= @quarter_bets[i].total_bet %></td>
+		</tr>
+	<% end %>
+</table>

@@ -24,9 +24,8 @@ module Store
 			:blk => info.blk, :pf => info.pf)
 	end
 
-	def self.result(team, season_id, past_team_id, games, quarter, home=nil, weekend=nil, travel=nil, rest=nil, offensive_efficiency=nil, win_percentage=nil, pace=nil)
-		Result.create(:season_id => season_id, :past_team_id => past_team_id, :games => games, :quarter => quarter, :home => home, :weekend => weekend, :travel => travel,
-			:rest => rest, :offensive_efficiency => offensive_efficiency, :win_percentage => win_percentage, :pace => pace,
+	def self.result(team, season, past_team, games, quarter)
+		Result.create(:season_id => season, :past_team_id => past_team, :games => games, :quarter => quarter,
 			:mp => team.mp, :fgm => team.fgm, :fga => team.fga, :thpm => team.thpm, :thpa => team.thpa, :ftm => team.ftm, :fta => team.fta,
 			:orb => team.orb, :drb => team.drb, :ast => team.ast, :stl => team.stl, :blk => team.blk, :tov => team.tov, :pf => team.pf, :pts => team.pts)
 	end

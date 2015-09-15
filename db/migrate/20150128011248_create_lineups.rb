@@ -1,10 +1,12 @@
 class CreateLineups < ActiveRecord::Migration
-  def up
+  def change
     create_table :lineups do |t|
 
+      t.references :season
     	t.references :game
-      t.boolean "home", :default => false
-    	t.integer "quarter", :default => 0
+      t.references :opponent, :class_name => "Lineup"
+      t.boolean "home"
+    	t.integer "quarter"
       t.float "mp", :default => 0
       t.float "fgm", :default => 0
       t.float "fga", :default => 0
@@ -23,11 +25,5 @@ class CreateLineups < ActiveRecord::Migration
 
       t.timestamps
     end
-  end
-
-  def down
-
-  	drop_table :lineups
-
   end
 end

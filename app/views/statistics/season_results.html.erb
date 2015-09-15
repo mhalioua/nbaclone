@@ -1,0 +1,17 @@
+<div align="center">
+	<%= link_to("Home", :controller => 'access', :action => 'index') %></br>
+</div>
+
+<h3 align="center">All Seasons</h3>
+<% @seasons.each do |season| %>
+<table align="center">
+	<tr><th colspan="8"><%= season.year %></th></tr>
+	<tr><td>Description</td><td>Total Rating</td><td bgcolor="#00FFFF">Avg Rating</td><td>ORTG</td><td>DRTG</td><td bgcolor="#00FFFF">Avg Poss</td><td>Possessions</td><td>Games</td></tr>
+	<% average_result = season.results.where(:past_team_id => nil, :quarter => 0, :home => nil, :weekend => nil, :travel => nil, :rest => nil, :off => nil, :def => nil, :win => nil, :pace => nil, :opp_rest => nil, :opp_off => nil, :opp_def => nil, :opp_win => nil, :opp_pace => nil, :opposite => false).first %>
+	<% season.results.where(:past_team_id => nil).each do |result| %>
+		<% unless result.opposite %>
+		<tr><td><%= result.description %></td><td><%= (result.ORTG + result.DRTG).round(2) %></td><td bgcolor="#00FFFF"><%= (average_result.ORTG + average_result.DRTG).round(2).to_s + " / " + average_result.ORTG.round(2).to_s %></td><td><%= result.ORTG.round(2) %></td><td><%= result.DRTG.round(2) %></td><td bgcolor="#00FFFF"><%= average_result.TotPoss.round(2) %></td><td><%= result.TotPoss.round(2) %></td><td><%= result.games %></td></tr>
+		<% end %>
+	<% end %>
+</table>
+<% end %>

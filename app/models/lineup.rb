@@ -60,8 +60,8 @@ class Lineup < ActiveRecord::Base
 		100 * (opponent.pts / team.TotPoss(team, opponent))
 	end
 
-	def PtsPerPossession(team=self, opponent=self.opponent)
-		team.pts / team.TotPoss(team, opponent)
+	def ORTG(team=self, opponent=self.opponent)
+		100 * team.pts / team.TotPoss(team, opponent)
 	end
 	
 end

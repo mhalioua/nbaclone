@@ -18,7 +18,12 @@ class Result < ActiveRecord::Base
 
 	def TotPoss(team=self, opponent=self.opponent)
 		totposs = 0.5 * ((team.fga + 0.4 * team.fta - 1.07 * team.ORBPercent(team, opponent) * (team.fga - team.fgm) + team.tov) + (opponent.fga + 0.4 * opponent.fta - 1.07 * opponent.ORBPercent(opponent, team) * (opponent.fga - opponent.fgm) + opponent.tov))
-		totposs = totposs/team.games
+		if team.games == 0
+			return 0.0
+		else
+			totposs = totposs/team.games
+		end
+		return totposs
 	end
 
 	def Pace(team=self, opponent=self.opponent)
@@ -49,11 +54,11 @@ class Result < ActiveRecord::Base
 	end
 
 	def DRTG(team=self, opponent=self.opponent)
-		100 * (opponent.pts / team.TotPoss(team, opponent))
+		100 * opponent.pts / team.TotPoss(team, opponent) / team.games
 	end
 
-	def PtsPerPossession(team=self, opponent=self.opponent)
-		team.pts / team.TotPoss(team, opponent)
+	def ORTG(team=self, opponent=self.opponent)
+		100 * team.pts / team.TotPoss(team, opponent) / team.games
 	end
 	
 end

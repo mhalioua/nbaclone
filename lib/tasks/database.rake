@@ -1,7 +1,7 @@
 namespace :database do
 
 	# Create: past_teams, games, past_players, play_by_plays, extract
-	task :build => [:create_games, :create_past_players, :play_by_play, :extract] do
+	task :build => [:create_seasons, :create_past_teams, :create_games, :create_past_players, :play_by_play, :extract] do
 	end
 
 	task :create_teams => :environment do
@@ -30,7 +30,8 @@ namespace :database do
 	end
 
 	task :create_seasons => :environment do
-		i = 2010
+
+		i = 2015
 		# (2011..2015).each do |i|
 			season = Season.create(:year => i.to_s)
 		# end
@@ -40,11 +41,13 @@ namespace :database do
 		require 'open-uri'
 		require 'nokogiri'
 
-		n = 2010
+		season = Season.last
+
+		n  = season.year
 		# years = (2011..2015)
 		# years.each do |n|
 			num = n.to_s
-			season = Season.where(:year => num).first
+			
 			url = "http://www.basketball-reference.com/leagues/NBA_#{num}.html"
 			doc = Nokogiri::HTML(open(url))
 			doc.css("#team td").each_with_index do |stat, index|
@@ -70,13 +73,12 @@ namespace :database do
 
 		# n = (2011..2015)
 		# n.each do |n|
-		n = 2010
+		season = Season.last
+		n = season.year
 
 			num = n.to_s
 			url = "http://www.basketball-reference.com/leagues/NBA_#{num}_games.html"
 			doc = Nokogiri::HTML(open(url))
-
-			season = Season.where(:year => num).first
 
 			# Find teams from current season
 			past_teams = season.past_teams
@@ -100,7 +102,7 @@ namespace :database do
 				when 4
 					home_team = past_teams.where(:abbr => stat['csk'][0..2]).first
 				when 5
-					game = Game.create(:game_date_id => game_date.id, :away_team_id => away_team.id, :home_team_id => home_team.id)
+					game = Game.create(:season_id => season.id, :game_date_id => game_date.id, :away_team_id => away_team.id, :home_team_id => home_team.id)
 					puts game.url
 				end
 			end
@@ -113,9 +115,9 @@ namespace :database do
 
 		include Whoo
 
-		season = Season.where(:year => '2010').first
-		game_date = season.game_dates.first
-		# game_dates.each do |game_date|
+		season = Season.last
+		game_dates = season.game_dates
+		game_dates.each do |game_date|
 			game_date.games.each do |game|
 
 				puts game.url + ' ' + game.id.to_s
@@ -133,7 +135,7 @@ namespace :database do
 				# Populate arrays with past_players
 				doc.css("##{away_team.abbr}_basic a").each_with_index do |stat, index|
 
-					past_player = Whoo.createPlayer(stat, away_team)
+					past_player = Whoo.createPastPlayer(stat, away_team, season)
 					away_players << past_player
 					if index < 5
 						away_starters << past_player
@@ -144,7 +146,7 @@ namespace :database do
 				home_starters = Array.new
 
 				doc.css("##{home_team.abbr}_basic a").each_with_index do |stat, index|
-					past_player = Whoo.createPlayer(stat, home_team)
+					past_player = Whoo.createPastPlayer(stat, home_team, season)
 					home_players << past_player
 					if index < 5
 						home_starters << past_player
@@ -153,15 +155,15 @@ namespace :database do
 				end
 
 				# Create full game lineups
-				away_lineup = Lineup.create(:game_id => game.id, :quarter => 0, :home => false)
-				home_lineup = Lineup.create(:game_id => game.id, :quarter => 0, :home => true, :opponent_id => away_lineup.id)
+				away_lineup = Lineup.create(:season_id => season.id, :game_id => game.id, :quarter => 0, :home => false)
+				home_lineup = Lineup.create(:season_id => season.id, :game_id => game.id, :quarter => 0, :home => true, :opponent_id => away_lineup.id)
 				away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
 				# Create starters
-				Whoo.createPlayers(away_players, away_lineup, home_lineup)
-				Whoo.createPlayers(home_players, home_lineup, away_lineup)
+				Whoo.createPlayers(away_players, away_lineup, home_lineup, season, game, false)
+				Whoo.createPlayers(home_players, home_lineup, away_lineup, season, game, true)
 			end
-		# end
+		end
 
 	end
 
@@ -171,11 +173,10 @@ namespace :database do
 
 		include Whoo
 
-		season = Season.find(6)
-		game_date = season.game_dates.first
-		# game_dates.each do |game_date|
+		season = Season.last
+		game_dates = season.game_dates
+		game_dates.each do |game_date|
 			game_date.games.each do |game|
-
 				puts game.url + ' ' + game.id.to_s
 
 				play_url = "http://www.basketball-reference.com/boxscores/pbp/#{game.url}.html"
@@ -190,7 +191,7 @@ namespace :database do
 				Play.setFalse()
 
 				subs = Set.new
-				starters = Array.new
+				starters = Set.new
 				actions = Array.new
 
 				bool = false
@@ -202,12 +203,21 @@ namespace :database do
 					if text.include?("Start of")
 						bool = true
 						if quarter != 0
-							Whoo.createStarters(starters, subs, game, quarter, away_players)
+							Whoo.createStarters(starters, subs, game, quarter, away_players, home_players, season)
 						end
-						quarter = Whoo.newQuarter(text, starters, subs)
+						# Grabs the quarter using the text
+						quarter = Whoo.newQuarter(text)
+						if quarter > 4
+							break
+						end
+
+						# Delete any starters from the arrays
+						starters.clear
+						subs.clear
+					
 					end
 
-					# Skip to next iteration if bool false
+					# Skip to next iteration if quarter hasn't started yet
 					if !bool
 						next
 					end
@@ -232,18 +242,58 @@ namespace :database do
 						time = Whoo.convertMinutes(text)
 					when 2
 						# Away
-						Whoo.createAction(game, stat, away_players, home_players, starters, subs, quarter, time)
-					when 0
-						if !(text.include? "Jump")
-							# Home
-							Whoo.createAction(game, stat, away_players, home_players, starters, subs, quarter, time)
+						# skip if stat is empty or if it's a team foul
+						if text.length == 1 || (text.include? 'Team') || (text.include? 'timeout')
+							next
 						end
+						# Find the action
+						Whoo.setTrue(text)
+						action = Play.findTrue().to_s
+						if action == ''
+							next
+						end
+						# Find the players involved
+						first_alias, second_alias = Whoo.getAlias(stat)
+						player1 = Whoo.findStarter(first_alias, away_players, home_players)
+						player2 = Whoo.findStarter(second_alias, away_players, home_players)
+
+						# If substitutions, put the first player as a sub
+						if action == 'substitution' && !(starters.include?(player1))
+							subs << player1
+						end
+						Whoo.onFloor(player1, player2, starters, subs)
+						Whoo.createAction(game, quarter, time, player1, player2, action)
+					when 0
+						# Home
+						# skip if stat is empty or if it's a team foul
+						if text.length == 1 || (text.include? 'Team') || (text.include? 'timeout')
+							next
+						end
+						# Find the action
+						Whoo.setTrue(text)
+						action = Play.findTrue().to_s
+						if action == ''
+							next
+						end
+						# Find the players involved
+						first_alias, second_alias = Whoo.getAlias(stat)
+						player1 = Whoo.findStarter(first_alias, away_players, home_players)
+						player2 = Whoo.findStarter(second_alias, away_players, home_players)
+
+						# If substitutions, put the first player as a sub
+						if action == 'substitution' && !(starters.include?(player1))
+							subs << player1
+						end
+						Whoo.onFloor(player1, player2, starters, subs)
+						Whoo.createAction(game, quarter, time, player1, player2, action)
 					end
 				end
-				Whoo.createStarters(starters, subs, game, quarter, away_players)
+				if quarter == 4
+					Whoo.createStarters(starters, subs, game, quarter, away_players, home_players, season)
+				end
 				
 			end
-		# end
+		end
 	end
 
 
@@ -252,9 +302,9 @@ namespace :database do
 		include Whoo
 		include Store
 
-		season = Season.find(6)
-		game_date = season.game_dates.first
-		# game_dates.each do |game_date|
+		season = Season.last
+		game_dates = season.game_dates
+		game_dates.each do |game_date|
 			game_date.games.each do |game|
 				puts game.url + ' ' + game.id.to_s
 
@@ -266,7 +316,7 @@ namespace :database do
 				# Create way to reach stats according to alias
 				game.lineups.where(:quarter => 0).each do |lineup|
 					lineup.starters.each do |starter|
-						stat_hash[starter.alias] = Stat.new(:starter => starter)
+						stat_hash[starter.alias] = Stat.new(:starter => starter.alias, :home => starter.home)
 					end
 				end
 
@@ -276,16 +326,16 @@ namespace :database do
 
 					players_on_floor = Set.new
 
+					stat_hash.each { |key, value|
+
+						value.time = 0.0
+
+					} 
+
 					game.lineups.where(:quarter => quarter).each do |lineup|
 						lineup.starters.where(:starter => true).each do |starter|
-							stat = stat_hash[starter.alias]
-							if quarter > 4
-								stat.time = 5
-							else
-								stat.time = 12
-							end
-
-							players_on_floor << stat
+							stat_hash[starter.alias].time = 12.0
+							players_on_floor << starter.alias
 						end
 					end
 
@@ -294,12 +344,14 @@ namespace :database do
 					end
 
 					players_on_floor.each do |player|
-						player.mp += player.time
+						stat_hash[player].mp += stat_hash[player].time
 					end
+
 
 					Whoo.saveQuarterStats(stat_hash, game, quarter)
 
 					stat_hash.each { |key, value|
+
 						value.store
 					}
 
@@ -315,7 +367,7 @@ namespace :database do
 				end
 
 
-				team = Stat.new(:starter => "team")
+				team = Stat.new(:starter => "team", :home => true)
 				game.lineups.where("quarter > 0 AND quarter < 5 AND home = true").each do |lineup|
 
 					Store.add(team, lineup)
@@ -326,8 +378,7 @@ namespace :database do
 					:ftm => team.ftm, :fta => team.fta, :thpm => team.thpm, :thpa => team.thpa, :fgm => team.fgm, :fga => team.fga, :orb => team.orb,
 					:drb => team.drb, :stl => team.stl, :blk => team.blk, :pf => team.pf, :mp => team.mp)
 
-				team = Stat.new(:starter => "team")
-
+				team = Stat.new(:starter => "team", :home => false)
 
 				game.lineups.where("quarter > 0 AND quarter < 5 AND home = false").each do |lineup|
 
@@ -339,98 +390,77 @@ namespace :database do
 					:ftm => team.ftm, :fta => team.fta, :thpm => team.thpm, :thpa => team.thpa, :fgm => team.fgm, :fga => team.fga, :orb => team.orb,
 					:drb => team.drb, :stl => team.stl, :blk => team.blk, :pf => team.pf, :mp => team.mp)
 
+				Whoo.createHalfLineup(1, 2, season, game)
+				Whoo.createHalfLineup(3, 4, season, game)
+
 			end
-		# end
+		end
 
 	end
 
-	task :game_date => :environment do
-		previous_date = nil
-		Game.all.each do |game|
-			year = game.year
-			month = game.month
-			day = game.day
-			date = year + month + day
-			if date == previous_date
+	task :poss_percent => :environment do
+
+		Season.where(:year => "2015").first.starters.where("quarter = 0 OR quarter = 1 OR quarter = 12").each do |starter|
+			puts starter.id.to_s + " quarter #{starter.quarter}"
+			starter.update_attributes(:poss_percent => starter.PossPercent)
+		end
+
+	end
+
+	task :ortg => :environment do
+
+		Season.where(:year => "2014").first.starters.where("quarter = 0 OR quarter = 1 OR quarter = 12").each do |starter|
+			puts starter.id.to_s + " quarter #{starter.quarter}"
+			starter.update_attributes(:ortg => starter.ORTG.round(2))
+		end
+
+	end
+
+	task :lineup_ortg => :environment do
+
+		Lineup.all.each do |lineup|
+			puts lineup.id
+			ortg = lineup.ORTG.round(2)
+			if ortg.nan?
 				next
 			end
-
-			previous_date = date
-			gamedate = GameDate.create(:year => year, :month => month, :day => day)
-
-			Game.where(:year => year, :month => month, :day => day).each do |game|
-				game.update_attributes(:game_date_id => gamedate.id)
-			end
-
+			lineup.update_attributes(:ortg => lineup.ORTG.round(2))
 		end
+
 	end
 
-	task :season => :environment do
-		(2011..2015).each do |i|
-			year = i.to_s
-			season = Season.create(:year => year)
-			PastTeam.where(:year => year).each do |past_team|
-				past_team.update_attributes(:season_id => season.id)
-			end
-			previous_year = (i-1).to_ss
-			GameDate.where("(year = #{year}::VARCHAR AND month < '07') OR (year = #{previous_year}::VARCHAR AND month > '07')").each do |gamedate|
-				gamedate.update_attributes(:season_id => season.id)
-			end
+	task :possessions => :environment do
+
+		Lineup.where(:home => true, :quarter => 0).each do |lineup|
+			puts lineup.id
+			game = lineup.game
+			game.update_attributes(:full_game_poss => lineup.TotPoss.round(2))
 		end
+
+		Lineup.where(:home => true, :quarter => 12).each do |lineup|
+			puts lineup.id
+			game = lineup.game
+			game.update_attributes(:first_half_poss => lineup.TotPoss.round(2))
+		end
+
+		Lineup.where(:home => true, :quarter => 34).each do |lineup|
+			puts lineup.id
+			game = lineup.game
+			game.update_attributes(:second_half_poss => lineup.TotPoss.round(2))
+		end
+
+		Lineup.where(:home => true, :quarter => 1).each do |lineup|
+			puts lineup.id
+			game = lineup.game
+			game.update_attributes(:first_quarter_poss => lineup.TotPoss.round(2))
+		end
+
 	end
 
 	task :create_team_data => :environment do
 		GameDate.all.each do |game_date|
+			puts game_date.id
 			game_date.createTeamDatas
-		end
-	end
-
-	task :sum_stats => :environment do
-
-		PastPlayer.all.each do |past_player|
-      		mp = fgm = fga = thpm = thpa = ftm = fta = orb = drb = ast = blk = tov = pf = pts = 0
-			Starter.where(:past_player_id => past_player.id, :quarter => 0).each do |starter|
-
-				mp += starter.mp
-				fgm += starter.fgm
-				fga += starter.fga
-				thpm += starter.thpm
-				thpa += starter.thpa
-				ftm += starter.ftm
-				fta += starter.fta
-				orb += starter.orb
-				drb += starter.drb
-				ast += starter.ast
-				blk += starter.blk
-				tov += starter.tov
-				pf += starter.pf
-				pts += starter.pts
-
-			end
-			past_player.update_attributes(:mp => mp, :fgm => fgm, :fga => fga, :thpm => thpm, :thpa => thpa, :ftm => ftm, :fta => fta,
-				:orb => orb, :drb => drb, :ast => ast, :blk => blk, :tov => tov, :pf => pf, :pts => pts)
-		end
-
-		PastTeam.all.each do |past_team|
-			mp = fgm = fga = thpm = thpa = ftm = fta = orb = drb = ast = blk = tov = pf = pts = 0
-			PastPlayer.where(:past_team_id => past_team.id).each do |past_player|
-				mp += past_player.mp
-				fgm += past_player.fgm
-				fga += past_player.fga
-				thpm += past_player.thpm
-				thpa += past_player.thpa
-				ftm += past_player.ftm
-				fta += past_player.fta
-				orb += past_player.orb
-				drb += past_player.drb
-				ast += past_player.ast
-				blk += past_player.blk
-				tov += past_player.tov
-				pf += past_player.pf
-				pts += past_player.pts
-			end
-			past_team.update_attributes(:mp => mp, :fgm => fgm, :fga => fga, :thpm => thpm, :thpa => thpa, :ftm => ftm, :fta => fta,
-				:orb => orb, :drb => drb, :ast => ast, :blk => blk, :tov => tov, :pf => pf, :pts => pts)
 		end
 	end
 

@@ -1,5 +1,5 @@
 class CreatePlayerMatchupGames < ActiveRecord::Migration
-  def up
+  def change
     create_table :player_matchup_games do |t|
 
       t.references :player_matchup
@@ -27,9 +27,5 @@ class CreatePlayerMatchupGames < ActiveRecord::Migration
 
       t.timestamps
     end
-  end
-
-  def down
-  	drop_table :player_matchup_games
   end
 end

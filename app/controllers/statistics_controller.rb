@@ -4,14 +4,64 @@ class StatisticsController < ApplicationController
 
 	layout 'nba'
 
-	def season
-		@seasons = Season.all
+	def predicted
+		@season = Season.find_by_year("2015")
+		@games = @season.games
 	end
 
-	def mine
-		@seasons = Season.all
+	def season
+		@seasons = Season.where("year != '2006'")
+	end
+
+	def bet
 		@season = Season.find(params[:id])
+		@seasons = Season.where("year != '2006' AND year != #{@season.year}")
+		full_bets = @season.bets.where(:quarter => 0)
+		half_bets = @season.bets.where(:quarter => 12)
+		quarter_bets = @season.bets.where(:quarter => 1)
+		@full_bets = Array.new
+		@half_bets = Array.new
+		@quarter_bets = Array.new
+		@full_bets << full_bets.where(:time => "Full Year").first
+		@full_bets << full_bets.where(:time => "First Half").first
+		@full_bets << full_bets.where(:time => "Second Half").first
+		@full_bets << full_bets.where(:time => "November").first
+		@full_bets << full_bets.where(:time => "December").first
+		@full_bets << full_bets.where(:time => "January").first
+		@full_bets << full_bets.where(:time => "February").first
+		@full_bets << full_bets.where(:time => "March").first
+		@full_bets << full_bets.where(:time => "April").first
+		@half_bets << half_bets.where(:time => "Full Year").first
+		@half_bets << half_bets.where(:time => "First Half").first
+		@half_bets << half_bets.where(:time => "Second Half").first
+		@half_bets << half_bets.where(:time => "November").first
+		@half_bets << half_bets.where(:time => "December").first
+		@half_bets << half_bets.where(:time => "January").first
+		@half_bets << half_bets.where(:time => "February").first
+		@half_bets << half_bets.where(:time => "March").first
+		@half_bets << half_bets.where(:time => "April").first
+		@quarter_bets << quarter_bets.where(:time => "Full Year").first
+		@quarter_bets << quarter_bets.where(:time => "First Half").first
+		@quarter_bets << quarter_bets.where(:time => "Second Half").first
+		@quarter_bets << quarter_bets.where(:time => "November").first
+		@quarter_bets << quarter_bets.where(:time => "December").first
+		@quarter_bets << quarter_bets.where(:time => "January").first
+		@quarter_bets << quarter_bets.where(:time => "February").first
+		@quarter_bets << quarter_bets.where(:time => "March").first
+		@quarter_bets << quarter_bets.where(:time => "April").first
+	end
+
+
+	def result
+		@season = Season.find(params[:id])
+		@seasons = Season.where("year != #{@season.year}")
+		@past_teams = @season.past_teams.order("id ASC")
 		@results = @season.results
+		@all_teams = @season.results.where(:past_team_id => nil)
+	end
+
+	def season_results
+		@seasons = Season.all
 	end
 
 

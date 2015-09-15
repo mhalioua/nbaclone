@@ -17,7 +17,7 @@ module Whoo
 		return [year, month, day]
 	end
 
-	def self.createPlayer(stat, past_team)
+	def self.createPastPlayer(stat, past_team, season)
 
 		href = stat['href']
 		href = href[11...href.index('.')]
@@ -27,22 +27,22 @@ module Whoo
 			player = Player.create(:name => name, :alias => href)
 		end
 
-		if !past_player = PastPlayer.where(:player_id => player.id, :past_team_id => past_team.id, :alias => href).first
-			past_player = PastPlayer.create(:player_id => player.id, :past_team_id => past_team.id, :alias => href)
+		if !past_player = PastPlayer.where(:season_id => season.id, :player_id => player.id, :past_team_id => past_team.id, :alias => href).first
+			past_player = PastPlayer.create(:season_id => season.id, :player_id => player.id, :past_team_id => past_team.id, :alias => href)
 		end
 
 		return past_player
 
 	end
 
-	def self.createPlayers(starters, team_lineup, opp_lineup)
-		starters.each_with_index do |starter, index|
+	def self.createPlayers(past_players, team_lineup, opp_lineup, season, game, home)
+		past_players.each_with_index do |past_player, index|
 			if index < 5
 				starting = true
 			else
 				starting = false
 			end
-			Starter.create(:team_id => team_lineup.id, :opponent_id => opp_lineup.id, :past_player_id => starter.id, :alias => starter.alias, :starter => starting)
+			Starter.create(:season_id => season.id, :quarter => 0, :game_id => game.id, :home => home, :team_id => team_lineup.id, :opponent_id => opp_lineup.id, :past_player_id => past_player.id, :alias => past_player.alias, :starter => starting)
 		end
 	end
 
@@ -138,58 +138,48 @@ module Whoo
 	end
 
 	# This adds the lineups before the players, it separates the starters from the subs
-	def self.createStarters(starters, subs, game, quarter, away_players)
+	def self.createStarters(starters, subs, game, quarter, away_players, home_players, season)
 
-		away_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => false)
-		home_lineup = Lineup.create(:quarter => quarter, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
+		away_lineup = Lineup.create(:season_id => season.id, :quarter => quarter, :game_id => game.id, :home => false)
+		home_lineup = Lineup.create(:season_id => season.id, :quarter => quarter, :game_id => game.id, :home => true, :opponent_id => away_lineup.id)
 		away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
+		home = nil
 		starters.each do |starter|
-			if away_players.include?(starter)
+			if away_players.find_by_alias(starter.alias)
 				team_id = away_lineup.id
 				opponent_id = home_lineup.id
-			else
+				home = false
+			elsif home_players.find_by_alias(starter.alias)
 				team_id = home_lineup.id
 				opponent_id = away_lineup.id
+				home = true
+			else
+				next
 			end
-			Starter.create(:name => starter.name, :past_player_id => starter.id, :alias => starter.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :starter => true)
+			Starter.create(:season_id => season.id, :game_id => game.id, :home => home, :past_player_id => starter.past_player_id, :alias => starter.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :starter => true)
 		end
 
 		subs.each do |sub|
-			if sub.home
-				team_id = home_lineup.id
-				opponent_id = away_lineup.id
-			else
+			if sub == nil
+				next
+			end
+			if away_players.find_by_alias(sub.alias)
 				team_id = away_lineup.id
 				opponent_id = home_lineup.id
+				home = false
+			elsif home_players.find_by_alias(sub.alias)
+				team_id = home_lineup.id
+				opponent_id = away_lineup.id
+				home = true
+			else
+				next
 			end
-			Starter.create(:name => sub.name, :past_player_id => sub.id, :alias => sub.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :starter => false)
+			Starter.create(:season_id => season.id, :game_id => game.id, :home => home, :past_player_id => sub.past_player_id, :alias => sub.alias, :quarter => quarter, :team_id => team_id, :opponent_id => opponent_id, :starter => false)
 		end
 	end
 
-	def self.createAction(game, stat, away_players, home_players, starters, subs, quarter, time)
-		text = stat.text
-		# skip if stat is empty or if it's a team foul
-		if text.length == 1 || (text.include? 'Team') || (text.include? 'timeout')
-			return false
-		end
-
-		Whoo.setTrue(text)
-
-		first_alias, second_alias = Whoo.getAlias(stat)
-
-		player1 = Whoo.findStarter(first_alias, away_players, home_players)
-		player2 = Whoo.findStarter(second_alias, away_players, home_players)
-
-		action = Play.findTrue().to_s
-
-		if action == ''
-			return false
-		end
-
-		if action == 'substitution'
-			subs << player1
-		end
+	def self.onFloor(player1, player2, starters, subs)
 
 		if starters.size < 10
 			if player1 != nil && !(subs.include?(player1)) && !(starters.include?(player1))
@@ -203,8 +193,14 @@ module Whoo
 			end
 		end
 
-		player1 = player1.alias
+	end
 
+	def self.createAction(game, quarter, time, player1, player2, action)
+
+		if player1 == nil
+			return false
+		end
+		player1 = player1.alias
 		if player2 != nil
 			player2 = player2.alias
 		end
@@ -215,7 +211,7 @@ module Whoo
 		return true
 	end
 
-	def self.newQuarter(text, starters, subs)
+	def self.newQuarter(text)
 		case text
 		when /1st quarter/
 			quarter = 1
@@ -234,8 +230,6 @@ module Whoo
 		when /4th overtime/
 			quarter = 8
 		end
-		starters.clear
-		subs.clear
 		return quarter
 	end
 
@@ -286,10 +280,11 @@ module Whoo
 			if action.player2 != nil && action.player1 != nil
 				player1 = stat_hash[action.player1]
 				player2 = stat_hash[action.player2]
-				players_on_floor.delete(player2)
-				players_on_floor << player1
+				players_on_floor.delete(action.player2)
+				players_on_floor << action.player1
 				player1.time = action.time
 				player2.mp += (player2.time-action.time)
+				player2.time = 0.0
 			end
 		when 'double foul'
 			stat_hash[action.player1].pf += 1
@@ -300,12 +295,12 @@ module Whoo
 	def self.saveQuarterStats(stat_hash, game, quarter)
 		# Add all the player's stats to make team stats
 
-		away_team = Stat.new(:starter => 'away team')
-		home_team = Stat.new(:starter => 'home team')
+		away_team = Stat.new(:starter => 'team', :home => false)
+		home_team = Stat.new(:starter => 'team', :home => true)
 
 		stat_hash.each { |key, value|
 
-			if value.starter.team.home
+			if value.home
 
 				home_team.pts += value.qpts
 				home_team.ast += value.qast
@@ -323,7 +318,7 @@ module Whoo
 				home_team.pf += value.qpf
 				home_team.mp += value.qmp
 
-			else
+			elsif !value.home
 
 				away_team.pts += value.qpts
 				away_team.ast += value.qast
@@ -341,9 +336,11 @@ module Whoo
 				away_team.pf += value.qpf
 				away_team.mp += value.qmp
 
+			else
+				puts value.starter
 			end
 		}
-
+		
 		game.lineups.where(:quarter => quarter).each do |lineup|
 			lineup.starters.each do |starter|
 				player = stat_hash[starter.alias]
@@ -359,15 +356,83 @@ module Whoo
 			:fgm => home_team.fgm, :fga => home_team.fga, :orb => home_team.orb, :drb => home_team.drb, :stl => home_team.stl, :blk => home_team.blk, :pf => home_team.pf, :mp => home_team.mp)
 	end
 
+	def self.createHalfLineup(quarter_1, quarter_2, season, game)
+		new_quarter = (quarter_1.to_s + quarter_2.to_s).to_i
+		away_lineup = Lineup.create(:season_id => season.id, :game_id => game.id, :home => false, :quarter => new_quarter)
+		home_lineup = Lineup.create(:season_id => season.id, :game_id => game.id, :home => true, :quarter => new_quarter, :opponent_id => away_lineup.id)
+		away_lineup.update_attributes(:opponent_id => home_lineup.id)
 
+		away_alias = Array.new
+		home_alias = Array.new
+		away_starter = Array.new
+		home_starter = Array.new
+		game.lineups.where(:quarter => quarter_1).each do |lineup|
+			if !lineup.home
+				Store.add(away_lineup, lineup)
+			else
+				Store.add(home_lineup, lineup)
+			end
+			lineup.starters.each do |starter|
+				if !lineup.home
+					new_starter = Starter.new
+					new_starter.update_attributes(:team_id => away_lineup.id, :opponent_id => home_lineup.id, :season_id => season.id, :game_id => game.id, :past_player_id => starter.past_player_id, :starter => starter.starter, :alias => starter.alias, :home => starter.home, :quarter => new_quarter)
+					Store.add(new_starter, starter)
+					away_starter << new_starter
+					away_alias << starter.alias
+				else
+					new_starter = Starter.new
+					new_starter.update_attributes(:team_id => home_lineup.id, :opponent_id => away_lineup.id, :season_id => season.id, :game_id => game.id, :past_player_id => starter.past_player_id, :starter => starter.starter, :alias => starter.alias, :home => starter.home, :quarter => new_quarter)
+					Store.add(new_starter, starter)
+					home_starter << new_starter
+					home_alias << starter.alias
+				end
+			end
+		end
 
+		game.lineups.where(:quarter => quarter_2).each do |lineup|
+			if !lineup.home
+				Store.add(away_lineup, lineup)
+			else
+				Store.add(home_lineup, lineup)
+			end
+			lineup.starters.each do |starter|
+				if !lineup.home
+					if away_alias.include?(starter.alias)
+						index = away_alias.find_index(starter.alias)
+						Store.add(away_starter[index], starter)
+					else
+						new_starter = Starter.new
+						new_starter.update_attributes(:team_id => away_lineup.id, :opponent_id => home_lineup.id, :season_id => season.id, :game_id => game.id, :past_player_id => starter.past_player_id, :home => starter.home, :alias => starter.alias, :starter => false, :quarter => new_quarter)
+						Store.add(new_starter, starter)
+						away_starter << new_starter
+						away_alias << starter.alias
+					end
+				else
+					if home_alias.include?(starter.alias)
+						index = home_alias.find_index(starter.alias)
+						Store.add(home_starter[index], starter)
+					else
+						new_starter = Starter.new
+						new_starter.update_attributes(:team_id => home_lineup.id, :opponent_id => away_lineup.id, :season_id => season.id, :game_id => game.id, :past_player_id => starter.past_player_id, :home => starter.home, :alias => starter.alias, :starter => false, :quarter => new_quarter)
+						Store.add(new_starter, starter)
+						home_starter << new_starter
+						home_alias << starter.alias
+					end
+				end
+			end
+		end
 
+		away_lineup.save
+		home_lineup.save
 
+		away_starter.each do |starter|
+			starter.save
+		end
 
-
-
-
-
+		home_starter.each do |starter|
+			starter.save
+		end
+	end
 
 
 end

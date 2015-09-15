@@ -1,28 +1,13 @@
 module Conclude
 
-	def self.restOrWeekend(ps, weekday, away_rest, home_rest)
-		if weekday == "Saturday" || weekday == "Sunday"
-			ps -= 3
-		end
-		if away_rest == 0
-			ps -= 1
-		end
-		if home_rest == 0
-			ps -= 1
-		end
-		# if (away_rest == 0 && home_rest != 0) || (home_rest == 0 && away_rest != 0)
-		# 	ps -= 0.5
-		# end
-		return ps
-	end
-
 	def self.over_or_under(ps, cl, fs)
 		under = false
 		over = false
 
-		if ps >= (cl+3)
+		range = 3
+		if ps >= (cl+range)
 			over = true
-		elsif ps <= (cl-3)
+		elsif ps <= (cl-range)
 			under = true
 		else
 			return 0
@@ -49,14 +34,61 @@ module Conclude
 		end
 	end
 
-	def self.getStat(game)
-		game_date = game.game_date
-		weekday = game_date.weekday
-		away_team = game.away_team
-		home_team = game.home_team
-		away_team_rest = game_date.team_datas.where(:past_team_id => away_team.id).first.rest
-		home_team_rest = game_date.team_datas.where(:past_team_id => home_team.id).first.rest
-		return [weekday, away_team_rest, home_team_rest]
+	def self.findBool(game_date, time)
+		case time
+		when "Full Year"
+			false
+		when "First Half"
+			if game_date.season_id != 11
+				(game_date.month.to_i < 7 && game_date.month.to_i > 1) || (game_date.month.to_i == 1 && game_date.day.to_i > 24)
+			else
+				(game_date.month.to_i < 7 && game_date.month.to_i > 2) || (game_date.month.to_i == 2 && game_date.day.to_i > 22)
+			end
+		when "Second Half"
+			if game_date.season_id != 11
+				(game_date.month.to_i > 7) || (game_date.month.to_i == 1 && game_date.day.to_i < 25)
+			else
+				(game_date.month.to_i > 7 || game_date.month.to_i < 2) || (game_date.month.to_i == 2 && game_date.day.to_i < 23)
+			end
+		when "November"
+			game_date.month.to_i != 11
+		when "December"
+			game_date.month.to_i != 12
+		when "January"
+			game_date.month.to_i != 1
+		when "February"
+			game_date.month.to_i != 2
+		when "March"
+			game_date.month.to_i != 3
+		when "April"
+			game_date.month.to_i != 4
+		end
+	end
+
+	def self.findBet(season, quarter, time)
+		season.bets.where(:quarter => quarter, :time => time).first
+	end
+
+	def self.updateTotalBets(season, quarter, time, win_percent, total_bet)
+		bet = self.findBet(season, quarter, time)
+		if bet != nil
+			bet.update_attributes(:win_percent => win_percent, :total_bet => total_bet)
+		else
+			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
+		end 
+	end
+
+	def self.updateSpreadBets(season, quarter, time, win_percent, total_bet)
+		bet = self.findBet(season, quarter, time)
+		if bet != nil
+			bet.update_attributes(:spread_win_percent => win_percent, :spread_total_bet => total_bet)
+		else
+			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
+		end
+	end
+
+	def self.updatePointBets(season, quarter, time, win_games, win_by_points, lose_games, lose_by_points)
+		self.findBet(season, quarter, time).update_attributes(:win_by_points => win_by_points, :win_games => win_games, :lose_by_points => lose_by_points, :lose_games => lose_games)
 	end
 
 end

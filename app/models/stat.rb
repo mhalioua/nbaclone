@@ -1,13 +1,14 @@
 class Stat
 
-	attr_reader :starter
+	attr_reader :starter, :home
 	attr_accessor :ast, :tov, :pts, :ftm, :fta, :thpm, :thpa, :fgm, :fga, :orb, :drb, :stl, :blk, :pf, :mp, :time
 	
 	def initialize(params = {})
 		@starter = params.fetch(:starter)
+		@home = params.fetch(:home)
 		@ast = @tov = @pts = @ftm = @fta = @thpm = @thpa = @fgm = @fga = @orb = @drb = @stl = @blk = @pf = 0
-		@mp = @qmp = 0.0
-		@qast = @qtov = @qpts = @qftm = @qfta = @qthpm = @qthpa = @qfgm = @qfga = @qorb = @qdrb = @qstl = @qblk = @qpf = @time = 0
+		@time = @mp = @qmp = 0.0
+		@qast = @qtov = @qpts = @qftm = @qfta = @qthpm = @qthpa = @qfgm = @qfga = @qorb = @qdrb = @qstl = @qblk = @qpf = 0
 	end
 
 	def store()
@@ -54,7 +55,7 @@ class Stat
 	end
 
 	def mp
-		return @mp.round(2)
+		return @mp
 	end
 
 	def trb
@@ -118,7 +119,7 @@ class Stat
 	end
 
 	def qmp
-		(@mp - @qmp).round(2)
+		@mp - @qmp
 	end
 
 end

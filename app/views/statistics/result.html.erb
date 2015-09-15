@@ -1,0 +1,25 @@
+<div align="center">
+	<%= link_to("Home", :controller => 'access', :action => 'index') %></br>
+</div>
+
+<h3 align="center"><%= @season.year %></h3>
+<table align="center">
+	<tr><th colspan="5">All Team Averages</th></tr>
+	<tr><td>Description</td><td>ORTG</td><td>DRTG</td><td>Possessions</td><td>Games</td></tr>
+	<% @all_teams.each do |result| %>
+		<% unless result.opposite %>
+		<tr><td><%= result.description %></td><td><%= result.ORTG.round(2) %></td><td><%= result.DRTG.round(2) %></td><td><%= result.TotPoss.round(2) %></td><td><%= result.games %></td></tr>
+		<% end %>
+	<% end %>
+</table>
+<% @past_teams.each do |past_team| %>
+<table align="center" style="display:inline-block">
+	<tr><th colspan="5"><%= past_team.name + " Off: " + past_team.off_ranking.to_s + " Def: " + past_team.def_ranking.to_s + " Pace: " + past_team.pace_ranking.to_s %></th></tr>
+	<tr><td>Description</td><td>ORTG</td><td>DRTG</td><td>Possessions</td><td>Games</td></tr>
+	<% past_team.results.each do |result| %>
+		<% unless result.opposite %>
+		<tr><td><%= result.description %></td><td><%= result.ORTG.round(2) %></td><td><%= result.DRTG.round(2) %></td><td><%= result.TotPoss.round(2) %></td><td><%= result.games %></td></tr>
+		<% end %>
+	<% end %>
+</table>
+<% end %>

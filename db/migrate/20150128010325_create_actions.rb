@@ -1,8 +1,9 @@
 class CreateActions < ActiveRecord::Migration
-  def up
+  def change
     create_table :actions do |t|
 
     	t.references :game
+      t.references :season
     	t.integer "quarter"
     	t.float "time"
     	t.string "action"
@@ -12,12 +13,6 @@ class CreateActions < ActiveRecord::Migration
       t.timestamps
 
     end
-
-  end
-
-  def down
-
-  	drop_table :actions
 
   end
 
