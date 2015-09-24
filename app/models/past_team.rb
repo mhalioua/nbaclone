@@ -11,6 +11,10 @@ class PastTeam < ActiveRecord::Base
 		Game.where("away_team_id = #{self.id} OR home_team_id = #{self.id}").order('id DESC')
 	end
 
+	def previous_games(game)
+		self.games.where("id < #{game.id}").order('id DESC')
+	end
+
 	def longitude
 		self.team.longitude
 	end

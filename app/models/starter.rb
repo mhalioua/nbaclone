@@ -272,32 +272,19 @@ class Starter < ActiveRecord::Base
 		return ortg
 	end
 
+	def Prediction(past_number=10)
 
-	def PreviousORTG(past_number=10)
+		percentage = self.PredictPossPercent(past_number)
+		if percentage == nil || percentage.nan?
+			percentage = 0
+		end
+		ortg = self.PredictORTG(0.05, percentage)
+		if ortg == nil || ortg.nan?
+			ortg = 0
+		end
+		return [ortg, percentage]
 
-		previous_starters = Starter.where(:quarter => self.quarter, :alias => self.alias).where("id < #{self.id}").order('id DESC').limit(past_number)
-		size = previous_starters.size
-		if size != past_number
-			return nil
-		end
-		stat = Starter.new
-		team = Lineup.new
-		opponent = Lineup.new
-		previous_starters.each do |starter|
-			Store.add(stat, starter)
-			Store.add(team, starter.team)
-			Store.add(opponent, starter.opponent)
-		end
-		ortg = stat.ORTG(team, opponent)
-		if ortg.nan?
-			ortg = 0.0
-		end
-		return ortg
 	end
-
-
-
-
 
 
 

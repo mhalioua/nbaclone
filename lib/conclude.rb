@@ -1,10 +1,9 @@
 module Conclude
 
-	def self.over_or_under(ps, cl, fs)
+	def self.over_or_under(ps, cl, fs, range)
 		under = false
 		over = false
 
-		range = 3
 		if ps >= (cl+range)
 			over = true
 		elsif ps <= (cl-range)
@@ -65,30 +64,26 @@ module Conclude
 		end
 	end
 
-	def self.findBet(season, quarter, time)
-		season.bets.where(:quarter => quarter, :time => time).first
+	def self.findBet(season, quarter, time, range)
+		season.bets.where(:quarter => quarter, :time => time, :range => range).first
 	end
 
-	def self.updateTotalBets(season, quarter, time, win_percent, total_bet)
-		bet = self.findBet(season, quarter, time)
+	def self.updateTotalBets(season, quarter, time, range, win_percent, total_bet)
+		bet = self.findBet(season, quarter, time, range)
 		if bet != nil
 			bet.update_attributes(:win_percent => win_percent, :total_bet => total_bet)
 		else
-			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
+			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :range => range, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
 		end 
 	end
 
-	def self.updateSpreadBets(season, quarter, time, win_percent, total_bet)
-		bet = self.findBet(season, quarter, time)
+	def self.updateSpreadBets(season, quarter, time, range, win_percent, total_bet)
+		bet = self.findBet(season, quarter, time, range)
 		if bet != nil
 			bet.update_attributes(:spread_win_percent => win_percent, :spread_total_bet => total_bet)
 		else
-			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
+			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :range => range, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
 		end
-	end
-
-	def self.updatePointBets(season, quarter, time, win_games, win_by_points, lose_games, lose_by_points)
-		self.findBet(season, quarter, time).update_attributes(:win_by_points => win_by_points, :win_games => win_games, :lose_by_points => lose_by_points, :lose_games => lose_games)
 	end
 
 end

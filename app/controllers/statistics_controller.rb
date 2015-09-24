@@ -15,40 +15,58 @@ class StatisticsController < ApplicationController
 
 	def bet
 		@season = Season.find(params[:id])
-		@seasons = Season.where("year != '2006' AND year != #{@season.year}")
+		@seasons = Season.where("year != #{@season.year}")
 		full_bets = @season.bets.where(:quarter => 0)
 		half_bets = @season.bets.where(:quarter => 12)
 		quarter_bets = @season.bets.where(:quarter => 1)
 		@full_bets = Array.new
 		@half_bets = Array.new
 		@quarter_bets = Array.new
-		@full_bets << full_bets.where(:time => "Full Year").first
-		@full_bets << full_bets.where(:time => "First Half").first
-		@full_bets << full_bets.where(:time => "Second Half").first
-		@full_bets << full_bets.where(:time => "November").first
-		@full_bets << full_bets.where(:time => "December").first
-		@full_bets << full_bets.where(:time => "January").first
-		@full_bets << full_bets.where(:time => "February").first
-		@full_bets << full_bets.where(:time => "March").first
-		@full_bets << full_bets.where(:time => "April").first
-		@half_bets << half_bets.where(:time => "Full Year").first
-		@half_bets << half_bets.where(:time => "First Half").first
-		@half_bets << half_bets.where(:time => "Second Half").first
-		@half_bets << half_bets.where(:time => "November").first
-		@half_bets << half_bets.where(:time => "December").first
-		@half_bets << half_bets.where(:time => "January").first
-		@half_bets << half_bets.where(:time => "February").first
-		@half_bets << half_bets.where(:time => "March").first
-		@half_bets << half_bets.where(:time => "April").first
-		@quarter_bets << quarter_bets.where(:time => "Full Year").first
-		@quarter_bets << quarter_bets.where(:time => "First Half").first
-		@quarter_bets << quarter_bets.where(:time => "Second Half").first
-		@quarter_bets << quarter_bets.where(:time => "November").first
-		@quarter_bets << quarter_bets.where(:time => "December").first
-		@quarter_bets << quarter_bets.where(:time => "January").first
-		@quarter_bets << quarter_bets.where(:time => "February").first
-		@quarter_bets << quarter_bets.where(:time => "March").first
-		@quarter_bets << quarter_bets.where(:time => "April").first
+		# @full_bets << full_bets.where(:time => "Full Year").first
+		# @full_bets << full_bets.where(:time => "First Half").first
+		# @full_bets << full_bets.where(:time => "Second Half").first
+		# @full_bets << full_bets.where(:time => "November").first
+		# @full_bets << full_bets.where(:time => "December").first
+		# @full_bets << full_bets.where(:time => "January").first
+		# @full_bets << full_bets.where(:time => "February").first
+		# @full_bets << full_bets.where(:time => "March").first
+		# @full_bets << full_bets.where(:time => "April").first
+		full_year_first_half_bets =  half_bets.where(:time => "Full Year", :range => 3).first
+		first_half_first_half_bets =  half_bets.where(:time => "First Half", :range => 3).first
+		second_half_first_half_bets = half_bets.where(:time => "Second Half", :range => 3).first
+		if full_year_first_half_bets != nil
+			@half_bets << full_year_first_half_bets
+		end
+		if first_half_first_half_bets != nil
+			@half_bets << first_half_first_half_bets
+		end
+		if second_half_first_half_bets != nil
+			@half_bets << second_half_first_half_bets
+		end
+		# @half_bets << half_bets.where(:time => "November").first
+		# @half_bets << half_bets.where(:time => "December").first
+		# @half_bets << half_bets.where(:time => "January").first
+		# @half_bets << half_bets.where(:time => "February").first
+		# @half_bets << half_bets.where(:time => "March").first
+		# @half_bets << half_bets.where(:time => "April").first
+		full_year_first_quarter_bets = quarter_bets.where(:time => "Full Year", :range => 3).first
+		first_half_first_quarter_bets = quarter_bets.where(:time => "First Half", :range => 3).first
+		second_half_first_quarter_bets = quarter_bets.where(:time => "Second Half", :range => 3).first
+		if full_year_first_quarter_bets != nil
+			@half_bets << full_year_first_quarter_bets
+		end
+		if first_half_first_quarter_bets != nil
+			@half_bets << first_half_first_quarter_bets
+		end
+		if second_half_first_quarter_bets != nil
+			@half_bets << second_half_first_quarter_bets
+		end
+		# @quarter_bets << quarter_bets.where(:time => "November").first
+		# @quarter_bets << quarter_bets.where(:time => "December").first
+		# @quarter_bets << quarter_bets.where(:time => "January").first
+		# @quarter_bets << quarter_bets.where(:time => "February").first
+		# @quarter_bets << quarter_bets.where(:time => "March").first
+		# @quarter_bets << quarter_bets.where(:time => "April").first
 	end
 
 

@@ -1,38 +1,20 @@
 namespace :first_half do
 
-	task :total_algorithm => :environment do
+	task :algorithm => :environment do
 
 		past_number = 10
 		quarter = 12
 
-		seasons = Season.where("id = 14")
-		seasons.each do |season|
+		Season.all.each do |season|
 			season.games.each do |game|
-				predicted = game.total_algorithm(past_number, quarter)
-				game.update_attributes(:first_half_ps => predicted)
+				away_score, home_score = game.algorithmo(past_number, quarter)
+				game.update_attributes(:away_first_half_score_2 => away_score, :home_first_half_score_2 => home_score)
 				puts game.url
-				puts predicted
+				puts away_score
+				puts home_score
 			end
 		end
 
-	end
-
-	task :spread_algorithm => :environment do
-
-		past_number = 10
-		quarter = 12
-
-		seasons = Season.where("id = 14")
-		seasons.each do |season|
-			season.games.each do |game|
-				away_predicted, home_predicted = game.spread_algorithm(past_number, quarter)
-				game.update_attributes(:away_first_half_ps => away_predicted, :home_first_half_ps => home_predicted)
-				puts game.url
-				puts away_predicted
-				puts home_predicted
-			end
-		end
-		
 	end
 
 
@@ -41,11 +23,12 @@ namespace :first_half do
 		include Conclude
 
 		quarter = 12
+		range = 3
 
 		time = ["Full Year", "First Half", "Second Half", "November", "December", "January", "February", "March", "April"]
 		time = time[0]
 
-		seasons = Season.where("id != 1")
+		seasons = Season.all
 
 		seasons.each do |season|
 
@@ -61,21 +44,24 @@ namespace :first_half do
 
 				game_date.games.each do |game|
 
-					ps = game.first_half_ps
+					away_ps = game.away_first_half_score_2
+					home_ps = game.home_first_half_score_2
 					cl = game.first_half_open
 					if cl == nil
 						cl = game.first_half_cl
 					end
 
-					if cl== nil || ps == nil
+					if cl== nil || away_ps == nil || home_ps == nil
 						next
 					end
+
+					ps = away_ps + home_ps
 
 					puts game.url
 					total_games += 1
 					lineups = game.lineups
 					fs = lineups[2].pts + lineups[3].pts + lineups[4].pts + lineups[5].pts
-					over_under = Conclude.over_or_under(ps, cl, fs)
+					over_under = Conclude.over_or_under(ps, cl, fs, range)
 					plus_minus += over_under
 					case over_under
 					when 0
@@ -91,7 +77,7 @@ namespace :first_half do
 			total_bet = win_bet + lose_bet
 			win_percent = win_bet.to_f / total_bet.to_f
 
-			Conclude.updateTotalBets(season, quarter, time, win_percent, total_bet)
+			Conclude.updateTotalBets(season, quarter, time, range, win_percent, total_bet)
 
 			puts total_games.to_s + " total games"
 			puts plus_minus.to_s + " plus minus"
@@ -110,12 +96,13 @@ namespace :first_half do
 		include Conclude
 
 		quarter = 12
+		range = 3
 
 
 		time = ["Full Year", "First Half", "Second Half", "November", "December", "January", "February", "March", "April"]
 		time = time[0]
 
-		seasons = Season.where("id != 1")
+		seasons = Season.all
 
 		seasons.each do |season|
 
@@ -131,8 +118,8 @@ namespace :first_half do
 
 				game_date.games.each do |game|
 
-					away_ps = game.away_first_half_ps
-					home_ps = game.home_first_half_ps
+					away_ps = game.away_first_half_score_2
+					home_ps = game.home_first_half_score_2
 					cl = game.first_half_spread
 
 					if cl == nil || away_ps == nil || home_ps == nil
@@ -144,7 +131,7 @@ namespace :first_half do
 					total_games += 1
 					lineups = game.lineups
 					fs = lineups[2].pts - lineups[3].pts + lineups[4].pts - lineups[5].pts
-					over_under = Conclude.over_or_under(ps, cl, fs)
+					over_under = Conclude.over_or_under(ps, cl, fs, range)
 					plus_minus += over_under
 					case over_under
 					when 0
@@ -161,7 +148,7 @@ namespace :first_half do
 			total_bet = win_bet + lose_bet
 			win_percent = win_bet.to_f / total_bet.to_f
 
-			Conclude.updateSpreadBets(season, quarter, time, win_percent, total_bet)
+			Conclude.updateSpreadBets(season, quarter, time, range, win_percent, total_bet)
 
 			puts total_games.to_s + " total games"
 			puts plus_minus.to_s + " plus minus"
@@ -181,7 +168,7 @@ namespace :first_half do
 
 		include Close
 
-		Season.where(:year => "2015").each do |season|
+		Season.all.each do |season|
 			previous = nil
 			previous_date = nil
 			season.games.each do |game|
@@ -278,7 +265,7 @@ namespace :first_half do
 
 		include Close
 
-		Season.where("id != 1").each do |season|
+		Season.where("id > 9").each do |season|
 			previous = nil
 			previous_date = nil
 			season.games.each do |game|
@@ -293,7 +280,6 @@ namespace :first_half do
 				end
 
 				previous_date = date
-
 				url = "http://www.sportsbookreview.com/betting-odds/nba-basketball/1st-half/?date=#{date}"
 				doc = Nokogiri::HTML(open(url))
 

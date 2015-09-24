@@ -431,36 +431,91 @@ namespace :database do
 
 	task :possessions => :environment do
 
-		Lineup.where(:home => true, :quarter => 0).each do |lineup|
+		Lineup.where(:quarter => 0).each do |lineup|
 			puts lineup.id
-			game = lineup.game
-			game.update_attributes(:full_game_poss => lineup.TotPoss.round(2))
+			lineup.update_attributes(:poss => lineup.TotPoss.round(2))
 		end
 
-		Lineup.where(:home => true, :quarter => 12).each do |lineup|
+		Lineup.where(:quarter => 12).each do |lineup|
 			puts lineup.id
-			game = lineup.game
-			game.update_attributes(:first_half_poss => lineup.TotPoss.round(2))
+			lineup.update_attributes(:poss => lineup.TotPoss.round(2))
 		end
 
-		Lineup.where(:home => true, :quarter => 34).each do |lineup|
+		Lineup.where(:quarter => 34).each do |lineup|
 			puts lineup.id
-			game = lineup.game
-			game.update_attributes(:second_half_poss => lineup.TotPoss.round(2))
+			lineup.update_attributes(:poss => lineup.TotPoss.round(2))
 		end
 
-		Lineup.where(:home => true, :quarter => 1).each do |lineup|
+		Lineup.where(:quarter => 1).each do |lineup|
 			puts lineup.id
-			game = lineup.game
-			game.update_attributes(:first_quarter_poss => lineup.TotPoss.round(2))
+			lineup.update_attributes(:poss => lineup.TotPoss.round(2))
 		end
 
+	end
+
+	task :rest => :environment do
+		Game.all.each do |game|
+			puts game.id
+			game.lineups.where(:home => true).each do |lineup|
+				lineup.update_attributes(:rest => game.home_rest)
+			end
+
+			game.lineups.where(:home => false).each do |lineup|
+				lineup.update_attributes(:rest => game.away_rest)
+			end
+		end
+	end
+
+	task :weekend => :environment do
+		Game.all.each do |game|
+			puts game.id
+			game.lineups.each do |lineup|
+				lineup.update_attributes(:weekend => game.weekend)
+			end
+		end
 	end
 
 	task :create_team_data => :environment do
 		GameDate.all.each do |game_date|
 			puts game_date.id
 			game_date.createTeamDatas
+		end
+	end
+
+	task :total_rest => :environment do
+		Game.all.each do |game|
+			puts game.id
+			game.update_attributes(:total_rest => game.away_rest + game.home_rest)
+		end
+	end
+
+	task :lineup_predict_score => :environment do
+		Game.all.each do |game|
+			puts game.id
+			game.lineups.where(:quarter => 0).each_with_index do |lineup, index|
+				if index == 0
+					lineup.update_attributes(:predicted_score => game.away_full_game_score_2)
+				else
+					lineup.update_attributes(:predicted_score => game.home_full_game_score_2)
+				end
+			end
+
+			# game.lineups.where(:quarter => 12).each_with_index do |lineup, index|
+			# 	if index == 0
+			# 		lineup.update_attributes(:predicted_score => game.away_score)
+			# 	else
+			# 		lineup.update_attributes(:predicted_score => game.home_score)
+			# 	end
+			# end
+
+			# game.lineups.where(:quarter => 1).each_with_index do |lineup, index|
+			# 	if index == 0
+			# 		lineup.update_attributes(:predicted_score => game.away_full_game_score)
+			# 	else
+			# 		lineup.update_attributes(:predicted_score => game.home_full_game_score)
+			# 	end
+			# end
+
 		end
 	end
 

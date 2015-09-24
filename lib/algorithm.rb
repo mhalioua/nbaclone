@@ -1,86 +1,84 @@
 module Algorithm
 
-	def self.adjust(away_var, away_rest, home_var, home_rest, possessions)
-		away_var -= 1.62
-		home_var += 1.62
+	def self.calculate(percentage, ortg)
+		var = hundred = 0
+		(0...percentage.size).each do |i|
+			hundred += percentage[i]
+			var += ortg[i] * percentage[i]
+		end
 
-		case away_var
+		var = var/hundred
+		return var
+	end
+
+	def self.adjust(game, away_data, home_data, away_var, home_var, possessions, quarter)
+
+		total_rest = game.total_rest
+		away_rest = game.away_rest
+		home_rest = game.home_rest
+
+		case quarter
 		when 0
-			case home_var
-			when 0
-				away_var += 0.02
-				home_var += 0.02
-				possessions -= 0.92
-			when 1
-				away_var -= 0.15
-				home_var += 2.1
-				possessions -= 0.92
-			when 2
-				away_var -= 1.44
-				home_var += 2.27
-				possessions += 0.08
-			when 3
-				away_var -= 1.39
-				home_var += 1.84
-				possesssions += 0.82
-			end
+			away_season_ortg = away_data.full_game_season_ortg
+			home_season_ortg = home_data.full_game_season_ortg
+			away_season_drtg = away_data.full_game_season_drtg
+			home_season_drtg = home_data.full_game_season_drtg
+			away_base_drtg = away_data.full_game_base_drtg
+			home_base_drtg = home_data.full_game_base_drtg
 		when 1
-			case home_var
-			when 0
-				away_var += 2.1
-				home_var -= 1.5
-				possessions -= 0.15
-			when 1
-				away_var += 0.03
-				home_var += 0.03
-				possessions -= 0.05
-			when 2
-				away_var += 0.1
-				home_var += 0.04
-				possessions += 0.3
-			when 3
-				away_var -= 1.26
-				home_var -= 0.2
-				possesssions += 0.26
-			end
-		when 2
-			case home_var
-			when 0
-				away_var += 2.27
-				home_var -= 1.44
-				possessions += 0.08
-			when 1
-				away_var += 0.04
-				home_var += 0.1
-				possessions += 0.3
-			when 2
-				away_var -= 0.68
-				home_var -= 0.68
-				possessions -= 0.01
-			when 3
-				away_var -= 0.49
-				home_var += 0.22
-				possesssions += 0.67
-			end
+			away_season_ortg = away_data.first_quarter_season_ortg
+			home_season_ortg = home_data.first_quarter_season_ortg
+			away_season_drtg = away_data.first_quarter_season_drtg
+			home_season_drtg = home_data.first_quarter_season_drtg
+			away_base_drtg = away_data.first_quarter_base_drtg
+			home_base_drtg = home_data.first_quarter_base_drtg
+		when 12
+			away_season_ortg = away_data.first_half_season_ortg
+			home_season_ortg = home_data.first_half_season_ortg
+			away_season_drtg = away_data.first_half_season_drtg
+			home_season_drtg = home_data.first_half_season_drtg
+			away_base_drtg = away_data.first_half_base_drtg
+			home_base_drtg = home_data.first_half_base_drtg
+		end
+
+		away_var = (away_var + away_season_ortg)/2
+		home_var = (home_var + home_season_ortg)/2
+
+		away_var -= 1.5732
+		home_var += 1.5732
+
+
+		away_drtg = (away_base_drtg + away_season_drtg)/2
+		home_drtg = (home_base_drtg + home_season_drtg)/2
+
+		away_var += home_drtg
+		home_var += away_drtg
+
+		case total_rest
+		when 0
+			possessions -= 1.03
 		when 3
-			case home_var
-			when 0
-				away_var += 1.84
-				home_var -= 1.39
-				possessions += 0.84
-			when 1
-				away_var -= 0.2
-				home_var -= 1.26
-				possessions += 0.26
-			when 2
-				away_var += 0.22
-				home_var -= 0.49
-				possessions += 0.67
-			when 3
-				away_var -= 2.55
-				home_var -= 2.55
-				possesssions += 1.41
-			end
+			possessions += 0.3794
+		when 6
+			possessions += 1.507
+		end
+
+		case away_rest
+		when 0
+			away_var -= 1.57
+		when 1
+			away_var += 0.35
+		when 2
+			away_var += 0.43
+		end
+
+		case home_rest
+		when 0
+			home_var -= 1.57
+		when 1
+			home_var += 0.35
+		when 2
+			home_var += 0.43
 		end
 
 		return [away_var, home_var, possessions]

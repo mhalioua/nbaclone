@@ -159,185 +159,68 @@ class Game < ActiveRecord::Base
 
 	include Algorithm
 
-	def total_algorithm(past_number=10, quarter=0)
+	def algorithmo(past_number=10, quarter=0)
+
 		away_data = self.away_data
 		home_data = self.home_data
-		away_poss = away_data.base_poss
-		home_poss = home_data.base_poss
-		if away_poss == nil || home_poss == nil || away_data.base_drtg == nil || home_data.base_drtg == nil
-			return nil
-		end
 
 		case quarter
+		when 0
+			away_base_poss = away_data.full_game_base_poss
+			home_base_poss = home_data.full_game_base_poss
+			away_season_poss = away_data.full_game_season_poss
+			home_season_poss = home_data.full_game_season_poss
 		when 1
-			away_poss /= 4
-			home_poss /= 4
+			away_base_poss = away_data.first_quarter_base_poss
+			home_base_poss = home_data.first_quarter_base_poss
+			away_season_poss = away_data.first_quarter_season_poss
+			home_season_poss = home_data.first_quarter_season_poss
 		when 12
-			away_poss /= 2
-			home_poss /= 2
-		when 34
-			away_poss /= 2
-			home_poss /= 2
+			away_base_poss = away_data.first_half_base_poss
+			home_base_poss = home_data.first_half_base_poss
+			away_season_poss = away_data.first_half_season_poss
+			home_season_poss = home_data.first_half_season_poss
 		end
 
-		possessions = (away_poss + home_poss)/2
-		lineups = self.lineups.where(:quarter => quarter)
-
-		# Get the quarter team lineup
-		away_lineup = lineups.first
-		home_lineup = lineups.second
-
-		# Go through all the starters games and find their average ORTG's and percent of Team Possessions
-		away_ortg = Array.new
-		away_percentage = Array.new
-		away_lineup.starters.each do |away_starter|
-			percentage = away_starter.PredictPossPercent(past_number)
-			if percentage == nil || percentage.nan?
-				percentage = 0
-			end
-			ortg = away_starter.PredictORTG(0.05, percentage)
-			if ortg == nil || ortg.nan?
-				ortg = 0
-			end
-			away_ortg << ortg
-			away_percentage << percentage
-		end
-
-		# Multiply the predicted possession percentage by the predicted ORTG
-		away_var = 0
-		hundred = 0
-		(0...away_percentage.size).each do |i|
-			hundred += away_percentage[i]
-			away_var += away_ortg[i] * away_percentage[i]
-		end
-
-		away_var = away_var/hundred
-		away_var += home_data.base_drtg
-
-		home_ortg = Array.new
-		home_percentage = Array.new
-		home_lineup.starters.each do |home_starter|
-			percentage = home_starter.PredictPossPercent(past_number)
-			if percentage == nil || percentage.nan?
-				percentage = 0
-			end
-			ortg = home_starter.PredictORTG(0.05, percentage)
-			if ortg == nil || ortg.nan?
-				ortg = 0
-			end
-			home_ortg << ortg
-			home_percentage << percentage
-		end
-
-		home_var = 0
-		hundred = 0
-		(0...home_percentage.size).each do |i|
-			hundred += home_percentage[i]
-			home_var += home_ortg[i] * home_percentage[i]
-		end
-
-		home_var = home_var/hundred
-		home_var += away_data.base_drtg
-
-		away_var -= 1.62
-		home_var += 1.62
-
-		# away_var, home_var, possessions = Algorithm.adjust(away_var, away_rest, home_var, home_rest, possessions)
-		
-
-		predicted_score = (away_var + home_var) * possessions / 100
-		return predicted_score.round(2)
-	end
-
-	def spread_algorithm(past_number=10, quarter=0)
-		away_data = self.away_data
-		home_data = self.home_data
-		away_poss = away_data.base_poss
-		home_poss = home_data.base_poss
-
-		if away_poss == nil || home_poss == nil || away_data.base_drtg == nil || home_data.base_drtg == nil
+		if away_base_poss == nil || home_base_poss == nil
 			return [nil, nil]
 		end
 
-		case quarter
-		when 1
-			away_poss /= 4
-			home_poss /= 4
-		when 12
-			away_poss /= 2
-			home_poss /= 2
-		when 34
-			away_poss /= 2
-			home_poss /= 2
-		end
-
+		away_poss = (away_poss + away_season_poss)/2
+		home_poss = (home_poss + home_season_poss)/2
 		possessions = (away_poss + home_poss)/2
-		lineups = self.lineups.where(:quarter => quarter)
 
-		# Get the quarter team lineup
+		lineups = self.lineups.where(:quarter => quarter)
 		away_lineup = lineups.first
 		home_lineup = lineups.second
 
-		# Go through all the starters games and find their average ORTG's and percent of Team Possessions
 		away_ortg = Array.new
 		away_percentage = Array.new
 		away_lineup.starters.each do |away_starter|
-			percentage = away_starter.PredictPossPercent(past_number)
-			if percentage == nil || percentage.nan?
-				percentage = 0
-			end
-			ortg = away_starter.PredictORTG(0.05, percentage)
-			if ortg == nil || ortg.nan?
-				ortg = 0
-			end
+			ortg, percentage = away_starter.Prediction
 			away_ortg << ortg
 			away_percentage << percentage
 		end
 
-		# Multiply the predicted possession percentage by the predicted ORTG
-		away_var = 0
-		hundred = 0
-		(0...away_percentage.size).each do |i|
-			hundred += away_percentage[i]
-			away_var += away_ortg[i] * away_percentage[i]
-		end
-
-		away_var = away_var/hundred
-		away_var += home_data.base_drtg
+		away_var = Algorithm.calculate(away_percentage, away_ortg)
 
 		home_ortg = Array.new
 		home_percentage = Array.new
 		home_lineup.starters.each do |home_starter|
-			percentage = home_starter.PredictPossPercent(past_number)
-			if percentage == nil || percentage.nan?
-				percentage = 0
-			end
-			ortg = home_starter.PredictORTG(0.05, percentage)
-			if ortg == nil || ortg.nan?
-				ortg = 0
-			end
+			ortg, percentage = home_starter.Prediction
 			home_ortg << ortg
 			home_percentage << percentage
 		end
 
-		home_var = 0
-		hundred = 0
-		(0...home_percentage.size).each do |i|
-			hundred += home_percentage[i]
-			home_var += home_ortg[i] * home_percentage[i]
-		end
+		home_var = Algorithm.calculate(home_percentage, home_ortg)
 
-		home_var = home_var/hundred
-		home_var += away_data.base_drtg
+		away_var, home_var, possessions = Algorithm.adjust(self, away_data, home_data, away_var, home_var, possessions, quarter)
 
-		away_var -= 1.62
-		home_var += 1.62
+		away_score = away_var * possessions / 100
+		home_score = home_var * possessions / 100
 
-		# away_var, home_var, possessions = Algorithm.adjust(away_var, away_rest, home_var, home_rest, possessions)
+		return [away_score, home_score]
 
-		away_var = away_var * possessions / 100
-		home_var = home_var * possessions / 100
-		return [away_var.round(2), home_var.round(2)]
 	end
 
 end

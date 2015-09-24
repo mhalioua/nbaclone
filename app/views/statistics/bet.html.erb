@@ -13,19 +13,25 @@
 
 <table align="center">
 	<tr>
-		<th colspan="7"><%= @season.year %></th>
+		<th colspan="3"><%= @season.year %></th>
 	</tr>
 	<tr>
-		<th>Time</th><th>Full Game</th><th>Games</th><th>First Half</th><th>Games</th><th>First Quarter</th><th>Games</th>
+		<th>Time</th><th>First Half</th><th>Games</th>
 	</tr>
-	<% (0..8).each do |i|%>
+	<% (0...@half_bets.size).each do |i|%>
 		<tr>
-			<td><%= @full_bets[i].time %></td>
-			<td><%= @full_bets[i].win_percent.round(3) %></td>
-			<td><%= @full_bets[i].total_bet %></td>
-			<td><%= @half_bets[i].win_percent.round(3) %></td>
+			<td><%= @half_bets[i].time %></td>
+			<td><%= @half_bets[i].win_percent %></td>
 			<td><%= @half_bets[i].total_bet %></td>
-			<td><%= @quarter_bets[i].win_percent.round(3) %></td>
+		</tr>
+	<% end %>
+	<tr>
+		<th>Time</th><th>First Half</th><th>Games</th>
+	</tr>
+	<% (0...@quarter_bets.size).each do |i|%>
+		<tr>
+			<td><%= @quarter_bets[i].time %></td>
+			<td><%= @quarter_bets[i].win_percent %></td>
 			<td><%= @quarter_bets[i].total_bet %></td>
 		</tr>
 	<% end %>

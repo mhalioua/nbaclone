@@ -6,15 +6,17 @@ namespace :team_data do
 
 		quarter = 0
 
+		past_number = 10
+
 		TeamData.all.each do |team_data|
 			puts team_data.id
 			past_team = team_data.past_team
 			game_date = team_data.game_date
 			game = game_date.games.first
 
-			games = past_team.games.where("id < #{game.id}").order("id DESC").limit(10)
+			games = past_team.games.where("id < #{game.id}").order("id DESC").limit(past_number)
 
-			if games.size != 10
+			if games.size != past_number
 				team_data.update_attributes(:base_ortg => nil, :base_poss => nil)
 				next
 			end
@@ -30,7 +32,7 @@ namespace :team_data do
 			end
 
 			ortg = team.ORTG(team, opp)
-			poss = team.TotPoss(team, opp)/10
+			poss = team.TotPoss(team, opp)/past_number
 			team_data.update_attributes(:base_ortg => ortg, :base_poss => poss)
 		end
 	end
@@ -40,6 +42,7 @@ namespace :team_data do
 		include Store
 
 		quarter = 0
+		past_number = 0
 
 		TeamData.all.each do |team_data|
 			puts team_data.id
@@ -48,9 +51,9 @@ namespace :team_data do
 			team_datas = game_date.team_datas
 			game = game_date.games.first
 
-			games = past_team.games.where("id < #{game.id}").order("id DESC").limit(10)
+			games = past_team.games.where("id < #{game.id}").order("id DESC").limit(past_number)
 			
-			if games.size != 10 || team_datas.where(:base_ortg => nil).size != 0
+			if games.size != past_number || team_datas.where(:base_ortg => nil).size != 0
 				team_data.update_attributes(:base_drtg => nil)
 				next
 			end
