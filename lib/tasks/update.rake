@@ -4,7 +4,9 @@ namespace :update do
 
 		TeamData.all.each do |team_data|
 			puts team_data.id
-			team_data.update_attributes(:season_ortg => 0)
+			team_data.update_attributes(:full_game_season_ortg => nil, :full_game_season_poss => nil, :full_game_season_drtg => nil,
+				:first_half_season_ortg => nil, :first_half_season_poss => nil, :first_half_season_drtg => nil,
+				:first_quarter_season_ortg => nil, :first_quarter_season_poss => nil, :first_quarter_season_drtg => nil)
 		end
 
 	end
@@ -14,14 +16,14 @@ namespace :update do
 
 			puts season.id.to_s + " Season"
 
-			# full_game_team_ortg = Array.new
+			full_game_team_ortg = Array.new
 			first_half_team_ortg = Array.new
 			first_quarter_team_ortg = Array.new
 			team_count = Array.new
 			team_id = Array.new
 
 			season.past_teams.each do |past_team|
-				# full_game_team_ortg << 0
+				full_game_team_ortg << 0
 				first_half_team_ortg << 0
 				first_quarter_team_ortg << 0
 				team_count << 0
@@ -34,8 +36,8 @@ namespace :update do
 
 				game_date.games.each do |game|
 
-					# full_game_away_lineup = game.lineups.where(:quarter => 0).first
-					# full_game_home_lineup = game.lineups.where(:quarter => 0).second
+					full_game_away_lineup = game.lineups.where(:quarter => 0).first
+					full_game_home_lineup = game.lineups.where(:quarter => 0).second
 
 					first_half_away_lineup = game.lineups.where(:quarter => 12).first
 					first_half_home_lineup = game.lineups.where(:quarter => 12).second
@@ -55,8 +57,8 @@ namespace :update do
 					away_count = team_count[away_index]
 					home_count = team_count[home_index]
 
-					# full_game_away_ortg = full_game_team_ortg[away_index]
-					# full_game_home_ortg = full_game_team_ortg[home_index]
+					full_game_away_ortg = full_game_team_ortg[away_index]
+					full_game_home_ortg = full_game_team_ortg[home_index]
 
 					first_half_away_ortg = first_half_team_ortg[away_index]
 					first_half_home_ortg = first_half_team_ortg[home_index]
@@ -65,27 +67,27 @@ namespace :update do
 					first_quarter_home_ortg = first_quarter_team_ortg[home_index]
 
 					if away_count == 0
-						# full_game_away_season_ortg = 0
+						full_game_away_season_ortg = 0
 						first_half_away_season_ortg = 0
 						first_quarter_away_season_ortg = 0
 					else
-						# full_game_away_season_ortg = full_game_away_ortg/away_count
+						full_game_away_season_ortg = full_game_away_ortg/away_count
 						first_half_away_season_ortg = first_half_away_ortg/away_count
 						first_quarter_away_season_ortg = first_quarter_away_ortg/away_count
 					end
 
 					if home_count == 0
-						# full_game_home_season_ortg = 0
+						full_game_home_season_ortg = 0
 						first_half_home_season_ortg = 0
 						first_quarter_home_season_ortg = 0
 					else
-						# full_game_home_season_ortg = full_game_home_ortg/home_count
+						full_game_home_season_ortg = full_game_home_ortg/home_count
 						first_half_home_season_ortg = first_half_home_ortg/home_count
 						first_quarter_home_season_ortg = first_quarter_home_ortg/home_count
 					end
 
-					# away_data.update_attributes(:full_game_season_ortg => full_game_away_season_ortg)
-					# home_data.update_attributes(:full_game_season_ortg => full_game_home_season_ortg)
+					away_data.update_attributes(:full_game_season_ortg => full_game_away_season_ortg)
+					home_data.update_attributes(:full_game_season_ortg => full_game_home_season_ortg)
 
 					away_data.update_attributes(:first_half_season_ortg => first_half_away_season_ortg)
 					home_data.update_attributes(:first_half_season_ortg => first_half_home_season_ortg)
@@ -96,8 +98,8 @@ namespace :update do
 					team_count[away_index] += 1
 					team_count[home_index] += 1
 
-					# full_game_team_ortg[away_index] += full_game_away_lineup.ORTG
-					# full_game_team_ortg[home_index] += full_game_home_lineup.ORTG
+					full_game_team_ortg[away_index] += full_game_away_lineup.ORTG
+					full_game_team_ortg[home_index] += full_game_home_lineup.ORTG
 
 					first_half_team_ortg[away_index] += first_half_away_lineup.ORTG
 					first_half_team_ortg[home_index] += first_half_home_lineup.ORTG
@@ -108,18 +110,18 @@ namespace :update do
 				end
 
 				game_date.team_datas.each do |team_data|
-					# if team_data.full_game_season_ortg == 0
-					# 	past_team = team_data.past_team
-					# 	index = team_id.find_index(past_team.id)
-					# 	count = team_count[index]
-					# 	if count == 0
-					# 		team_data.update_attributes(:full_game_season_ortg => 0.0)
-					# 	else
-					# 		ortg = full_game_team_ortg[index]/count
-					# 		team_data.update_attributes(:full_game_season_ortg => ortg)
-					# 	end
-					# end
-					if team_data.first_half_season_ortg == 0
+					if team_data.full_game_season_ortg == 0.0 || team_data.full_game_season_ortg == nil
+						past_team = team_data.past_team
+						index = team_id.find_index(past_team.id)
+						count = team_count[index]
+						if count == 0
+							team_data.update_attributes(:full_game_season_ortg => 0.0)
+						else
+							ortg = full_game_team_ortg[index]/count
+							team_data.update_attributes(:full_game_season_ortg => ortg)
+						end
+					end
+					if team_data.first_half_season_ortg == 0.0 || team_data.first_half_season_ortg == nil
 						past_team = team_data.past_team
 						index = team_id.find_index(past_team.id)
 						count = team_count[index]
@@ -130,7 +132,7 @@ namespace :update do
 							team_data.update_attributes(:first_half_season_ortg => ortg)
 						end
 					end
-					if team_data.first_quarter_season_ortg == 0
+					if team_data.first_quarter_season_ortg == 0 || team_data.first_quarter_season_ortg == nil
 						past_team = team_data.past_team
 						index = team_id.find_index(past_team.id)
 						count = team_count[index]
@@ -152,14 +154,14 @@ namespace :update do
 
 			puts season.id.to_s + " Season"
 
-			# full_game_team_poss = Array.new
+			full_game_team_poss = Array.new
 			first_half_team_poss = Array.new
 			first_quarter_team_poss = Array.new
 			team_count = Array.new
 			team_id = Array.new
 
 			season.past_teams.each do |past_team|
-				# full_game_team_poss << 0
+				full_game_team_poss << 0
 				first_half_team_poss << 0
 				first_quarter_team_poss << 0
 				team_count << 0
@@ -172,8 +174,8 @@ namespace :update do
 
 				game_date.games.each do |game|
 
-					# full_game_away_lineup = game.lineups.where(:quarter => 0).first
-					# full_game_home_lineup = game.lineups.where(:quarter => 0).second
+					full_game_away_lineup = game.lineups.where(:quarter => 0).first
+					full_game_home_lineup = game.lineups.where(:quarter => 0).second
 
 					first_half_away_lineup = game.lineups.where(:quarter => 12).first
 					first_half_home_lineup = game.lineups.where(:quarter => 12).second
@@ -193,8 +195,8 @@ namespace :update do
 					away_count = team_count[away_index]
 					home_count = team_count[home_index]
 
-					# full_game_away_poss = full_game_team_poss[away_index]
-					# full_game_home_poss = full_game_team_poss[home_index]
+					full_game_away_poss = full_game_team_poss[away_index]
+					full_game_home_poss = full_game_team_poss[home_index]
 
 					first_half_away_poss = first_half_team_poss[away_index]
 					first_half_home_poss = first_half_team_poss[home_index]
@@ -203,27 +205,27 @@ namespace :update do
 					first_quarter_home_poss = first_quarter_team_poss[home_index]
 
 					if away_count == 0
-						# full_game_away_season_poss = 0
+						full_game_away_season_poss = 0
 						first_half_away_season_poss = 0
 						first_quarter_away_season_poss = 0
 					else
-						# full_game_away_season_poss = full_game_away_poss/away_count
+						full_game_away_season_poss = full_game_away_poss/away_count
 						first_half_away_season_poss = first_half_away_poss/away_count
 						first_quarter_away_season_poss = first_quarter_away_poss/away_count
 					end
 
 					if home_count == 0
-						# full_game_home_season_poss = 0
+						full_game_home_season_poss = 0
 						first_half_home_season_poss = 0
 						first_quarter_home_season_poss = 0
 					else
-						# full_game_home_season_poss = full_game_home_poss/home_count
+						full_game_home_season_poss = full_game_home_poss/home_count
 						first_half_home_season_poss = first_half_home_poss/home_count
 						first_quarter_home_season_poss = first_quarter_home_poss/home_count
 					end
 
-					# away_data.update_attributes(:full_game_season_poss => full_game_away_season_poss)
-					# home_data.update_attributes(:full_game_season_poss => full_game_home_season_poss)
+					away_data.update_attributes(:full_game_season_poss => full_game_away_season_poss)
+					home_data.update_attributes(:full_game_season_poss => full_game_home_season_poss)
 
 					away_data.update_attributes(:first_half_season_poss => first_half_away_season_poss)
 					home_data.update_attributes(:first_half_season_poss => first_half_home_season_poss)
@@ -234,8 +236,8 @@ namespace :update do
 					team_count[away_index] += 1
 					team_count[home_index] += 1
 
-					# full_game_team_poss[away_index] += full_game_away_lineup.TotPoss
-					# full_game_team_poss[home_index] += full_game_home_lineup.TotPoss
+					full_game_team_poss[away_index] += full_game_away_lineup.TotPoss
+					full_game_team_poss[home_index] += full_game_home_lineup.TotPoss
 
 					first_half_team_poss[away_index] += first_half_away_lineup.TotPoss
 					first_half_team_poss[home_index] += first_half_home_lineup.TotPoss
@@ -246,18 +248,18 @@ namespace :update do
 				end
 
 				game_date.team_datas.each do |team_data|
-					# if team_data.full_game_season_poss == 0
-					# 	past_team = team_data.past_team
-					# 	index = team_id.find_index(past_team.id)
-					# 	count = team_count[index]
-					# 	if count == 0
-					# 		team_data.update_attributes(:full_game_season_poss => 0.0)
-					# 	else
-					# 		poss = full_game_team_poss[index]/count
-					# 		team_data.update_attributes(:full_game_season_poss => poss)
-					# 	end
-					# end
-					if team_data.first_half_season_poss == 0
+					if team_data.full_game_season_poss == 0 || team_data.full_game_season_poss == nil
+						past_team = team_data.past_team
+						index = team_id.find_index(past_team.id)
+						count = team_count[index]
+						if count == 0
+							team_data.update_attributes(:full_game_season_poss => 0.0)
+						else
+							poss = full_game_team_poss[index]/count
+							team_data.update_attributes(:full_game_season_poss => poss)
+						end
+					end
+					if team_data.first_half_season_poss == 0 || team_data.first_half_season_poss == nil
 						past_team = team_data.past_team
 						index = team_id.find_index(past_team.id)
 						count = team_count[index]
@@ -268,7 +270,7 @@ namespace :update do
 							team_data.update_attributes(:first_half_season_poss => poss)
 						end
 					end
-					if team_data.first_quarter_season_poss == 0
+					if team_data.first_quarter_season_poss == 0 || team_data.first_half_season_poss == nil
 						past_team = team_data.past_team
 						index = team_id.find_index(past_team.id)
 						count = team_count[index]
@@ -290,55 +292,47 @@ namespace :update do
 
 		quarters = [0, 1, 12]
 		quarters.each do |quarter|
+
 			Season.all.each do |season|
 
 				puts season.id.to_s + " Season"
 
+				opp_ortg_array = Array.new
+				opp_id_array = Array.new
+				team_id = Array.new
+
+				season.past_teams.each do |past_team|
+					opp_ortg_array << Array.new
+					opp_id_array << Array.new
+					team_id << past_team.id
+				end
+
 				season.game_dates.each do |game_date|
 
 					puts game_date.id.to_s + " Game Date"
-					first_game = game_date.games.first
 
-					season.past_teams.each do |past_team|
+					team_season_ortg = Array.new
 
-						team_data = game_date.findTeamData(past_team)
-						previous_games = past_team.previous_games(first_game)
-						count = season_drtg = 0
-						previous_games.each_with_index do |game, index|
-
-							opp_team = game.getOppTeam(past_team)
-
-							case quarter
-							when 0
-								opp_season_ortg = game_date.findTeamData(opp_team).full_game_season_ortg
-							when 1
-								opp_season_ortg = game_date.findTeamData(opp_team).first_quarter_season_ortg
-							when 12
-								opp_season_ortg = game_date.findTeamData(opp_team).first_half_season_ortg
-							end
-
-							if opp_season_ortg == 0
-								next
-							end
-							opp_game_ortg = game.getOpponent(past_team, quarter).ORTG
-
-							count += 1
-							game_drtg = opp_game_ortg - opp_season_ortg
-							season_drtg += game_drtg
-
+					team_datas = game_date.team_datas
+					team_datas.each do |team_data|
+						case quarter
+						when 0
+							team_season_ortg << team_data.full_game_season_ortg
+						when 1
+							team_season_ortg << team_data.first_quarter_season_ortg
+						when 12
+							team_season_ortg << team_data.first_half_season_ortg
 						end
+					end
 
-						if count != 0
-							drtg = season_drtg/count
-							case quarter
-							when 0
-								team_data.update_attributes(:full_game_season_drtg => drtg)
-							when 1
-								team_data.update_attributes(:first_quarter_season_drtg => drtg)
-							when 12
-								team_data.update_attributes(:first_half_season_drtg => drtg)
-							end
-						else
+					team_datas.each do |team_data|
+
+						past_team = team_data.past_team
+						index = team_id.find_index(past_team.id)
+						past_team_opp_ortg = opp_ortg_array[index]
+						past_team_opp_id = opp_id_array[index]
+
+						if past_team_opp_ortg.size < 10
 							case quarter
 							when 0
 								team_data.update_attributes(:full_game_season_drtg => 0.0)
@@ -347,7 +341,49 @@ namespace :update do
 							when 12
 								team_data.update_attributes(:first_half_season_drtg => 0.0)
 							end
+							next
 						end
+
+						season_drtg = 0
+						size = past_team_opp_ortg.size
+						(0...size).each do |i|
+							opp_id = past_team_opp_id[i]
+							opp_index = team_id.find_index(opp_id)
+							opp_base_ortg = team_season_ortg[opp_index]
+							opp_ortg = past_team_opp_ortg[i]
+							season_drtg += opp_ortg - opp_base_ortg
+						end
+
+						season_drtg /= size
+						case quarter
+						when 0
+							team_data.update_attributes(:full_game_season_drtg => season_drtg)
+						when 1
+							team_data.update_attributes(:first_quarter_season_drtg => season_drtg)
+						when 12
+							team_data.update_attributes(:first_half_season_drtg => season_drtg)
+						end
+
+					end
+
+					game_date.games.each do |game|
+
+						away_team = game.away_team
+						home_team = game.home_team
+
+						lineups = game.lineups.where(:quarter => quarter)
+
+						away_lineup = lineups.first
+						home_lineup = lineups.second
+
+						away_index = team_id.find_index(away_team.id)
+						home_index = team_id.find_index(home_team.id)
+
+						opp_ortg_array[away_index] << home_lineup.ORTG
+						opp_ortg_array[home_index] << away_lineup.ORTG
+
+						opp_id_array[away_index] << home_team.id
+						opp_id_array[home_index] << away_team.id
 
 					end
 
@@ -374,19 +410,8 @@ namespace :update do
 				end
 				season.game_dates.each do |game_date|
 					puts game_date.id
-					game_date.saveORTG(quarter, past_number, game_array, team_id)
+					game_date.baseORTG(quarter, past_number, game_array, team_id)
 				end
-			end
-		end
-	end
-
-	task :past_team_data_drtg => :environment do
-		past_number = 10
-		quarters = [1, 12]
-		quarters.each do |quarter|
-			GameDate.all.each do |game_date|
-				puts game_date.id
-				game_date.saveDRTG(quarter, past_number)
 			end
 		end
 	end
@@ -404,7 +429,26 @@ namespace :update do
 				end
 				season.game_dates.each do |game_date|
 					puts game_date.id
-					game_date.savePoss(quarter, past_number, game_array, team_id)
+					game_date.basePoss(quarter, past_number, game_array, team_id)
+				end
+			end
+		end
+	end
+
+	task :past_team_data_drtg => :environment do
+		past_number = 10
+		quarters = [12]
+		quarters.each do |quarter|
+			Season.all.each do |season|
+				previous_drtg = Array.new
+				team_id = Array.new
+				season.past_teams.each do |past_team|
+					previous_drtg << nil
+					team_id << past_team.id
+				end
+				season.game_dates.each do |game_date|
+					puts game_date.id
+					game_date.baseDRTG(quarter, past_number, previous_drtg, team_id)
 				end
 			end
 		end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150923205335) do
+ActiveRecord::Schema.define(version: 20150928023425) do
 
   create_table "actions", force: true do |t|
     t.integer  "game_id"
@@ -29,16 +29,16 @@ ActiveRecord::Schema.define(version: 20150923205335) do
     t.integer  "season_id"
     t.integer  "quarter"
     t.string   "time"
-    t.float    "win_percent",        limit: 24
-    t.integer  "total_bet"
+    t.float    "total_win_percent",  limit: 24
+    t.integer  "total_win_bet"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "win_games"
-    t.float    "win_by_points",      limit: 24
-    t.integer  "lose_games"
-    t.float    "lose_by_points",     limit: 24
+    t.integer  "total_lose_bet"
+    t.float    "total_bet",          limit: 24
+    t.integer  "spread_win_bet"
+    t.float    "spread_lose_bet",    limit: 24
     t.float    "spread_win_percent", limit: 24
-    t.float    "spread_total_bet",   limit: 24
+    t.float    "spread_bet",         limit: 24
     t.float    "range",              limit: 24
   end
 

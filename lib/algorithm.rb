@@ -47,9 +47,8 @@ module Algorithm
 		away_var -= 1.5732
 		home_var += 1.5732
 
-
-		away_drtg = (away_base_drtg + away_season_drtg)/2
-		home_drtg = (home_base_drtg + home_season_drtg)/2
+		away_drtg = (away_season_drtg)
+		home_drtg = (home_season_drtg)
 
 		away_var += home_drtg
 		home_var += away_drtg

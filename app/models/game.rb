@@ -119,43 +119,7 @@ class Game < ActiveRecord::Base
 		else
 			return 0.0
 		end
-	end
-
-	def PredictPossessions(past_number=10, quarter=0)
-		# Grab PAST_NUMBER games from the database where the team played and order them in reverse order
-		previous_away_games = self.previous_away_games(past_number)
-		previous_home_games = self.previous_home_games(past_number)
-
-		# if there aren't enough previous games, then go to the next one
-		if previous_away_games.size != past_number || previous_home_games.size != past_number
-			return nil
-		end
-
-		away_lineup = Lineup.new
-		away_opponent = Lineup.new
-		previous_away_games.each do |away_game|
-			team = away_game.lineups.where(:quarter => quarter).first
-			opponent = team.opponent
-			Store.add(away_lineup, team)
-			Store.add(away_opponent, opponent)
-		end
-
-		home_lineup = Lineup.new
-		home_opponent = Lineup.new
-		previous_home_games.each do |home_game|
-			team = home_game.lineups.where(:quarter => quarter).first
-			opponent = team.opponent
-			Store.add(home_lineup, team)
-			Store.add(home_opponent, opponent)
-		end
-
-		away_possessions = away_lineup.TotPoss(away_lineup, away_opponent)
-		home_possessions = home_lineup.TotPoss(home_lineup, home_opponent)
-		possessions = (away_possessions + home_possessions) / (2 * past_number)
-
-		return possessions
-
-	end
+	end 
 
 	include Algorithm
 
@@ -186,8 +150,8 @@ class Game < ActiveRecord::Base
 			return [nil, nil]
 		end
 
-		away_poss = (away_poss + away_season_poss)/2
-		home_poss = (home_poss + home_season_poss)/2
+		away_poss = (away_base_poss + away_season_poss)/2
+		home_poss = (home_base_poss + home_season_poss)/2
 		possessions = (away_poss + home_poss)/2
 
 		lineups = self.lineups.where(:quarter => quarter)

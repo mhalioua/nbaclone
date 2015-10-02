@@ -3,7 +3,7 @@ namespace :game do
 	task :algorithm => :environment do
 
 		past_number = 10
-		quarters = [0, 1, 12]
+		quarters = [1, 12]
 
 		quarters.each do |quarter|
 			Season.all.each do |season|
@@ -13,11 +13,11 @@ namespace :game do
 					away_score, home_score = game.algorithmo(past_number, quarter)
 					case quarter
 					when 0
-						game.update_attributes(:away_full_game_score_2 => away_score, :home_full_game_score_2 => home_score)
+						game.update_attributes(:away_full_game_score => away_score, :home_full_game_score => home_score)
 					when 1
-						game.update_attributes(:away_first_quarter_score_2 => away_score, :home_first_quarter_score_2 => home_score)
+						game.update_attributes(:away_first_quarter_score => away_score, :home_first_quarter_score => home_score)
 					when 12
-						game.update_attributes(:away_first_half_score_2 => away_score, :home_first_half_score_2 => home_score)
+						game.update_attributes(:away_first_half_score => away_score, :home_first_half_score => home_score)
 					end
 					puts game.url
 					puts away_score
@@ -32,18 +32,13 @@ namespace :game do
 
 		include Conclude
 
-		times = ["Full Year", "First Half", "Second Half", "November", "December", "January", "February", "March", "April"]
+		# times = ["Full Year", "First Half", "Second Half", "November", "December", "January", "February", "March", "April"]
 		types = ["Total", "Spread"]
 		types.each do |type|
-			quarters = [0]
+			quarters = [1, 12]
 			quarters.each do |quarter|
-				(0.5..8).step(0.5) do |range|
+				(0..4).step(0.5) do |range|
 					Season.all.each do |season|
-
-						puts season.year
-						puts type + " Bet"
-						puts quarter.to_s + " Quarter"
-						puts range.to_s + " Range"
 
 						full_year_total_games = full_year_plus_minus = full_year_no_bet = full_year_win_bet = full_year_lose_bet = 0
 						first_half_total_games = first_half_plus_minus = first_half_no_bet = first_half_win_bet = first_half_lose_bet = 0
@@ -59,25 +54,40 @@ namespace :game do
 
 								case quarter
 								when 0
-									away_ps = game.away_full_game_score_2
-									home_ps = game.home_full_game_score_2
-									cl = game.full_game_open
-									if cl == nil
-										cl = game.full_game_cl
+									away_ps = game.away_full_game_score
+									home_ps = game.home_full_game_score
+									case type
+									when "Total"
+										cl = game.full_game_open
+										if cl == nil
+											cl = game.full_game_cl
+										end
+									when "Spread"
+										cl = game.full_game_spread
 									end
 								when 1
-									away_ps = game.away_first_quarter_score_2
-									home_ps = game.home_first_quarter_score_2
-									cl = game.first_quarter_open
-									if cl == nil
-										cl = game.first_quarter_cl
+									away_ps = game.away_first_quarter_score
+									home_ps = game.home_first_quarter_score
+									case type
+									when "Total"
+										cl = game.first_quarter_open
+										if cl == nil
+											cl = game.first_quarter_cl
+										end
+									when "Spread"
+										cl = game.first_quarter_spread
 									end
 								when 12
-									away_ps = game.away_first_half_score_2
-									home_ps = game.home_first_half_score_2
-									cl = game.first_half_open
-									if cl == nil
-										cl = game.first_half_cl
+									away_ps = game.away_first_half_score
+									home_ps = game.home_first_half_score
+									case type
+									when "Total"
+										cl = game.first_half_open
+										if cl == nil
+											cl = game.first_half_cl
+										end
+									when "Spread"
+										cl = game.full_game_spread
 									end
 								end
 
@@ -85,7 +95,6 @@ namespace :game do
 									next
 								end
 
-								puts game.url
 								lineups = game.lineups
 
 								case quarter
@@ -148,30 +157,27 @@ namespace :game do
 							end
 						end
 
-						full_year_total_bet = full_year_win_bet + full_year_lose_bet
-						first_half_total_bet = first_half_win_bet + first_half_lose_bet
-						second_half_total_bet = second_half_win_bet + second_half_lose_bet
+						win_bets = Array.new
+						lose_bets = Array.new
 
-						full_year_win_percent = full_year_win_bet.to_f / full_year_total_bet.to_f
-						first_half_win_percent = first_half_win_bet.to_f / first_half_total_bet.to_f
-						second_half_win_percent = second_half_win_bet.to_f / second_half_total_bet.to_f
+						win_bets << full_year_win_bet
+						win_bets << first_half_win_bet
+						win_bets << second_half_win_bet
+
+						lose_bets << full_year_lose_bet
+						lose_bets << first_half_lose_bet
+						lose_bets << second_half_lose_bet
+
 
 						case type
 						when "Total"
-							Conclude.updateTotalBets(season, quarter, "Full Year", range, full_year_win_percent, full_year_total_bet)
-							Conclude.updateTotalBets(season, quarter, "First Half", range, first_half_win_percent, first_half_total_bet)
-							Conclude.updateTotalBets(season, quarter, "Second Half", range, second_half_win_percent, second_half_total_bet)
+							Conclude.updateTotalBets(season, quarter, range, win_bets, lose_bets)
 						when "Spread"
-							Conclude.updateSpreadBets(season, quarter, "Full Year", range, full_year_win_percent, full_year_total_bet)
-							Conclude.updateSpreadBets(season, quarter, "First Half", range, first_half_win_percent, first_half_total_bet)
-							Conclude.updateSpreadBets(season, quarter, "Second Half", range, second_half_win_percent, second_half_total_bet)
+							Conclude.updateSpreadBets(season, quarter, range, win_bets, lose_bets)
 						end
 
-						puts season.year + " Season"
-						puts "Quarter " + quarter.to_s
-						puts full_year_win_percent.to_s + " Full Year"
-						puts first_half_win_percent.to_s + " First Half"
-						puts second_half_win_percent.to_s + " Second Half"
+						puts season.year
+						puts quarter.to_s
 					end
 				end
 			end

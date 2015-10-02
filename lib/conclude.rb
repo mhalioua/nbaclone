@@ -68,22 +68,64 @@ module Conclude
 		season.bets.where(:quarter => quarter, :time => time, :range => range).first
 	end
 
-	def self.updateTotalBets(season, quarter, time, range, win_percent, total_bet)
-		bet = self.findBet(season, quarter, time, range)
-		if bet != nil
-			bet.update_attributes(:win_percent => win_percent, :total_bet => total_bet)
-		else
-			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :range => range, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
-		end 
+	def self.updateTotalBets(season, quarter, range, win_bets, lose_bets)
+
+
+		(0..2).each do |i|
+			case i
+			when 0
+				time = "Full Year"
+			when 1
+				time = "First Half"
+			when 2
+				time = "Second Half"
+			end
+
+			bet = self.findBet(season, quarter, time, range)
+			win_bet = win_bets[i]
+			lose_bet = lose_bets[i]
+			total_bet = win_bet + lose_bet
+			win_percent = win_bet.to_f / total_bet.to_f
+
+			if bet != nil
+				bet.update_attributes(:total_win_bet => win_bet, :total_lose_bet => lose_bet, :total_bet => total_bet, :total_win_percent => win_percent)
+			else
+				Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :range => range, :total_win_bet => win_bet, :total_lose_bet => lose_bet, :total_bet => total_bet, :total_win_percent => win_percent)
+			end
+
+
+		end
+
 	end
 
-	def self.updateSpreadBets(season, quarter, time, range, win_percent, total_bet)
-		bet = self.findBet(season, quarter, time, range)
-		if bet != nil
-			bet.update_attributes(:spread_win_percent => win_percent, :spread_total_bet => total_bet)
-		else
-			Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :range => range, :spread_win_percent => win_percent, :spread_total_bet => total_bet)
+	def self.updateSpreadBets(season, quarter, range, win_bets, lose_bets)
+
+
+		(0..2).each do |i|
+			case i
+			when 0
+				time = "Full Year"
+			when 1
+				time = "First Half"
+			when 2
+				time = "Second Half"
+			end
+
+			bet = self.findBet(season, quarter, time, range)
+			win_bet = win_bets[i]
+			lose_bet = lose_bets[i]
+			total_bet = win_bet + lose_bet
+			win_percent = win_bet.to_f / total_bet.to_f
+
+			if bet != nil
+				bet.update_attributes(:spread_win_bet => win_bet, :spread_lose_bet => lose_bet, :spread_bet => total_bet, :spread_win_percent => win_percent)
+			else
+				Bet.create(:season_id => season.id, :quarter => quarter, :time => time, :range => range, :spread_win_bet => win_bet, :spread_lose_bet => lose_bet, :spread_bet => total_bet, :spread_win_percent => win_percent)
+			end
+
+
 		end
+
 	end
 
 end
