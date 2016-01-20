@@ -1,4 +1,4 @@
-.class ChangeSpread < ActiveRecord::Migration
+class ChangeSpread < ActiveRecord::Migration
   def change
   	add_column :games, :full_game_spread, :float
   	add_column :games, :first_half_spread, :float
