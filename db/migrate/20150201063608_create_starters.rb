@@ -4,9 +4,9 @@ class CreateStarters < ActiveRecord::Migration
 
       t.references :season
       t.references :game
-    	t.references :team, :class_name => "Lineup"
+      t.references :team, :class_name => "Lineup"
       t.references :opponent, :class_name => "Lineup"
-    	t.references :past_player
+      t.references :past_player
       t.string "alias"
       t.boolean "starter"
       t.boolean "home"
@@ -30,6 +30,8 @@ class CreateStarters < ActiveRecord::Migration
 
       t.timestamps
     end
-    add_index("starters", "alias")
+
+      add_index("starters", "alias")
+  
   end
 end

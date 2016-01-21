@@ -87,21 +87,22 @@ namespace :database do
 			@year = @month = @day = game_date = away_team = home_team = nil
 			doc.css("#games td").each_with_index do |stat, index|
 				# Find the year, month, and date in terms of numbers
-				case index%8
+				case index%9
 				when 0
 					game_year, game_month, game_day = Whoo.findDate(stat.text)
 					if game_day != @day
-						weekday = Date.new(game_year.to_i, game_month.to_i, game_day.to_i).strftime("%A")
 						@year = game_year
 						@month = game_month
 						@day = game_day
-						game_date = GameDate.create(:season_id => season.id, :year => @year, :month => @month, :day => @day, :weekday => weekday)
+						game_date = GameDate.create(:season_id => season.id, :year => @year, :month => @month, :day => @day)
 					end
-				when 2
-					away_team = past_teams.where(:abbr => stat['csk'][0..2]).first
-				when 4
-					home_team = past_teams.where(:abbr => stat['csk'][0..2]).first
+				when 3
+					abbr = stat['csk'][0..2]
+					away_team = past_teams.where(:abbr => abbr).first
 				when 5
+					abbr = stat['csk'][0..2]
+					home_team = past_teams.where(:abbr => abbr).first
+				when 6
 					game = Game.create(:season_id => season.id, :game_date_id => game_date.id, :away_team_id => away_team.id, :home_team_id => home_team.id)
 					puts game.url
 				end
@@ -499,23 +500,6 @@ namespace :database do
 					lineup.update_attributes(:predicted_score => game.home_full_game_score_2)
 				end
 			end
-
-			# game.lineups.where(:quarter => 12).each_with_index do |lineup, index|
-			# 	if index == 0
-			# 		lineup.update_attributes(:predicted_score => game.away_score)
-			# 	else
-			# 		lineup.update_attributes(:predicted_score => game.home_score)
-			# 	end
-			# end
-
-			# game.lineups.where(:quarter => 1).each_with_index do |lineup, index|
-			# 	if index == 0
-			# 		lineup.update_attributes(:predicted_score => game.away_full_game_score)
-			# 	else
-			# 		lineup.update_attributes(:predicted_score => game.home_full_game_score)
-			# 	end
-			# end
-
 		end
 	end
 
